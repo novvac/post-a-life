@@ -8,6 +8,13 @@ const routes = [
     path: '/app',
     name: 'Accessed',
     component: () => import('@/views/Accessed.vue'),
+    children: [
+      {
+        path: "",
+        name: "Home",
+        component: () => import('@/views/Home.vue'),
+      }
+    ]
   },
   {
     path: "/auth",

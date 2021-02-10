@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <router-view></router-view>
+    <div class="grey lighten-4" style="height: 100%">
+      <router-view></router-view>
+    </div>
   </v-app>
 </template>
 

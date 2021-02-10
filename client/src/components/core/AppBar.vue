@@ -4,8 +4,13 @@
         flat
         clipped-left
         clipped-right
+        color="white"
     >
-        This is app bar 
+        <h2>Logo</h2>
+
+        <v-spacer></v-spacer>
+
+
     </v-app-bar>
 </template>
 

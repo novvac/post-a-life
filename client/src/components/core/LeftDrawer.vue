@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer
         app
-        dark
+        floating
         clipped
     >
         this is left nav drawer
