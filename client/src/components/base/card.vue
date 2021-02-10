@@ -22,6 +22,10 @@
         <v-card-text>
             <slot/>
         </v-card-text>
+
+        <v-card-actions class="pa-0" v-if="hasOtherAction">
+            <slot name="other-action"/>
+        </v-card-actions>
     </v-card>
 </template>
 
@@ -43,6 +47,9 @@ export default {
         },
         hasSubtitle() {
             return !!this.$slots['subtitle'];
+        },
+        hasOtherAction() {
+            return !!this.$slots['other-action'];
         }
     }
 }
