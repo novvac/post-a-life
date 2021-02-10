@@ -5,9 +5,18 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home.vue'),
+    path: '/app',
+    name: 'Accessed',
+    component: () => import('@/views/Accessed.vue'),
+  },
+  {
+    path: "/auth",
+    name: "Auth",
+    component: () => import("@/views/Auth.vue"),
+  },
+  {
+    path: "*",
+    redirect: "/app",
   },
 ]
 
