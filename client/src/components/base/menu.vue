@@ -1,5 +1,15 @@
 <template>
-    <v-menu></v-menu>
+    <v-menu offset-y centered>
+        <template v-slot:activator="{on}">
+            <div v-on="on">
+                <slot name="activator"/>
+            </div>
+        </template>
+
+        <div>
+            <slot/>
+        </div>
+    </v-menu>
 </template>
 
 <script>

@@ -17,9 +17,17 @@
                             <v-list-item-subtitle class="caption mt-1">@novvac</v-list-item-subtitle>
                         </div>
 
-                        <v-btn small icon>
-                            <v-icon small>mdi-chevron-down</v-icon>
-                        </v-btn>
+                        <base-menu>
+                            <template v-slot:activator>
+                                <v-btn small icon>
+                                    <v-icon small>mdi-chevron-down</v-icon>
+                                </v-btn>
+                            </template>
+
+                            <base-card :rounded="0">
+                                Hello ;)
+                            </base-card>
+                        </base-menu>
                     </div>
                 </v-list-item>
             </v-list>
