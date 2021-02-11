@@ -30,6 +30,16 @@ export default {
     data() {
         return {
             credentails: {},
+            errors: {},
+            msg: "",
+        }
+    },
+    methods: {
+        signIn() {
+            this.errors = {};
+            this.msg = "";
+
+            const url = "192.168.43.5:3000/api/auth/sign-in"
         }
     }
 }

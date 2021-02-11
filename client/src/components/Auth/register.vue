@@ -6,6 +6,8 @@
             flat
             dark
             v-model="credentials.firstName"
+            :error="Boolean(errors.firstName)"
+            :error-messages="errors.firstName"
         />
         <v-text-field
             placeholder="Last name"
@@ -13,6 +15,8 @@
             flat
             dark
             v-model="credentials.lastName"
+            :error="Boolean(errors.lastName)"
+            :error-messages="errors.lastName"
         />
         <v-text-field
             placeholder="Email"
@@ -20,6 +24,8 @@
             flat
             dark
             v-model="credentials.email"
+            :error="Boolean(errors.email)"
+            :error-messages="errors.email"
         />
         <v-text-field
             placeholder="Password"
@@ -28,6 +34,8 @@
             type="password"
             dark
             v-model="credentials.password"
+            :error="Boolean(errors.password)"
+            :error-messages="errors.password"
         />
 
         <v-text-field
@@ -37,11 +45,15 @@
             type="password"
             dark
             v-model="credentials.rePassword"
+            :error="Boolean(errors.rePassword)"
+            :error-messages="errors.rePassword"
         />
 
-        <v-btn icon large dark>
+        <v-btn icon large dark @click="signUp">
             <v-icon>mdi-check</v-icon>
         </v-btn>
+
+        <p v-if="msg">{{msg}}</p>
 
         <a class="d-block" href="login">zaloguj się</a>
     </div>
@@ -53,6 +65,16 @@ export default {
     data() {
         return {
             credentials: {},
+            errors: {},
+            msg: "",
+        }
+    },
+    methods: {
+        signUp() {
+            this.errors = {};
+            this.msg = "";
+
+            const url = "http://192.168.43.5:3000/api/auth/sign-up"
         }
     }
 }
