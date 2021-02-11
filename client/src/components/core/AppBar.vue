@@ -35,7 +35,7 @@
                     </v-btn>
                 </template>
 
-                <base-card>
+                <base-card :rounded="0">
                     Content here
                 </base-card>
             </base-menu>
