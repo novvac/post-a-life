@@ -43,7 +43,16 @@ export default {
             this.errors = {};
             this.msg = "";
 
-            const url = "192.168.43.5:3000/api/auth/sign-in"
+            const url = "192.168.43.5:3000/api/auth/sign-in";
+            this.$http.post(url, this.credentials)
+                .then((res) => {
+                    this.msg = res.data.msg;
+                    this.$router.push("/app");
+                    this.credentials = {};
+                })
+                .catch((e) => {
+                    this.errors = e.response.data.errors;
+                })
         }
     }
 }
