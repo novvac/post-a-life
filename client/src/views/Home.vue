@@ -5,7 +5,8 @@
                 <new-post/>
             </v-col>
             <v-col cols="12" :md="4">
-                <stories/>
+                <stories class="mb-5"/>
+                <events/>
             </v-col>
         </v-row>
     </div>
@@ -17,6 +18,7 @@ export default {
     components: {
         NewPost: () => import('@/components/Home/newPost'),
         Stories: () => import('@/components/Home/stories'),
+        Events: () => import('@/components/Home/events'),
     }
 }
 </script>
