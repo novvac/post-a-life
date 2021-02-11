@@ -6,6 +6,8 @@
             flat
             dark
             v-model="credentials.email"
+            :error="Boolean(errors.email)"
+            :error-messages="errors.email"
         />
         <v-text-field
             placeholder="Password"
@@ -14,6 +16,8 @@
             type="password"
             dark
             v-model="credentials.password"
+            :error="Boolean(errors.password)"
+            :error-messages="errors.password"
         />
 
         <v-btn icon large dark>
