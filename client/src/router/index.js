@@ -20,6 +20,19 @@ const routes = [
     path: "/auth",
     name: "Auth",
     component: () => import("@/views/Auth.vue"),
+    redirect: "/auth/login",
+    children: [
+      {
+        path: "login",
+        name: "Login",
+        component: () => import('@/components/Auth/login.vue'),
+      },
+      {
+        path: "register",
+        name: "Register",
+        component: () => import('@/components/Auth/register.vue'),
+      }
+    ]
   },
   {
     path: "*",

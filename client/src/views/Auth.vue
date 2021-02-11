@@ -1,6 +1,6 @@
 <template>
-    <div class="auth">
-        this will be auth page
+    <div class="auth pa-5 black white--text" style="height: 100%">
+        <router-view></router-view>
     </div>
 </template>
 
