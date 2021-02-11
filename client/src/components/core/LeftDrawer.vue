@@ -4,6 +4,27 @@
         floating
         clipped
     >
+        <base-card class="grey lighten-3 ma-5" dense>
+            <v-list class="pa-0">
+                <v-list-item class="ma-0 pa-0">
+                    <v-avatar size="36">
+                        <v-img src="https://i.pinimg.com/originals/bb/0c/07/bb0c074019ee55b098fb023ec53be7fb.png"></v-img>
+                    </v-avatar>
+
+                    <div class="ml-3 d-flex align-center justify-space-between" style="width: 100%">
+                        <div>
+                            <v-list-item-title class="font-weight-bold body-2">John Doe</v-list-item-title>
+                            <v-list-item-subtitle class="caption mt-1">@novvac</v-list-item-subtitle>
+                        </div>
+
+                        <v-btn small icon>
+                            <v-icon small>mdi-chevron-down</v-icon>
+                        </v-btn>
+                    </div>
+                </v-list-item>
+            </v-list>
+        </base-card>
+
         <v-list class="ma-0 pa-0">
             <v-list-item
                 v-for="link in links"

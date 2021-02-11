@@ -19,7 +19,7 @@
             <slot name="subtitle"/>
         </v-card-subtitle>
 
-        <v-card-text>
+        <v-card-text :class="[dense ? 'px-3 py-2' : undefined]">
             <slot/>
         </v-card-text>
 
@@ -36,6 +36,10 @@ export default {
         rounded: {
             type: Number,
             default: 16,
+        },
+        dense: {
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
