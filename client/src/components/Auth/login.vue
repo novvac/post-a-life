@@ -20,7 +20,7 @@
             :error-messages="errors.password"
         />
 
-        <v-btn icon large dark>
+        <v-btn icon large dark @click="signIn()">
             <v-icon>mdi-login</v-icon>
         </v-btn>
 
@@ -33,7 +33,7 @@ export default {
     name: "Login",
     data() {
         return {
-            credentails: {},
+            credentials: {},
             errors: {},
             msg: "",
         }
@@ -43,7 +43,7 @@ export default {
             this.errors = {};
             this.msg = "";
 
-            const url = "192.168.43.5:3000/api/auth/sign-in";
+            const url = "http://192.168.43.5:3000/api/auth/sign-in";
             this.$http.post(url, this.credentials)
                 .then((res) => {
                     this.msg = res.data.msg;
