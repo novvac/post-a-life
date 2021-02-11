@@ -1,10 +1,11 @@
 <template>
     <div class="login">
         <v-text-field
-            placeholder="Username"
+            placeholder="Email"
             outlined
             flat
             dark
+            v-model="credentials.email"
         />
         <v-text-field
             placeholder="Password"
@@ -12,6 +13,7 @@
             flat
             type="password"
             dark
+            v-model="credentials.password"
         />
 
         <v-btn icon large dark>
@@ -25,6 +27,11 @@
 <script>
 export default {
     name: "Login",
+    data() {
+        return {
+            credentails: {},
+        }
+    }
 }
 </script>
 
