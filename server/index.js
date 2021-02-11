@@ -13,7 +13,7 @@ app.use(morgan('tiny'));
 app.use(cors());
 
 // db
-mongoose.connect("mognodb://localhost:27017/post-a-life", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb://localhost:27017/post-a-life", {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connection.once("open", () => {
     console.log("[DATABASE] database is running");
 })
