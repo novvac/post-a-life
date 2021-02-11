@@ -24,18 +24,21 @@
 
         <v-spacer></v-spacer>
 
-        <div>
-            <v-btn icon>
-                <v-icon>mdi-account-plus-outline</v-icon>
-            </v-btn>
+        <div class="d-flex">
+            <base-menu
+                v-for="action in actions"
+                :key="action.icon"
+            >
+                <template v-slot:activator>
+                    <v-btn icon>
+                        <v-icon>mdi-{{action.icon}}</v-icon>
+                    </v-btn>
+                </template>
 
-            <v-btn icon class="mx-2">
-                <v-icon>mdi-bell-outline</v-icon>
-            </v-btn>
-            
-            <v-btn icon>
-                <v-icon>mdi-message-text-outline</v-icon>
-            </v-btn>
+                <base-card>
+                    Content here
+                </base-card>
+            </base-menu>
         </div>
     </v-app-bar>
 </template>
@@ -45,7 +48,20 @@ export default {
     name: "CoreAppBar",
     data() {
         return {
-
+            actions: [
+                {
+                    icon: "account-plus-outline",
+                    content: [],
+                },
+                {
+                    icon: "bell-outline",
+                    content: [],
+                },
+                {
+                    icon: "message-text-outline",
+                    content: [],
+                }
+            ]
         }
     }
 }
