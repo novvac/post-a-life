@@ -29,3 +29,5 @@ passport.use(new LocalStrategy({usernameField: "email"}, function(email, passwor
         return done(null, user);
     })
 }))
+
+module.exports = passport;
