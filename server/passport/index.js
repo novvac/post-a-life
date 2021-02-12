@@ -21,11 +21,6 @@ passport.use(new LocalStrategy({usernameField: "email"}, function(email, passwor
         if(!user)
             return done(null, false);
 
-        bcrypt.compare(password, user.password, (err, isCorrect) => {
-            if(!isCorrect)
-                return done(null, false);
-        })
-
         return done(null, user);
     })
 }))
