@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User.model");
+const passport = require('../passport/index');
 
 const validateSignUpData = require("../validators/signUpValidator");
 router.post('/sign-up', (req, res) => {
@@ -39,45 +40,37 @@ router.post('/sign-up', (req, res) => {
     })
 })
 
-// DEBUG - users list
-router.get("/users", (req, res) => {
-    User.find((err, users) => {
-        if(err)
-            return res.status(500).send("Server error!");
-
-        res.json({users});
-    })
-})
-
 const validateSignInData = require("../validators/signInValidator");
-router.post('/sign-in', (req, res) => {
+router.post('/sign-in', (req, res, next) => {
     const { errors, isCorrect } = validateSignInData(req.body);
 
     if(!isCorrect) {
         return res.status(500).json({errors});
     }
 
-    User.findOne({email: req.body.email}, (err, user) => {
-        if(err)
-            return res.status(500).send("Server error 1");
-        
-        if(!user) {
-            return res.status(404).json({errors: {email: "Niepoprawny email!"}});
+    passport.authenticate("local", (err, user, info) => {
+        if(err) {
+            return res.status(400).json({errors: {password: err}});
         }
 
-        bcrypt.compare(req.body.password, user.password, (err, isSame) => {
-            if(err)
-                return res.status(500).send("Server error 2");
-            
-            if(isSame) {
-                // user is log in
+        if(!user) {
+            return res.status(400).json({errors: {password: "Niepoprawne dane logowania!"}});
+        }
 
-                return res.status(200).json({msg: "Zalogowano! Za chwilę nastąpi przekierowanie!"});
+        bcrypt.compare(req.body.password, user.password, (err, isCorrect) => {
+            if(isCorrect) {
+                req.logIn(user, (err) => {
+                    if(err) {
+                        return res.status(400).json({errors: {password: err}});
+                    }
+        
+                    return res.status(200).json({msg: "success"});
+                })
             } else {
-                return res.status(500).json({errors: {password: "Hasło niepoprawne!"}});
+                return res.status(400).json({errors: {password: "Nieprawidłowe dane logowania"}});
             }
         })
-    })
+    })(req, res, next);
 })
 
 module.exports = router;
