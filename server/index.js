@@ -13,7 +13,12 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:8080',
+        'http://192.168.43.5:8080'
+    ],
+}));
 app.use(passport.initialize());
 
 // db
@@ -27,7 +32,9 @@ mongoose.connection.on("error", () => {
 
 // routing
 const auth = require("./routes/auth.routing");
+const user = require("./routes/user.routing");
 app.use("/api/auth/", auth);
+app.use("/api/user/", user);
 
 app.listen(PORT, () => {
     console.log("Server is running!");

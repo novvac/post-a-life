@@ -11,6 +11,15 @@ import './components/base/index';
 Vue.config.productionTip = false;
 // ajax
 Vue.prototype.$http = axios;
+axios.interceptors.request.use(function(config) {
+  let token = null;
+  if(VueCookies.get("token"))
+    token = VueCookies.get("token");
+  
+  config.headers.Authorization = `Bearer ${token}`;
+
+  return config;
+})
 // cookies
 Vue.use(VueCookies);
 Vue.$cookies.config(60*20);

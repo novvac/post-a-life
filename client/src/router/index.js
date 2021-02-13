@@ -14,6 +14,11 @@ const routes = [
         path: "",
         name: "Home",
         component: () => import('@/views/Home.vue'),
+      },
+      {
+        path: "friends",
+        name: "Friends",
+        component: () => import('@/views/Friends.vue'),
       }
     ]
   },
@@ -57,8 +62,6 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // user is logged?
   const tokenExist = Boolean(VueCookies.get("token"));
-
-  console.log(to.fullPath.slice(0,4));
   if(!tokenExist && to.fullPath.slice(0,4) === "/app") {
     next({name: "Login"});
   } else {
