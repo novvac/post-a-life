@@ -24,8 +24,16 @@
                                 </v-btn>
                             </template>
 
-                            <base-card :rounded="0">
-                                Hello ;)
+                            <base-card :rounded="0" withoutPadding>
+                                <v-list class="pa-0">
+                                    <v-list-item
+                                        link
+                                        @click="logout()"
+                                        dense
+                                    >
+                                        Wyloguj
+                                    </v-list-item>
+                                </v-list>
                             </base-card>
                         </base-menu>
                     </div>
@@ -60,6 +68,12 @@ export default {
                 {icon: "folder-image", text: "Photos", to: "/app/photos"},
                 {icon: "file-multiple", text: "Files", to: "/app/files"},
             ]
+        }
+    },
+    methods: {
+        logout() {
+            this.$cookies.remove("token");
+            this.$router.push("/auth/login");
         }
     }
 }

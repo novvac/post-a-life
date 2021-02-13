@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueCookies from 'vue-cookies'
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,13 @@ const routes = [
     path: "/auth",
     name: "Auth",
     component: () => import("@/views/Auth.vue"),
+    beforeEnter(to, from, next) {
+      if(VueCookies.get("token")) {
+        next({name: "Accessed"});
+      } else {
+        next();
+      }
+    },
     redirect: "/auth/login",
     children: [
       {
@@ -34,16 +42,28 @@ const routes = [
       }
     ]
   },
-  {
-    path: "*",
-    redirect: "/app",
-  },
+  // {
+  //   path: "*",
+  //   redirect: "/app",
+  // },
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  // user is logged?
+  const tokenExist = Boolean(VueCookies.get("token"));
+
+  console.log(to.fullPath.slice(0,4));
+  if(!tokenExist && to.fullPath.slice(0,4) === "/app") {
+    next({name: "Login"});
+  } else {
+    next();
+  }
 })
 
 export default router

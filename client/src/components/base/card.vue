@@ -27,7 +27,7 @@
             <slot name="subtitle"/>
         </v-card-subtitle>
 
-        <v-card-text :class="[dense ? 'px-3 py-2' : undefined]">
+        <v-card-text :class="[dense ? 'px-3 py-2' : undefined, withoutPadding ? 'pa-0' : undefined]">
             <slot/>
         </v-card-text>
 
@@ -46,6 +46,10 @@ export default {
             default: 16,
         },
         dense: {
+            type: Boolean,
+            default: false,
+        },
+        withoutPadding: {
             type: Boolean,
             default: false,
         }
