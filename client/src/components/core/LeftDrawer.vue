@@ -13,8 +13,8 @@
 
                     <div class="ml-3 d-flex align-center justify-space-between" style="width: 100%">
                         <div>
-                            <v-list-item-title class="font-weight-bold body-2">John Doe</v-list-item-title>
-                            <v-list-item-subtitle class="caption mt-1">@novvac</v-list-item-subtitle>
+                            <v-list-item-title class="font-weight-bold body-2">{{user.data.firstName ? user.data.firstName : ""}} {{user.data.lastName ? user.data.lastName : ""}}</v-list-item-title>
+                            <v-list-item-subtitle class="caption mt-1">#a5f2</v-list-item-subtitle>
                         </div>
 
                         <base-menu>
@@ -56,6 +56,11 @@
 </template>
 
 <script>
+import {
+    mapGetters,
+    mapActions,
+} from 'vuex';
+
 export default {
     name: "CoreLeftDrawer",
     data() {
@@ -70,12 +75,17 @@ export default {
             ]
         }
     },
+    computed: {
+        ...mapGetters(['user']),
+    },
     methods: {
+        ...mapActions(['clearUser']),
         logout() {
+            this.clearUser();
             this.$cookies.remove("token");
             this.$router.push("/auth/login");
         }
-    }
+    },
 }
 </script>
 

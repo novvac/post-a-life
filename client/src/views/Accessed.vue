@@ -1,5 +1,5 @@
 <template>
-  <div class="accessed">
+  <div class="accessed" v-if="loaded">
     <core-app-bar/>
 
     <core-left-drawer/>
@@ -14,10 +14,16 @@
 <script>
 import {
   mapGetters,
+  mapActions,
 } from 'vuex';
 
 export default {
   name: 'Accessed',
+  data() {
+    return {
+      loaded: false,
+    }
+  },
   components: {
     CoreAppBar: () => import('@/components/core/AppBar'),
     CoreLeftDrawer: () => import('@/components/core/LeftDrawer'),
@@ -27,15 +33,28 @@ export default {
     ...mapGetters(['user']),
   },
   methods: {
+    ...mapActions(['setUser']),
     loadUserInfo() {
-      return this.$http.post('http://192.168.43.5:3000/api/user/me', {});
+      return this.$http.get('http://192.168.43.5:3000/api/user/me');
     },
     loadUser() {
       if(!this.user) {
+        this.loaded = false;
         this.$http.all([this.loadUserInfo()])
           .then(this.$http.spread((usrInfo) => {
-            console.log(usrInfo);
+            // set user info
+            this.setUser(usrInfo);
+
+            
+            this.loaded = true;
           }))
+          .catch(err => {
+            if(err.response.status === 401) {
+              if(this.$cookies.get("token"))
+                this.$cookies.remove("token");
+              this.$router.push("/auth/login");
+            }
+          })
       }
     }
   },
