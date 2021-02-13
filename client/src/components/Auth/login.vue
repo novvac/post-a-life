@@ -24,6 +24,8 @@
             <v-icon>mdi-login</v-icon>
         </v-btn>
 
+        <p v-if="msg">{{msg}}</p>
+
         <a class="d-block" href="register">załóż konto</a>
     </div>
 </template>
@@ -47,9 +49,8 @@ export default {
             this.$http.post(url, this.credentials)
                 .then((res) => {
                     this.msg = res.data.msg;
-                    //this.$router.push("/app");
-                    console.log(res.data.token);
-                    this.credentials = {};
+                    this.$cookies.set("token", res.data.token);
+                    this.$router.push("/app");
                 })
                 .catch((e) => {
                     this.errors = e.response.data.errors;
