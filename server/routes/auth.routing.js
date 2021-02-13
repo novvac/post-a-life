@@ -57,18 +57,12 @@ router.post('/sign-in', (req, res, next) => {
             return res.status(400).json({errors: {password: "Niepoprawne dane logowania!"}});
         }
 
-        bcrypt.compare(req.body.password, user.password, (err, isCorrect) => {
-            if(isCorrect) {
-                req.logIn(user, (err) => {
-                    if(err) {
-                        return res.status(400).json({errors: {password: err}});
-                    }
-        
-                    return res.status(200).json({msg: "success"});
-                })
-            } else {
-                return res.status(400).json({errors: {password: "Nieprawidłowe dane logowania"}});
+        req.logIn(user, (err) => {
+            if(err) {
+                return res.status(400).json({errors: {password: err}});
             }
+
+            return res.status(200).json({msg: "success"});
         })
     })(req, res, next);
 })
