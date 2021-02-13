@@ -47,7 +47,8 @@ export default {
             this.$http.post(url, this.credentials)
                 .then((res) => {
                     this.msg = res.data.msg;
-                    this.$router.push("/app");
+                    //this.$router.push("/app");
+                    console.log(res.data.token);
                     this.credentials = {};
                 })
                 .catch((e) => {

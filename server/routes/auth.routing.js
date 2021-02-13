@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const User = require("../models/User.model");
-const passport = require('../passport/index');
+const jwt = require("jsonwebtoken");
+const config = require("../config/keys");
 
 const validateSignUpData = require("../validators/signUpValidator");
 router.post('/sign-up', (req, res) => {
@@ -48,23 +49,25 @@ router.post('/sign-in', (req, res, next) => {
         return res.status(500).json({errors});
     }
 
-    passport.authenticate("local", (err, user, info) => {
-        if(err) {
-            return res.status(400).json({errors: {password: err}});
+    User.findOne({email: req.body.email}, (err, user) => {
+        if(user) {
+            bcrypt.compare(req.body.password, user.password, (err, isCorrect) => {
+                if(isCorrect) {
+                    const payload = {
+                        id: user.id,
+                    }
+
+                    const token = jwt.sign(payload, config.secretOrKey);
+
+                    return res.status(200).json({token, msg: "Zalogowano!"});
+                } else {
+                    return res.status(404).json({errors: {password: "Nieprawidłowe dane logowania!"}});
+                }
+            })
+        } else {
+            return res.status(404).json({errors: {password: "Nieprawidłowe dane logowania!"}});
         }
-
-        if(!user) {
-            return res.status(400).json({errors: {password: "Niepoprawne dane logowania!"}});
-        }
-
-        req.logIn(user, (err) => {
-            if(err) {
-                return res.status(400).json({errors: {password: err}});
-            }
-
-            return res.status(200).json({msg: "success"});
-        })
-    })(req, res, next);
+    })
 })
 
 module.exports = router;

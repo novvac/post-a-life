@@ -1,31 +1,23 @@
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require("passport-jwt").ExtractJwt;
 const User = require('../models/User.model');
-const bcrypt = require("bcrypt");
+const config = require("../config/keys");
 
-passport.serializeUser(function(user, done) {
-    done(null, user.id);
-})
+let opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = config.secretOrKey;
 
-passport.deserializeUser(function(id, done) {
-    User.findById(id, (err, user) => {
-        done(err, user);
-    })
-})
-
-passport.use(new LocalStrategy({usernameField: "email"}, function(email, password, done) {
-    User.findOne({email: email}, (err, user) => {
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.id}, (err, user) => {
         if(err)
             return done(err);
-        
-        if(!user)
-            return done(null, false);
 
-        const passwordCorrect = bcrypt.compareSync(password, user.password);
-        if(passwordCorrect)
+        if(user) {
             return done(null, user);
-        else
+        } else {
             return done(null, false);
+        }
     })
 }))
 
