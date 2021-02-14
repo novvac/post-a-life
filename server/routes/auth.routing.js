@@ -5,6 +5,18 @@ const User = require("../models/User.model");
 const jwt = require("jsonwebtoken");
 const config = require("../config/keys");
 
+function encodeShortID(num) {
+    let encoded =  num.toString(36);
+    while(encoded.length < 4) {
+        encoded = '0' + encoded;
+    }
+    return encoded;
+}
+
+function decodeShortID(encoded) {
+    return parseInt(encoded, 36);
+}
+
 const validateSignUpData = require("../validators/signUpValidator");
 router.post('/sign-up', (req, res) => {
     const { errors, isCorrect } = validateSignUpData(req.body);
@@ -22,6 +34,18 @@ router.post('/sign-up', (req, res) => {
             return res.status(500).json({errors: {email: "Konto zostało już utworzone z podanych adresem email!"}})
         } else {
             let newUser = new User(req.body);
+
+            // set short id
+            User.countDocuments((err, count) => {
+                if(count > 0) {
+                    User.findOne({}, {}, {skip: count-1}, (err, lastUser) => {
+                        const short_id = decodeShortID(lastUser.short_id);
+                        newUser.short_id = encodeShortID(short_id+1);
+                    })
+                } else {
+                    newUser.short_id = encodeShortID(1);
+                }
+            })
 
             bcrypt.genSalt(10, (err, salt) => {
                 if(err)

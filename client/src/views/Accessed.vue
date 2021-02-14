@@ -21,7 +21,7 @@ export default {
   name: 'Accessed',
   data() {
     return {
-      loaded: false,
+      loaded: true,
     }
   },
   components: {
