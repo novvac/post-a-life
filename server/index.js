@@ -5,6 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const passport = require("./passport/index");
+const config = require("./config/keys");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +23,7 @@ app.use(cors({
 app.use(passport.initialize());
 
 // db
-mongoose.connect("mongodb://localhost:27017/post-a-life", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(config.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connection.once("open", () => {
     console.log("[DATABASE] database is running");
 })
