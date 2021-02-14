@@ -21,13 +21,14 @@ export default {
 <style lang="scss">
 .avatar {
     width: 100%;
-    height: 80px;
+    height: 60px;
     position: relative;
 
     .v-avatar {
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -60%);
         left: 50%;
         position: absolute;
+        border: 6px solid white;
     }
 }
 </style>
