@@ -14,7 +14,7 @@
                     <div class="ml-3 d-flex align-center justify-space-between" style="width: 100%">
                         <div>
                             <v-list-item-title class="font-weight-bold body-2">{{user.data.firstName ? user.data.firstName : ""}} {{user.data.lastName ? user.data.lastName : ""}}</v-list-item-title>
-                            <v-list-item-subtitle class="caption mt-1">#a5f2</v-list-item-subtitle>
+                            <v-list-item-subtitle class="caption mt-1">#{{user.data.short_id ? user.data.short_id : ""}}</v-list-item-subtitle>
                         </div>
 
                         <base-menu>

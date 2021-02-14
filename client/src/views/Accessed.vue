@@ -44,7 +44,6 @@ export default {
           .then(this.$http.spread((usrInfo) => {
             // set user info
             this.setUser(usrInfo);
-
             
             this.loaded = true;
           }))
