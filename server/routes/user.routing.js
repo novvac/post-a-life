@@ -8,4 +8,18 @@ router.get("/me", passport.authenticate("jwt", {session: false}), (req, res) => 
     res.status(200).send(result);
 })
 
+router.get("/basic-data/:id", passport.authenticate("jwt", {session: false}), (req, res) => {
+    User.findOne({short_id: req.params.id}, (err, user) => {
+        if(err)
+            return res.status(500).send("Błąd serwera");
+        
+        if(user) {
+            let {_id, email, password, __v, ...result} = user._doc;
+            return res.status(200).send(result);
+        } else {
+            return res.status(404).send("Użytkownik nie istnieje!");
+        }
+    })
+})
+
 module.exports = router;

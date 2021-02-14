@@ -37,13 +37,13 @@ export default {
     loadUserInfo() {
       return this.$http.get('http://192.168.43.5:3000/api/user/me');
     },
-    loadUser() {
+    LOAD_USER() {
       if(!this.user) {
         this.loaded = false;
         this.$http.all([this.loadUserInfo()])
           .then(this.$http.spread((usrInfo) => {
             // set user info
-            this.setUser(usrInfo);
+            this.setUser(usrInfo.data);
             
             this.loaded = true;
           }))
@@ -58,11 +58,11 @@ export default {
     }
   },
   created() {
-    this.loadUser();
+    this.LOAD_USER();
   },
   watch: {
     $route(to, from) {
-      this.loadUser();
+      this.LOAD_USER();
     }
   }
 }
