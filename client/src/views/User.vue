@@ -108,6 +108,11 @@ export default {
     created() {
         this.LOAD_USER();
     },
+    watch: {
+        $route(to, from) {
+            this.LOAD_USER();
+        }
+    }
 }
 </script>
 
