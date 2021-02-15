@@ -125,6 +125,7 @@ export default {
     },
     methods: {
         search() {
+//TODO: main search redirect
             console.log("searching...");
             // przenieś użytkownika na stronę wyszukiwania zaawansowanego razem
             // z wyszukiwanym hasłem. Następnie przed załadowaniem strony
@@ -136,9 +137,11 @@ export default {
             this.isSearching = false;
             clearTimeout(this.timeout);
 
-            this.timeout = setTimeout(() => {
-                this.isSearching = true;
-            }, 250)
+            if(!this.waitingForData) {
+                this.timeout = setTimeout(() => {
+                    this.isSearching = true;
+                }, 250)
+            }
         },
     },
     watch: {
