@@ -57,8 +57,7 @@ router.post("/add-friend/", passport.authenticate("jwt", {session: false}), (req
         if(sender) {
             User.findOne({short_id: req.body.id}, (err, recipient) => {
                 if(recipient) {
-                    if(!sender.friends.includes(recipient.id))
-                        sender.friends.push(recipient.id);
+                    
                     
                     sender.save();
 
@@ -73,12 +72,46 @@ router.post("/add-friend/", passport.authenticate("jwt", {session: false}), (req
     })
 })
 
-router.post("/harden-relation/", passport.authenticate("jwt", {session: false}), (req, res) => {
-    console.log(req.body);
-})
+function deleteIdFromArray(arr, id) {
+    return arr.filter((val, index, arr) => {
+        return val != id;
+    })
+}
 
-router.post("/destroy-relation/", passport.authenticate("jwt", {session: false}), (req, res) => {
-    console.log(req.body);
+router.post("/set-relation/", passport.authenticate("jwt", {session: false}), (req, res) => {
+    User.findOne({_id: req.user.id}, (err, sender) => {
+        if(err)
+            return res.status(500).send("Błąd serwera!");
+
+        if(sender) {
+            User.findOne({short_id: req.body.id}, (err, recipient) => {
+                if(recipient) {
+                    const mutation = req.body.mutation
+                    if(mutation == "ADD") {
+                        if(!sender.friends.includes(recipient.id))
+                            sender.friends.push(recipient.id);
+                    } else if(mutation == "SET") {
+                        if(!sender.friends.includes(recipient.id))
+                            sender.friends.push(recipient.id);
+                        if(!recipient.friends.includes(sender.id))
+                            recipient.friends.push(sender.id)
+                    } else if(mutation == "DESTROY") {
+                        sender.friends = deleteIdFromArray(sender.friends, recipient.id);
+                        recipient.friends = deleteIdFromArray(recipient.friends, sender.id);
+                    }
+                    
+                    sender.save();
+                    recipient.save();
+
+                    return res.status(200).send("ok");
+                } else {
+                    return res.status(404).send("Użytkownik nie istnieje!");
+                }
+            })
+        } else {
+            return res.status(404).send("Użytkownik nie istnieje!");
+        }
+    })
 })
 
 module.exports = router;

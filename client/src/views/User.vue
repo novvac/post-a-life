@@ -29,7 +29,7 @@
                                 text 
                                 class="caption text-capitalize elevation-0"
                                 :color="basicData.friendStatus.status != 'N' ? 'primary' : undefined"
-                                @click="basicData.friendStatus.options.length === 0 ? invitationManager('/add-friend/') : undefined"
+                                @click="basicData.friendStatus.options.length === 0 ? invitationManager('ADD') : undefined"
                             >
                                 <v-icon class="mr-2" small>mdi-{{basicData.friendStatus.icon}}</v-icon>
                                 {{basicData.friendStatus.text}}
@@ -42,7 +42,7 @@
                                     v-for="option in basicData.friendStatus.options"
                                     :key="option.icon"
                                     link
-                                    @click="invitationManager(option.endpoint)"
+                                    @click="invitationManager(option.mutation)"
                                 >
                                     <v-icon small class="mr-2">mdi-{{option.icon}}</v-icon>
                                     <span class="caption">{{option.text}}</span>
@@ -146,29 +146,27 @@ export default {
             const status = friendStatus.status;
             if(status === "F") {
                 this.setOptions([
-                    {icon: "account-minus", text: "Usuń ze znajomych", endpoint: '/destroy-relation/'}
+                    {icon: "account-minus", text: "Usuń ze znajomych", mutation: 'DESTROY'}
                 ])
             } else if(status === "P") {
                 this.setOptions([
-                    {icon: "undo", text: "Cofnij wysyłanie zaproszenia", endpoint: '/destroy-relation/'},
+                    {icon: "undo", text: "Cofnij wysyłanie zaproszenia", mutation: 'DESTROY'},
                 ])
             } else if(status === "R") {
                 this.setOptions([
-                    {icon: "check", text: "Zaakceptuj", endpoint: '/harden-relation/'},
-                    {icon: "delete", text: "Usuń zaproszenie", endpoint: '/destroy-relation/'},
+                    {icon: "check", text: "Zaakceptuj", mutation: 'SET'},
+                    {icon: "delete", text: "Usuń zaproszenie", mutation: 'DESTROY'},
                 ])
             } else {
                 // this must be empty
                 this.setOptions([]);
             }
         },
-        invitationManager(endpoint) {
-            let url = "http://192.168.43.5:3000/api/user" + endpoint;
-            this.$http.post(url, {id: this.id})
+        invitationManager(mutation) {
+            let url = "http://192.168.43.5:3000/api/user/set-relation/";
+            this.$http.post(url, {id: this.id, mutation: mutation})
                 .then(res => {
-                    this.loadFriendStatus().then(status => {
-                        this.LOAD_USER();
-                    })
+                    this.LOAD_USER();
                 })
                 .catch(err => {
                     console.log(err);
