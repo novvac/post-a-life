@@ -34,8 +34,10 @@ mongoose.connection.on("error", () => {
 // routing
 const auth = require("./routes/auth.routing");
 const user = require("./routes/user.routing");
+const main = require("./routes/main.routing");
 app.use("/api/auth/", auth);
 app.use("/api/user/", user);
+app.use("/api/main/", main);
 
 app.listen(PORT, () => {
     console.log("Server is running!");

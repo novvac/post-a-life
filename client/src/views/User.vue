@@ -16,7 +16,7 @@
         
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{basicData.firstName}} {{basicData.lastName}}</p>
-                <p class="ma-0 text-center caption">#{{basicData.short_id}}</p>
+                <p class="ma-0 text-center caption">{{basicData.short_id}}</p>
             </div>
 
             <v-divider class="mt-5"></v-divider>
