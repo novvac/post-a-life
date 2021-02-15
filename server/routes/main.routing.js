@@ -4,10 +4,11 @@ const User = require("../models/User.model");
 const passport = require("../passport/index");
 
 router.get("/fast-search/:query", passport.authenticate("jwt", {session: false}), (req, res) => {
-    const query = req.params.query.split(" ");
+    const query = req.params.query.split("_");
     let regex = [];
     for(let word of query) {
-        regex.push(new RegExp(word, "i"));
+        if(word)
+            regex.push(new RegExp(word, "i"));
     }
     User.find({$or: [{firstName: regex}, {lastName: regex}, {short_id: regex}]}, {}, {limit: 5}, (err, docs) => {
             let dataToSend = [];

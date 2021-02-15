@@ -145,7 +145,7 @@ export default {
         isSearching() {
             if(this.isSearching) {
                 this.waitingForData = true;
-                this.$http.get("http://192.168.43.5:3000/api/main/fast-search/" + this.searchValue)
+                this.$http.get("http://192.168.43.5:3000/api/main/fast-search/" + this.searchValue.split(" ").join("_"))
                     .then(res => {
                         this.msg = "";
                         this.found = res.data.data;
