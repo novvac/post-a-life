@@ -49,29 +49,6 @@ router.get("/friend-status/:id", passport.authenticate("jwt", {session: false}),
     })
 })
 
-router.post("/add-friend/", passport.authenticate("jwt", {session: false}), (req, res) => {
-    User.findOne({_id: req.user.id}, (err, sender) => {
-        if(err)
-            return res.status(500).send("Błąd serwera!");
-
-        if(sender) {
-            User.findOne({short_id: req.body.id}, (err, recipient) => {
-                if(recipient) {
-                    
-                    
-                    sender.save();
-
-                    return res.status(200).send("ok");
-                } else {
-                    return res.status(404).send("Użytkownik nie istnieje!");
-                }
-            })
-        } else {
-            return res.status(404).send("Użytkownik nie istnieje!");
-        }
-    })
-})
-
 function deleteIdFromArray(arr, id) {
     return arr.filter((val, index, arr) => {
         return val != id;
