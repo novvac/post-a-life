@@ -27,6 +27,7 @@
                 @keyup.enter="search()"
                 @click:append="search()"
                 @keyup="fastSearch()"
+                @click:clear="searchValue = ''"
             />
 
             <base-card class="result" without-padding :rounded="0" v-if="searchValue.length > 0">                
@@ -50,6 +51,7 @@
                         class="py-2"
                         link
                         :to="`/app/user/${user.short_id}`"
+                        @click="searchValue = ''"
                     >
                         <v-avatar size="36" class="grey">
                         </v-avatar>
@@ -137,7 +139,7 @@ export default {
             this.timeout = setTimeout(() => {
                 this.isSearching = true;
             }, 250)
-        }
+        },
     },
     watch: {
         isSearching() {
