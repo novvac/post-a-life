@@ -26,7 +26,7 @@
                 v-model="searchValue"
                 @keyup.enter="search()"
                 @click:append="search()"
-                @keypress="fastSearch()"
+                @keyup="fastSearch()"
             />
 
             <base-card class="result" without-padding :rounded="0" v-if="searchValue.length > 0">                
@@ -150,16 +150,14 @@ export default {
                         this.waitingForData = false;
                     })
                     .catch(err => {
-                        this.found = [];
                         if(err.response.status === 401) {
                             if(this.$cookies.get("token"))
                                 this.$cookies.remove("token");
                             this.$router.push("/auth/login");
-                        } else if(err.response.status === 404) {
-                            this.msg = err.response.data;
-                        } else {
-                            this.msg = "Błąd serwera!";
                         }
+
+                        this.found = [];
+                        this.msg = err.response.data;
 
                         this.waitingForData = false;
                     })
