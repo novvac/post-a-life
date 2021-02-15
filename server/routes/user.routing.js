@@ -28,8 +28,6 @@ router.get("/friend-status/:id", passport.authenticate("jwt", {session: false}),
             return res.status(500).send("Błąd serwera!");
 
         if(user) {
-            //sprawdź czy user nie sprawdza znajomości ze samym sobą
-
             let userA = req.user.friends.includes(user._id);
             let userB = user.friends.includes(req.user._id);
 
@@ -89,6 +87,40 @@ router.post("/set-relation/", passport.authenticate("jwt", {session: false}), (r
             return res.status(404).send("Użytkownik nie istnieje!");
         }
     })
+})
+
+router.get("/friends/", passport.authenticate("jwt", {session: false}), (req, res) => {
+    const friends = req.user.friends;
+    
+    User.find({_id: friends}, (err, docs) => {
+        current = 1;
+        for(doc of docs) {
+            let isFriend = null;
+            if(doc.friends.includes(req.user.id))
+                isFriend = true;
+            else
+                isFriend = false;
+
+            let {friends, _id, email, password, __v, ...result} = doc._doc;
+            addData(result, isFriend, current, docs.length);
+            
+            current++;
+        }
+    })
+
+    let dataToSend = [];
+    function addData(data, isFriend, current, max) {
+        if(isFriend)
+            dataToSend.push(data);
+        
+        if(current === max)
+            sendData();
+    }
+
+    function sendData() {
+        console.log(dataToSend);
+        res.status(200).json({data: dataToSend});
+    }
 })
 
 module.exports = router;
