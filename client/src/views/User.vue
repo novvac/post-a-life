@@ -122,26 +122,7 @@ export default {
             ])
                 .then(this.$http.spread((basicData, friendStatus) => {
                     this.basicData = basicData.data;
-                    this.basicData.friendStatus = friendStatus.data;
-
-                    const status = friendStatus.data.status;
-                    if(status === "F") {
-                        this.setOptions([
-                            {icon: "account-minus", text: "Usuń ze znajomych", endpoint: '/destroy-relation/'}
-                        ])
-                    } else if(status === "P") {
-                        this.setOptions([
-                            {icon: "undo", text: "Cofnij wysyłanie zaproszenia", endpoint: '/destroy-relation/'},
-                        ])
-                    } else if(status === "R") {
-                        this.setOptions([
-                            {icon: "check", text: "Zaakceptuj", endpoint: '/harden-relation/'},
-                            {icon: "delete", text: "Usuń zaproszenie", endpoint: '/destroy-relation/'},
-                        ])
-                    } else {
-                        // this must be empty
-                        this.setOptions([]);
-                    }
+                    this.setFriendStatus(friendStatus.data);
 
                     this.loaded = true;
                 }))
@@ -159,11 +140,35 @@ export default {
         setOptions(opts) {
             this.basicData.friendStatus.options = opts;
         },
+        setFriendStatus(friendStatus) {
+            this.basicData.friendStatus = friendStatus;
+
+            const status = friendStatus.status;
+            if(status === "F") {
+                this.setOptions([
+                    {icon: "account-minus", text: "Usuń ze znajomych", endpoint: '/destroy-relation/'}
+                ])
+            } else if(status === "P") {
+                this.setOptions([
+                    {icon: "undo", text: "Cofnij wysyłanie zaproszenia", endpoint: '/destroy-relation/'},
+                ])
+            } else if(status === "R") {
+                this.setOptions([
+                    {icon: "check", text: "Zaakceptuj", endpoint: '/harden-relation/'},
+                    {icon: "delete", text: "Usuń zaproszenie", endpoint: '/destroy-relation/'},
+                ])
+            } else {
+                // this must be empty
+                this.setOptions([]);
+            }
+        },
         invitationManager(endpoint) {
             let url = "http://192.168.43.5:3000/api/user" + endpoint;
             this.$http.post(url, {id: this.id})
                 .then(res => {
-                    console.log(res);
+                    this.loadFriendStatus().then(status => {
+                        this.LOAD_USER();
+                    })
                 })
                 .catch(err => {
                     console.log(err);
@@ -176,7 +181,7 @@ export default {
     watch: {
         $route(to, from) {
             this.LOAD_USER();
-        }
+        },
     }
 }
 </script>

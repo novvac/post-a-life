@@ -50,12 +50,27 @@ router.get("/friend-status/:id", passport.authenticate("jwt", {session: false}),
 })
 
 router.post("/add-friend/", passport.authenticate("jwt", {session: false}), (req, res) => {
-    const id = req.body.id;
-    if(!req.user.friends.includes(id)) {
-        User.findOne({id: req.user._id}, (err, user) => {
-            console.log(user);
-        })
-    }
+    User.findOne({_id: req.user.id}, (err, sender) => {
+        if(err)
+            return res.status(500).send("Błąd serwera!");
+
+        if(sender) {
+            User.findOne({short_id: req.body.id}, (err, recipient) => {
+                if(recipient) {
+                    if(!sender.friends.includes(recipient.id))
+                        sender.friends.push(recipient.id);
+                    
+                    sender.save();
+
+                    return res.status(200).send("ok");
+                } else {
+                    return res.status(404).send("Użytkownik nie istnieje!");
+                }
+            })
+        } else {
+            return res.status(404).send("Użytkownik nie istnieje!");
+        }
+    })
 })
 
 router.post("/harden-relation/", passport.authenticate("jwt", {session: false}), (req, res) => {
