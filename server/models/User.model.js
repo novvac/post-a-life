@@ -7,7 +7,7 @@ const User = new Schema({
     lastName: String,
     email: String,
     password: String,
-    // here will be something (idk what yet)
+    friends: Array
 })
 
 module.exports = mongoose.model("User", User);
