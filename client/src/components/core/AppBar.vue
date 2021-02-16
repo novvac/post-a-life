@@ -53,7 +53,8 @@
                         :to="`/app/user/${user.short_id}`"
                         @click="searchValue = ''"
                     >
-                        <v-avatar size="36" class="grey">
+                        <v-avatar size="36">
+                            <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"/>
                         </v-avatar>
 
                         <div class="ml-2">
