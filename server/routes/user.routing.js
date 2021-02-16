@@ -3,15 +3,7 @@ const router = express.Router();
 const User = require("../models/User.model");
 const passport = require("../passport/index");
 const multer = require('multer');
-
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, './uploads')
-    },
-    filename: function(req, file, cb) {
-        cb(null, file.fieldname + "-" + req.user.short_id + '-' + Date.now() + "." + file.mimetype.replace("image/", ''));
-    }
-})
+const storage = require('../config/multer');
 
 const upload = multer({storage: storage});
 
