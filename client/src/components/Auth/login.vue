@@ -45,10 +45,10 @@ export default {
             this.errors = {};
             this.msg = "";
 
-            const url = "http://192.168.43.5:3000/api/auth/sign-in";
+            const url = "http://192.168.43.5:3000/api/auth/login";
             this.$http.post(url, this.credentials)
                 .then((res) => {
-                    this.msg = res.data.msg;
+                    this.msg = "Zalogowano! Zaraz nastąpi przekierowanie!";
                     this.$cookies.set("token", res.data.token);
                     this.$router.push("/app");
                 })

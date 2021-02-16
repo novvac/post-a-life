@@ -22,7 +22,7 @@ axios.interceptors.request.use(function(config) {
 })
 // cookies
 Vue.use(VueCookies);
-Vue.$cookies.config(60*20);
+Vue.$cookies.config(60*60*24);  //TODO: change this later
 
 new Vue({
   router,

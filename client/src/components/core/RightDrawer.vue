@@ -57,24 +57,22 @@ export default {
         }
     },
     methods: {
-        loadUsers() {
-            this.$http.get("http://192.168.43.5:3000/api/user/friends/")
-                .then(res => {
-                    res.data = res.data.data;
+        // ! deprecated - this will be used with wss
+        // loadUsers() {
+        //     this.$http.get("http://192.168.43.5:3000/api/user/friends/")
+        //         .then(res => {
+        //             res.data = res.data.data;
                     
-                    for(let user of res.data) {
-                        user.to = "/app/user/" + user.short_id;
-                        this.items[1].content = res.data;
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-        }
+        //             for(let user of res.data) {
+        //                 user.to = "/app/user/" + user.short_id;
+        //                 this.items[1].content = res.data;
+        //             }
+        //         })
+        //         .catch(err => {
+        //             console.log(err);
+        //         })
+        // }
     },
-    created() {
-        this.loadUsers();
-    }
 }
 </script>
 
