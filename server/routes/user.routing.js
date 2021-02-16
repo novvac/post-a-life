@@ -4,7 +4,16 @@ const User = require("../models/User.model");
 const passport = require("../passport/index");
 const multer = require('multer');
 
-const upload = multer({dest: './uploads/'});
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads')
+    },
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.replace("image/", ''));
+    }
+})
+
+const upload = multer({storage: storage});
 
 router.get("/me", passport.authenticate("jwt", {session: false}), (req, res) => {
     let {password, _id, __v, email, ...result} = req.user._doc;
@@ -96,6 +105,9 @@ router.get("/friends/", passport.authenticate("jwt", {session: false}), (req, re
     const friends = req.user.friends;
     
     User.find({_id: friends}, (err, docs) => {
+        if(err)
+            return res.status(500).send("Błąd serwera!");
+
         current = 1;
         for(doc of docs) {
             let isFriend = null;
@@ -126,8 +138,20 @@ router.get("/friends/", passport.authenticate("jwt", {session: false}), (req, re
 })
 
 router.post("/banner/upload/", passport.authenticate("jwt", {session: false}), upload.single('banner'), (req,res) => {
-    console.log(req.file);
-    res.status(200).json({file: "ok"});
+    User.findOne({_id: req.user.id}, (err, user) => {
+        if(err)
+            return res.status(500).send("Błąd serwera!");
+        
+        if(user) {
+            user.banner = req.file.filename;
+            user.save();
+
+            res.status(200).json({file: "ok"});
+        } else {
+            if(err)
+            return res.status(404).send("Użytkownik nie istnieje!");
+        }
+    })
 })
 
 module.exports = router;

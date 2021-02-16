@@ -11,7 +11,7 @@
         </base-card>
 
         <base-card without-padding v-else-if="loaded && !msg">
-            <profile-banner :owner="id === user.short_id ? true : false" src="https://papers.co/wallpaper/papers.co-oc25-summer-tree-leaf-vacation-green-nature-29-wallpaper.jpg"/>
+            <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + basicData.banner"/>
             <avatar :owner="id === user.short_id ? true : false" src="https://i.pinimg.com/originals/bb/0c/07/bb0c074019ee55b098fb023ec53be7fb.png"/>
         
             <div>

@@ -6,10 +6,12 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const passport = require("./passport/index");
 const config = require("./config/keys");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use('/uploads', express.static(path.join(__dirname + "/uploads")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
