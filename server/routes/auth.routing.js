@@ -67,7 +67,7 @@ router.post('/register', (req, res) => {
     
                         user.save();
     
-                        return res.status(200).json({msg: "Konto utworzone, możesz się teraz zalogować!"});
+                        return res.status(201).json('success');
                     })
                 })
             }
@@ -93,7 +93,7 @@ router.post('/login', (req, res, next) => {
 
                     const token = jwt.sign(payload, config.secretOrKey);
 
-                    return res.status(200).json({token, msg: "Zalogowano!"});
+                    return res.status(200).json({token});
                 } else {
                     return res.status(404).json({errors: {password: "Nieprawidłowe dane logowania!"}});
                 }

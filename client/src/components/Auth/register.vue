@@ -77,7 +77,7 @@ export default {
             const url = "http://192.168.43.5:3000/api/auth/register";
             this.$http.post(url, this.credentials)
                 .then((res) => {
-                    this.msg = res.data.msg;
+                    this.msg = "Konto zostało utworzone! Możesz się teraz zalogować!";
                     this.credentials = {};
                 })
                 .catch((e) => {
