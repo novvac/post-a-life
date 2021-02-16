@@ -56,6 +56,9 @@ router.post('/sign-up', (req, res) => {
                         return res.status(500).send("Server error 3");
 
                     newUser.password = encrypted;
+                    const DEFAULT_BANNER = "default.png";
+                    newUser.banner = DEFAULT_BANNER;
+
                     newUser.save();
 
                     return res.status(200).json({msg: "Konto utworzone, możesz się teraz zalogować!"});
