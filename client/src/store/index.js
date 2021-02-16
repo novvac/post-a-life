@@ -28,9 +28,9 @@ export default new Vuex.Store({
       commit('setUser', payload)
     },
     LOGOUT({commit}) {
-      commit('setUser', null);
       VueCookies.remove("token");
       router.push("/auth/login");
+      commit('setUser', null);
     },
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {

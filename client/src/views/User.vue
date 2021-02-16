@@ -1,6 +1,6 @@
 <template>
     <div class="user ma-5">
-        <base-card v-if="!loaded" style="height: 100%">
+        <base-card v-if="loading" style="height: 100%">
             <v-progress-circular
                 indeterminate
                 class="mr-3"
@@ -10,13 +10,13 @@
             Ładowanie danych...
         </base-card>
 
-        <base-card without-padding v-else-if="loaded && !msg">
-            <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + basicData.banner"/>
-            <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + basicData.avatar"/>
+        <base-card without-padding v-else-if="!loading && !msg">
+            <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.banner"/>
+            <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.avatar"/>
         
             <div>
-                <p class="ma-0 text-center mt-4 title black--text">{{basicData.firstName}} {{basicData.lastName}}</p>
-                <p class="ma-0 text-center caption">{{basicData.short_id}}</p>
+                <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>
+                <p class="ma-0 text-center caption">{{loadedUser.short_id}}</p>
             </div>
 
             <v-divider class="mt-5"></v-divider>
@@ -28,18 +28,18 @@
                             <v-btn 
                                 text 
                                 class="caption text-capitalize elevation-0"
-                                :color="basicData.friendStatus.status != 'N' ? 'primary' : undefined"
-                                @click="basicData.friendStatus.options.length === 0 ? invitationManager('ADD') : undefined"
+                                :color="loadedUser.friendStatus.status != 'N' ? 'primary' : undefined"
+                                @click="loadedUser.friendStatus.options.length === 0 ? invitationManager('ADD') : undefined"
                             >
-                                <v-icon class="mr-2" small>mdi-{{basicData.friendStatus.icon}}</v-icon>
-                                {{basicData.friendStatus.text}}
+                                <v-icon class="mr-2" small>mdi-{{loadedUser.friendStatus.icon}}</v-icon>
+                                {{loadedUser.friendStatus.text}}
                             </v-btn>
                         </template>
 
-                        <base-card without-padding v-if="basicData.friendStatus.options">
+                        <base-card without-padding v-if="loadedUser.friendStatus.options">
                             <v-list class="pa-0" dense>
                                 <v-list-item
-                                    v-for="option in basicData.friendStatus.options"
+                                    v-for="option in loadedUser.friendStatus.options"
                                     :key="option.icon"
                                     link
                                     @click="invitationManager(option.mutation)"
@@ -90,8 +90,8 @@ export default {
     name: "User",
     data() {
         return {
-            loaded: true,
-            basicData: null,
+            loading: false,
+            loadedUser: null,
             msg: null,
         }
     },
@@ -106,25 +106,26 @@ export default {
         avatar: () => import("@/components/User/avatar"),
     },
     methods: {
-        loadBasicData() {
-            return this.$http.get("http://192.168.43.5:3000/api/user/basic-data/" + this.id);
+        userEndpoint() {
+            return this.$http.get("http://192.168.43.5:3000/api/user/" + this.id);
         },
-        loadFriendStatus() {
-            return this.$http.get("http://192.168.43.5:3000/api/user/friend-status/" + this.id);
+        friendStatusEndpoint() {
+            return this.$http.get("http://192.168.43.5:3000/api/user/relation/" + this.id);
         },
-        LOAD_USER() {
+        loadUser() {
             this.msg = null;
-            this.basicData = {},
-            this.loaded = false;
-            this.$http.all([
-                this.loadBasicData(),
-                this.loadFriendStatus(),
-            ])
-                .then(this.$http.spread((basicData, friendStatus) => {
-                    this.basicData = basicData.data;
-                    this.setFriendStatus(friendStatus.data);
+            this.loadedUser = {},
+            this.loading = true;
 
-                    this.loaded = true;
+            this.$http.all([
+                this.userEndpoint(),
+                this.friendStatusEndpoint(),
+            ])
+                .then(this.$http.spread((loadedUser, friendStatus) => {
+                    this.loadedUser = loadedUser.data;
+                    this.setFriendStatus(friendStatus.data.status);
+
+                    this.loading = false;
                 }))
                 .catch(err => {
                     if(err.response.status === 401) {
@@ -132,53 +133,54 @@ export default {
                             this.$cookies.remove("token");
                         this.$router.push("/auth/login");
                     }
-                        
-                    this.msg = err.response.data;
-                    this.loaded = true;
+
+                    this.msg = err.response.data.error.details;
+                    this.loading = false;
                 })
         },
-        setOptions(opts) {
-            this.basicData.friendStatus.options = opts;
+        setOptions(opts, icon, text) {
+            this.loadedUser.friendStatus.icon = icon;
+            this.loadedUser.friendStatus.text = text;
+            this.loadedUser.friendStatus.options = opts;
         },
-        setFriendStatus(friendStatus) {
-            this.basicData.friendStatus = friendStatus;
-
-            const status = friendStatus.status;
+        setFriendStatus(status) {
+            this.loadedUser.friendStatus = {status: status}
             if(status === "F") {
                 this.setOptions([
                     {icon: "account-minus", text: "Usuń ze znajomych", mutation: 'DESTROY'}
-                ])
+                ], "account-multiple", "Jesteście znajomymi")
             } else if(status === "P") {
                 this.setOptions([
                     {icon: "undo", text: "Cofnij wysyłanie zaproszenia", mutation: 'DESTROY'},
-                ])
+                ], "check", "Wysłano zaproszenie")
             } else if(status === "R") {
                 this.setOptions([
                     {icon: "check", text: "Zaakceptuj", mutation: 'SET'},
                     {icon: "delete", text: "Usuń zaproszenie", mutation: 'DESTROY'},
-                ])
+                ], "account-alert", "Otrzymano zaproszenie")
             } else {
-                // this must be empty
-                this.setOptions([]);
+                this.setOptions([], "account-plus", "Dodaj do znajomych");    // this must be empty
             }
         },
         invitationManager(mutation) {
-            let url = "http://192.168.43.5:3000/api/user/set-relation/";
-            this.$http.post(url, {id: this.id, mutation: mutation})
+            let url = "http://192.168.43.5:3000/api/user/relation/";
+            this.$http.put(url, {id: this.id, mutation: mutation})
                 .then(res => {
-                    this.LOAD_USER();
+                    // TODO: DELETE LOAD USER FROM HERE and reload only friend status button
+                    this.loadUser();
                 })
                 .catch(err => {
-                    console.log(err);
+                    // TODO: make error message
+                    //console.log(err);
                 })
         }
     },
     created() {
-        this.LOAD_USER();
+        this.loadUser();
     },
     watch: {
         $route(to, from) {
-            this.LOAD_USER();
+            this.loadUser();
         },
     }
 }
