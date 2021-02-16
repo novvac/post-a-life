@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const passport = require("../passport/index");
-const multer = require('multer');
 
+const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads')
@@ -12,8 +12,19 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + "-" + req.user.short_id + '-' + Date.now() + "." + file.mimetype.replace("image/", ''));
     }
 })
-
 const upload = multer({storage: storage});
+
+// ###################### new api ###################################
+
+// GET CURRENT LOGGED USER
+router.get("/", passport.authenticate("jwt", {session: false}), (req, res) => {
+    let {password, _id, __v, email, ...result} = req.user._doc;
+    res.status(200).json({user: result});
+})
+
+
+
+// ##################################################################
 
 router.get("/me", passport.authenticate("jwt", {session: false}), (req, res) => {
     let {password, _id, __v, email, ...result} = req.user._doc;

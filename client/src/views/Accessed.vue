@@ -1,5 +1,5 @@
 <template>
-  <div class="accessed" v-if="loaded">
+  <div class="accessed" v-if="!loading">
     <core-app-bar/>
 
     <core-left-drawer/>
@@ -21,7 +21,7 @@ export default {
   name: 'Accessed',
   data() {
     return {
-      loaded: true,
+      loading: false,
     }
   },
   components: {
@@ -33,36 +33,22 @@ export default {
     ...mapGetters(['user']),
   },
   methods: {
-    ...mapActions(['setUser']),
-    loadUserInfo() {
-      return this.$http.get('http://192.168.43.5:3000/api/user/me');
-    },
-    LOAD_USER() {
+    ...mapActions(['LOAD_USER']),
+    loadUser() {
       if(!this.user) {
-        this.loaded = false;
-        this.$http.all([this.loadUserInfo()])
-          .then(this.$http.spread((usrInfo) => {
-            // set user info
-            this.setUser(usrInfo.data);
-            
-            this.loaded = true;
-          }))
-          .catch(err => {
-            if(err.response.status === 401) {
-              if(this.$cookies.get("token"))
-                this.$cookies.remove("token");
-              this.$router.push("/auth/login");
-            }
-          })
+        this.loading = true;
+        this.LOAD_USER().then(() => {
+          this.loading = false;
+        })
       }
     }
   },
   created() {
-    this.LOAD_USER();
+    this.loadUser();
   },
   watch: {
     $route(to, from) {
-      this.LOAD_USER();
+      this.loadUser();
     }
   }
 }
