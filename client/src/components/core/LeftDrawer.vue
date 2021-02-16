@@ -86,11 +86,9 @@ export default {
         ...mapGetters(['user']),
     },
     methods: {
-        ...mapActions(['clearUser']),
+        ...mapActions(['LOGOUT']),
         logout() {
-            this.clearUser();
-            this.$cookies.remove("token");
-            this.$router.push("/auth/login");
+            this.LOGOUT();
         }
     },
 }

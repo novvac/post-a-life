@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios';
+import VueCookies from 'vue-cookies';
+import router from '../router/index';
 
 Vue.use(Vuex)
 
@@ -25,8 +27,10 @@ export default new Vuex.Store({
     setUser({commit}, payload) {
       commit('setUser', payload)
     },
-    clearUser({commit}) {
-      commit('setUser')
+    LOGOUT({commit}) {
+      commit('setUser', null);
+      VueCookies.remove("token");
+      router.push("/auth/login");
     },
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {
