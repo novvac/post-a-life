@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads')
     },
     filename: function(req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + "." + file.mimetype.replace("image/", ''));
+        cb(null, file.fieldname + "-" + req.user.short_id + '-' + Date.now() + "." + file.mimetype.replace("image/", ''));
     }
 })
 
@@ -144,6 +144,23 @@ router.post("/banner/upload/", passport.authenticate("jwt", {session: false}), u
         
         if(user) {
             user.banner = req.file.filename;
+            user.save();
+
+            res.status(200).json({file: "ok"});
+        } else {
+            if(err)
+            return res.status(404).send("Użytkownik nie istnieje!");
+        }
+    })
+})
+
+router.post("/avatar/upload/", passport.authenticate("jwt", {session: false}), upload.single('avatar'), (req, res) => {
+    User.findOne({_id: req.user.id}, (err, user) => {
+        if(err)
+            return res.status(500).send("Błąd serwera!");
+        
+        if(user) {
+            user.avatar = req.file.filename;
             user.save();
 
             res.status(200).json({file: "ok"});

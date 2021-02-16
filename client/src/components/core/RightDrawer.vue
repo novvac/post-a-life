@@ -16,8 +16,8 @@
                     :key="subitem.to"
                     :to="subitem.to"
                 >
-                    <v-avatar size="42">
-                        <v-img :src="subitem.avatar"></v-img>
+                    <v-avatar size="36">
+                        <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
                     </v-avatar>
 
                     <div class="ml-2 d-flex flex-column">
@@ -63,7 +63,6 @@ export default {
                     res.data = res.data.data;
                     
                     for(let user of res.data) {
-                        user.avatar = "https://i.pinimg.com/736x/d6/a9/57/d6a957f1d8045c9c973c12bf5968326f.jpg";
                         user.to = "/app/user/" + user.short_id;
                         this.items[1].content = res.data;
                     }

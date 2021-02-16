@@ -7,7 +7,7 @@
         <v-list class="pa-0">
             <v-list-item class="pa-0 d-flex align-center justify-start">
                 <v-avatar>
-                    <v-img src="https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"></v-img>
+                    <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
                 </v-avatar>
 
                 <v-textarea
@@ -30,8 +30,15 @@
 </template>
 
 <script>
+import {
+    mapGetters
+} from 'vuex';
+
 export default {
     name: "NewPost",
+    computed: {
+        ...mapGetters(['user']),
+    }
 }
 </script>
 

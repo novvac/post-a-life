@@ -1,7 +1,7 @@
 <template>
     <div class="banner" style="position: relative; overflow: hidden; height: 320px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
         <v-file-input
-            @change="changeBanner" 
+            @change="changeBanner()" 
             v-if="owner" dark
             style="z-index: 1; position: absolute; bottom: 12px; right: 4px;"
             prepend-icon="mdi-camera"

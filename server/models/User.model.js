@@ -8,6 +8,7 @@ const User = new Schema({
     email: String,
     password: String,
     friends: Array,
+    avatar: String,
     banner: String,
 })
 

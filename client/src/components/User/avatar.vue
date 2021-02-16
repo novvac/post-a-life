@@ -3,9 +3,17 @@
         <v-avatar size="160" style="position: relative" :class="owner ? 'owner' : undefined">
             <v-img :src="src"></v-img>
 
-            <v-btn @click="changeAvatar()" x-large icon absolute center color="white" style="z-index:2" class="icon">
-                <v-icon>mdi-camera</v-icon>
-            </v-btn>
+            <v-file-input
+                @change="changeAvatar()" 
+                v-if="owner" dark
+                style="z-index: 9; position: absolute;"
+                prepend-icon="mdi-camera"
+                hide-input
+                v-model="selectedFile"
+                accept="image/png, image/jpeg, image/jpg"
+                :rules="rules"
+                class="icon"
+            ></v-file-input>
         </v-avatar>
     </div>
 </template>
@@ -23,9 +31,25 @@ export default {
             default: false,
         }
     },
+    data() {
+        return {
+            selectedFile: null,
+            rules: [
+                value => !value || value.size < 2000000 || "Wielkość obrazu nie może przekraczać 2MB"
+            ]
+        }
+    },
     methods: {
         changeAvatar() {
-            console.log("change avatar");
+            const formData = new FormData();
+            formData.append("avatar", this.selectedFile);
+            this.$http.post("http://192.168.43.5:3000/api/user/avatar/upload/", formData)
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     }
 }
@@ -60,6 +84,15 @@ export default {
         }
         &.owner:hover .icon {
             display: block;
+        }
+    }
+
+    // TODO: center icon
+    .v-input__prepend-outer {
+        margin: 0 !important;
+
+        button:before {
+            font-size: 2.5rem;
         }
     }
 }

@@ -56,7 +56,10 @@ router.post('/sign-up', (req, res) => {
                         return res.status(500).send("Server error 3");
 
                     newUser.password = encrypted;
-                    const DEFAULT_BANNER = "default.png";
+
+                    const DEFAULT_BANNER = "default-banner.png";
+                    const DEFAULT_AVATAR = "default-avatar.png";
+                    newUser.avatar = DEFAULT_AVATAR;
                     newUser.banner = DEFAULT_BANNER;
 
                     newUser.save();
