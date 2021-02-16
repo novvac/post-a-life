@@ -18,61 +18,65 @@ function decodeShortID(encoded) {
 }
 
 const validateSignUpData = require("../validators/signUpValidator");
-router.post('/sign-up', (req, res) => {
+router.post('/register', (req, res) => {
     const { errors, isCorrect } = validateSignUpData(req.body);
 
     if(!isCorrect) {
         return res.status(500).json({errors});
     }
 
-    User.findOne({email: req.body.email}, (err, user) => {
+    User.findOne({email: req.body.email}, (err, doc) => {
         if(err) {
             return res.status(500).send("Server error 1");
         }
 
-        if(user) {
+        if(doc) {
             return res.status(500).json({errors: {email: "Konto zostało już utworzone z podanych adresem email!"}})
         } else {
-            let newUser = new User(req.body);
+            let user = new User(req.body);
 
             // set short id
             User.countDocuments((err, count) => {
                 if(count > 0) {
                     User.findOne({}, {}, {skip: count-1}, (err, lastUser) => {
                         const short_id = decodeShortID(lastUser.short_id);
-                        newUser.short_id = encodeShortID(short_id+1);
+                        user.short_id = encodeShortID(short_id+1);
+                        createHash();
                     })
                 } else {
-                    newUser.short_id = encodeShortID(1);
+                    user.short_id = encodeShortID(1);
+                    createHash();
                 }
             })
 
-            bcrypt.genSalt(10, (err, salt) => {
-                if(err)
-                    return res.status(500).send("Server error 2");
-                
-                bcrypt.hash(req.body.password, salt, (err, encrypted) => {
+            function createHash() {
+                bcrypt.genSalt(10, (err, salt) => {
                     if(err)
-                        return res.status(500).send("Server error 3");
-
-                    newUser.password = encrypted;
-
-                    const DEFAULT_BANNER = "default-banner.png";
-                    const DEFAULT_AVATAR = "default-avatar.png";
-                    newUser.avatar = DEFAULT_AVATAR;
-                    newUser.banner = DEFAULT_BANNER;
-
-                    newUser.save();
-
-                    return res.status(200).json({msg: "Konto utworzone, możesz się teraz zalogować!"});
+                        return res.status(500).send("Server error 2");
+                    
+                    bcrypt.hash(req.body.password, salt, (err, encrypted) => {
+                        if(err)
+                            return res.status(500).send("Server error 3");
+    
+                        user.password = encrypted;
+    
+                        const DEFAULT_BANNER = "default-banner.png";
+                        const DEFAULT_AVATAR = "default-avatar.png";
+                        user.avatar = DEFAULT_AVATAR;
+                        user.banner = DEFAULT_BANNER;
+    
+                        user.save();
+    
+                        return res.status(200).json({msg: "Konto utworzone, możesz się teraz zalogować!"});
+                    })
                 })
-            })
+            }
         }
     })
 })
 
 const validateSignInData = require("../validators/signInValidator");
-router.post('/sign-in', (req, res, next) => {
+router.post('/login', (req, res, next) => {
     const { errors, isCorrect } = validateSignInData(req.body);
 
     if(!isCorrect) {

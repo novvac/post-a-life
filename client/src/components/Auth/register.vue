@@ -74,7 +74,7 @@ export default {
             this.errors = {};
             this.msg = "";
 
-            const url = "http://192.168.43.5:3000/api/auth/sign-up";
+            const url = "http://192.168.43.5:3000/api/auth/register";
             this.$http.post(url, this.credentials)
                 .then((res) => {
                     this.msg = res.data.msg;
