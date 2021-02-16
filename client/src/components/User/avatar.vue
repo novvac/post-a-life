@@ -1,9 +1,9 @@
 <template>
     <div class="avatar">
-        <v-avatar size="160" :class="owner ? 'owner' : undefined">
+        <v-avatar size="160" style="position: relative" :class="owner ? 'owner' : undefined">
             <v-img :src="src"></v-img>
 
-            <v-btn v-owner x-large icon absolute center color="white" style="z-index:2" class="icon">
+            <v-btn @click="changeAvatar()" x-large icon absolute center color="white" style="z-index:2" class="icon">
                 <v-icon>mdi-camera</v-icon>
             </v-btn>
         </v-avatar>
@@ -21,6 +21,11 @@ export default {
         owner: {
             type: Boolean,
             default: false,
+        }
+    },
+    methods: {
+        changeAvatar() {
+            console.log("change avatar");
         }
     }
 }

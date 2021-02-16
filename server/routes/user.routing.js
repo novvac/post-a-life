@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const passport = require("../passport/index");
+const multer = require('multer');
+
+const upload = multer({dest: './uploads/'});
 
 router.get("/me", passport.authenticate("jwt", {session: false}), (req, res) => {
     let {password, _id, __v, email, ...result} = req.user._doc;
@@ -118,9 +121,13 @@ router.get("/friends/", passport.authenticate("jwt", {session: false}), (req, re
     }
 
     function sendData() {
-        console.log(dataToSend);
         res.status(200).json({data: dataToSend});
     }
+})
+
+router.post("/banner/upload/", passport.authenticate("jwt", {session: false}), upload.single('banner'), (req,res) => {
+    console.log(req.file);
+    res.status(200).json({file: "ok"});
 })
 
 module.exports = router;
