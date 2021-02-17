@@ -1,5 +1,5 @@
 <template>
-    <v-menu offset-y centered>
+    <v-menu offset-y centered v-bind="$attrs" v-on="$listeners">
         <template v-slot:activator="{on}">
             <div v-on="on">
                 <slot name="activator"/>

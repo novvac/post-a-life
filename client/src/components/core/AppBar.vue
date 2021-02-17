@@ -80,15 +80,42 @@
             <base-menu
                 v-for="action in actions"
                 :key="action.icon"
+                :close-on-content-click="false"
             >
                 <template v-slot:activator>
                     <v-btn icon>
-                        <v-icon>mdi-{{action.icon}}</v-icon>
+                        <v-badge dot color="error" v-if="action.content.length">
+                            <v-icon>mdi-{{action.icon}}</v-icon>
+                        </v-badge>
+                        <v-icon v-else>mdi-{{action.icon}}</v-icon>
                     </v-btn>
                 </template>
 
-                <base-card :rounded="0">
-                    Content here
+                <base-card :rounded="0" without-padding>
+                    <v-row class="ma-0 pa-5" align="center" justify="space-between">
+                        <span class="title black--text d-block pr-10">
+                            {{action.title}}
+                        </span>
+
+                        <v-btn icon>
+                            <v-icon>mdi-dots-vertical</v-icon>
+                        </v-btn>
+                    </v-row>
+
+                    <v-divider></v-divider>
+
+                    <v-list class="pa-0" v-if="action.content.length > 0">
+                        <component
+                            v-for="item in action.content"
+                            :key="item.short_id"
+                            :is="action.component"
+                            :item="item"
+                        />
+                    </v-list>
+
+                    <p class="ma-0 pa-5" v-else>
+                        Brak danych
+                    </p>
                 </base-card>
             </base-menu>
         </div>
@@ -110,16 +137,29 @@ export default {
             searchValue: "",
             actions: [
                 {
+                    title: "Znajomi",
                     icon: "account-plus-outline",
-                    content: [],
+                    content: [
+                        {
+                            firstName: "Jan",
+                            lastName: "Kowalski",
+                            avatar: "default-avatar.png",
+                            short_id: "0003",
+                        },
+                    ],
+                    component: () => import('../AppBarComponents/friends'),
                 },
                 {
+                    title: "Powiadomienia",
                     icon: "bell-outline",
                     content: [],
+                    component: () => import('../AppBarComponents/notifications'),
                 },
                 {
+                    title: "Wiadomości",
                     icon: "message-text-outline",
                     content: [],
+                    component: () => import('../AppBarComponents/chats'),
                 }
             ]
         }
