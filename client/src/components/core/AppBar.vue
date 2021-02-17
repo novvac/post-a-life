@@ -81,6 +81,9 @@
                 v-for="action in actions"
                 :key="action.icon"
                 :close-on-content-click="false"
+                min-width="25%"
+                max-width="400px"
+                max-height="75%"
             >
                 <template v-slot:activator>
                     <v-btn icon>
@@ -93,7 +96,7 @@
 
                 <base-card :rounded="0" without-padding>
                     <v-row class="ma-0 pa-5" align="center" justify="space-between">
-                        <span class="title black--text d-block pr-10">
+                        <span class="body-1 font-weight-bold black--text d-block pr-10">
                             {{action.title}}
                         </span>
 
@@ -104,7 +107,7 @@
 
                     <v-divider></v-divider>
 
-                    <v-list class="pa-0" v-if="action.content.length > 0">
+                    <v-list class="pa-0 pt-2" v-if="action.content.length > 0">
                         <component
                             v-for="item in action.content"
                             :key="item.short_id"
@@ -146,6 +149,13 @@ export default {
                             avatar: "default-avatar.png",
                             short_id: "0003",
                         },
+                        {
+                            firstName: "Jarek",
+                            lastName: "Tomaszewski",
+                            avatar: "avatar-0002-1613500241745.jpeg",
+                            short_id: "0002",
+                        },
+                        
                     ],
                     component: () => import('../AppBarComponents/friends'),
                 },

@@ -4,7 +4,7 @@
         :to="'/app/user/' + item.short_id"
     >
         <v-row class="ma-0">
-            <v-avatar size="24">
+            <v-avatar size="32">
                 <v-img :src="'http://192.168.43.5:3000/uploads/' + item.avatar"></v-img>
             </v-avatar>
 
