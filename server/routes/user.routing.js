@@ -13,6 +13,7 @@ router.get("/", passport.authenticate("jwt", {session: false}), (req, res) => {
     res.status(200).json({user: result});
 })
 
+// GET USER WITH :id AS SHORT_ID
 router.get('/:id', passport.authenticate("jwt", {session: false}), (req, res) => {
     User.findOne({short_id: req.params.id}, (err, doc) => {
         if(err)
@@ -39,6 +40,7 @@ router.get('/:id', passport.authenticate("jwt", {session: false}), (req, res) =>
     })
 })
 
+// GET RELATION BETWEEN LOGGED USER AND USER WITH :id AS SHORT_ID
 router.get("/relation/:id", passport.authenticate("jwt", {session: false}), (req, res) => {
     User.findOne({short_id: req.params.id}, (err, doc) => {
         if(err)
@@ -76,6 +78,8 @@ router.get("/relation/:id", passport.authenticate("jwt", {session: false}), (req
     })
 })
 
+// SET RELATION BETWEEN LOGGED USER AND USER WITH :id AS SHORT_ID WITH MUTATION LIKE
+// ADD (create new relation), SET (set relation), DESTROY (delete relation)
 router.put("/relation/", passport.authenticate("jwt", {session: false}), (req, res) => {
     function deleteIdFromArray(arr, id) {
         return arr.filter((val, index, arr) => {
@@ -141,6 +145,7 @@ router.put("/relation/", passport.authenticate("jwt", {session: false}), (req, r
     })
 })
 
+// UPLOAD NEW BANNER AND SET THEM TO LOGGED USER
 router.post("/banner/", passport.authenticate("jwt", {session: false}), upload.single('banner'), (req,res) => {
     User.findOne({_id: req.user.id}, (err, user) => {
         if(err)
@@ -161,6 +166,7 @@ router.post("/banner/", passport.authenticate("jwt", {session: false}), upload.s
     })
 })
 
+// UPLOAD NEW AVATAR AND SET THEM TO LOGGED USER
 router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.single('avatar'), (req, res) => {
     User.findOne({_id: req.user.id}, (err, user) => {
         if(err)
