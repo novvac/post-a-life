@@ -22,35 +22,10 @@
             <v-divider class="mt-5"></v-divider>
             <v-row class="ma-0 mx-5 my-3" align="center">
                 <div v-if="id != user.short_id" class="d-flex">
-                    <!-- FRIEND BUTTON MECHANISM -->
-                    <base-menu>
-                        <template v-slot:activator>
-                            <v-btn 
-                                text 
-                                class="caption text-capitalize elevation-0"
-                                :color="loadedUser.friendStatus.status != 'N' ? 'primary' : undefined"
-                                @click="loadedUser.friendStatus.options.length === 0 ? invitationManager('ADD') : undefined"
-                            >
-                                <v-icon class="mr-2" small>mdi-{{loadedUser.friendStatus.icon}}</v-icon>
-                                {{loadedUser.friendStatus.text}}
-                            </v-btn>
-                        </template>
-
-                        <base-card without-padding v-if="loadedUser.friendStatus.options">
-                            <v-list class="pa-0" dense>
-                                <v-list-item
-                                    v-for="option in loadedUser.friendStatus.options"
-                                    :key="option.icon"
-                                    link
-                                    @click="invitationManager(option.mutation)"
-                                >
-                                    <v-icon small class="mr-2">mdi-{{option.icon}}</v-icon>
-                                    <span class="caption">{{option.text}}</span>
-                                </v-list-item>
-                            </v-list>
-                        </base-card>
-                    </base-menu>
-                    <!-- END FRIEND BUTTON MECHANISM -->
+                    <v-btn text class="caption text-capitalize elevation-0 ml-2">
+                        <v-icon class="mr-2" small>mdi-account-plus</v-icon>
+                        Dodaj do znajomych
+                    </v-btn>
 
                     <v-btn text class="caption text-capitalize elevation-0 ml-2">
                         <v-icon class="mr-2" small>mdi-message</v-icon>
@@ -83,7 +58,8 @@
 
 <script>
 import {
-    mapGetters,
+  mapActions,
+    mapGetters, mapMutations,
 } from 'vuex';
 
 export default {
@@ -106,74 +82,29 @@ export default {
         avatar: () => import("@/components/User/avatar"),
     },
     methods: {
-        userEndpoint() {
-            return this.$http.get("http://192.168.43.5:3000/api/user/" + this.id);
-        },
-        friendStatusEndpoint() {
-            return this.$http.get("http://192.168.43.5:3000/api/user/relation/" + this.id);
-        },
+        ...mapActions(['LOGOUT']),
         loadUser() {
             this.msg = null;
             this.loadedUser = {},
             this.loading = true;
 
             this.$http.all([
-                this.userEndpoint(),
-                this.friendStatusEndpoint(),
+                this.$http.get("http://192.168.43.5:3000/api/user/" + this.id),
             ])
-                .then(this.$http.spread((loadedUser, friendStatus) => {
+                .then(this.$http.spread((loadedUser) => {
                     this.loadedUser = loadedUser.data;
-                    this.setFriendStatus(friendStatus.data.status);
-
                     this.loading = false;
                 }))
                 .catch(err => {
-                    if(err.response.status === 401) {
-                        if(this.$cookies.get("token"))
-                            this.$cookies.remove("token");
-                        this.$router.push("/auth/login");
-                    }
-
-                    this.msg = err.response.data.error.details;
+                    this.msg = "Nie udało się załadować użytkownika! Prosimy o kontakt!";
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+                    else if(err.response.status === 404)
+                        this.msg = "Użytkownik nie istnieje!";
+                        
                     this.loading = false;
                 })
         },
-        setOptions(opts, icon, text) {
-            this.loadedUser.friendStatus.icon = icon;
-            this.loadedUser.friendStatus.text = text;
-            this.loadedUser.friendStatus.options = opts;
-        },
-        setFriendStatus(status) {
-            this.loadedUser.friendStatus = {status: status}
-            if(status === "F") {
-                this.setOptions([
-                    {icon: "account-minus", text: "Usuń ze znajomych", mutation: 'DESTROY'}
-                ], "account-multiple", "Jesteście znajomymi")
-            } else if(status === "P") {
-                this.setOptions([
-                    {icon: "undo", text: "Cofnij wysyłanie zaproszenia", mutation: 'DESTROY'},
-                ], "check", "Wysłano zaproszenie")
-            } else if(status === "R") {
-                this.setOptions([
-                    {icon: "check", text: "Zaakceptuj", mutation: 'SET'},
-                    {icon: "delete", text: "Usuń zaproszenie", mutation: 'DESTROY'},
-                ], "account-alert", "Otrzymano zaproszenie")
-            } else {
-                this.setOptions([], "account-plus", "Dodaj do znajomych");    // this must be empty
-            }
-        },
-        invitationManager(mutation) {
-            let url = "http://192.168.43.5:3000/api/user/relation/";
-            this.$http.put(url, {id: this.id, mutation: mutation})
-                .then(res => {
-                    // TODO: DELETE LOAD USER FROM HERE and reload only friend status button
-                    this.loadUser();
-                })
-                .catch(err => {
-                    // TODO: make error message
-                    //console.log(err);
-                })
-        }
     },
     created() {
         this.loadUser();

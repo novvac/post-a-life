@@ -28,7 +28,8 @@ export default new Vuex.Store({
       commit('setUser', payload)
     },
     LOGOUT({commit}) {
-      VueCookies.remove("token");
+      if(VueCookies.get("token"))
+        VueCookies.remove("token");
       router.push("/auth/login");
       commit('setUser', null);
     },
@@ -41,9 +42,7 @@ export default new Vuex.Store({
           })
           .catch(err => {
             if(err.response.status === 401) {
-              if(this.$cookies.get("token"))
-                this.$cookies.remove("token");
-              this.$router.push("/auth/login");
+              this.dispatch("LOGOUT");
             } else {
               reject(err);
             }            
