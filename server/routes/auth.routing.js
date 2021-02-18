@@ -60,11 +60,6 @@ router.post('/register', (req, res) => {
     
                         user.password = encrypted;
     
-                        const DEFAULT_BANNER = "default-banner.png";
-                        const DEFAULT_AVATAR = "default-avatar.png";
-                        user.avatar = DEFAULT_AVATAR;
-                        user.banner = DEFAULT_BANNER;
-    
                         user.save();
     
                         return res.status(201).json('success');
