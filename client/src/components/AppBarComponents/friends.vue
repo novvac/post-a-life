@@ -13,7 +13,7 @@
                         <b>{{item.firstName}} {{item.lastName}}</b> ({{item.short_id}})
                     </a>
                 </p>
-                <p class="ma-0 caption">Chce dołączyć do grona twoich znajomych!</p>
+                <p class="ma-0 caption">subtitle</p>
             </div>
         </div>
 
@@ -28,14 +28,6 @@
                 Usuń
             </v-btn>
         </div>
-
-        <v-divider></v-divider>
-<!-- 
-        <v-list-item-action v-if="!item.readed">
-            <v-btn icon>
-                <v-icon>mdi-check</v-icon>
-            </v-btn>
-        </v-list-item-action> -->
     </v-list-item>
 </template>
 
@@ -48,26 +40,8 @@ export default {
             required: true,
         }
     },
-    methods: {
-        manageInvitation(mutation) {
-            this.$http.put("http://192.168.43.5:3000/api/user/relation/", {id: this.item.short_id, mutation: mutation})
-                .then(res => {
-                    console.log("ok");
-                })
-                .catch(err => {
-                    console.log("err");
-                })
-        }
-    }
 }
 </script>
 
-<style lang="scss">
-a {
-    color: black !important;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
-}
+<style>
 </style>

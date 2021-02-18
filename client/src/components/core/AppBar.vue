@@ -94,7 +94,7 @@
                     </v-btn>
                 </template>
 
-                <base-card :rounded="0" without-padding>
+                <base-card :rounded="0" without-padding class="action">
                     <v-row class="ma-0 pa-5" align="center" justify="space-between">
                         <span class="body-1 font-weight-bold black--text d-block pr-10">
                             {{action.title}}
@@ -142,21 +142,7 @@ export default {
                 {
                     title: "Znajomi",
                     icon: "account-plus-outline",
-                    content: [
-                        {
-                            firstName: "Jan",
-                            lastName: "Kowalski",
-                            avatar: "default-avatar.png",
-                            short_id: "0003",
-                        },
-                        {
-                            firstName: "Jarek",
-                            lastName: "Tomaszewski",
-                            avatar: "avatar-0002-1613500241745.jpeg",
-                            short_id: "0002",
-                        },
-                        
-                    ],
+                    content: [],
                     component: () => import('../AppBarComponents/friends'),
                 },
                 {
@@ -236,6 +222,15 @@ export default {
         z-index: 9999;
         border: 1px solid #999;
         border-top: none;
+    }
+}
+.action {
+    a {
+        color: black !important;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
     }
 }
 </style>
