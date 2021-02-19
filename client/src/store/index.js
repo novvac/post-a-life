@@ -35,7 +35,7 @@ export default new Vuex.Store({
     },
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {
-        axios.get("http://192.168.43.5:3000/api/user/")
+        axios.get("http://192.168.43.5:3000/api/user/id/")
           .then(res => {
             commit('setUser', res.data.user);
             resolve(null);

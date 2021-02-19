@@ -82,12 +82,14 @@ export default {
                 .then(res => {
                     this.snackbar = true;
                     this.loading = false;
+                    this.payload = {};
                 })
                 .catch(err => {
                     if(err.response.status === 401)
                         return this.LOGOUT();
                     this.errors = err.response.data.errors;
-                        
+                    
+                    this.payload = {};
                     this.loading = false;
                 })
         }

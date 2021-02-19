@@ -108,7 +108,7 @@ export default {
             this.loading = true;
 
             this.$http.all([
-                this.$http.get("http://192.168.43.5:3000/api/user/" + this.id),
+                this.$http.get("http://192.168.43.5:3000/api/user/id/" + this.id),
                 this.$http.get("http://192.168.43.5:3000/api/user/friend/" + this.id),
             ])
                 .then(this.$http.spread((loadedUser, friendStatus) => {

@@ -10,13 +10,13 @@ const storage = require('../config/multer');
 const upload = multer({storage: storage});
 
 // GET CURRENT LOGGED USER
-router.get("/", passport.authenticate("jwt", {session: false}), (req, res) => {
+router.get("/id/", passport.authenticate("jwt", {session: false}), (req, res) => {
     let {password, _id, __v, email, friends, ...result} = req.user._doc;
     res.status(200).json({user: result});
 })
 
 // GET USER WITH :id (SHORT_ID)
-router.get('/:id', passport.authenticate("jwt", {session: false}), (req, res) => {
+router.get('/id/:id', passport.authenticate("jwt", {session: false}), (req, res) => {
     User.findOne({short_id: req.params.id}, (err, doc) => {
         if(err)
             return res.status(500).json({
@@ -82,6 +82,10 @@ router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.s
             res.status(200).json('success');
         }
     })
+})
+
+router.get("/friends/", passport.authenticate("jwt", {session: false}), async(req, res) => {
+    res.status(200).send(req.user.friends);
 })
 
 router.get("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
