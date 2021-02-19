@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
+const Friend = require("../models/Friend.model");
 const passport = require("../passport/index");
 const multer = require('multer');
+const mongoose = require("mongoose");
 const storage = require('../config/multer');
 
 const upload = multer({storage: storage});
@@ -80,6 +82,101 @@ router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.s
             res.status(200).json('success');
         }
     })
+})
+
+router.get("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    const recipient = await User.findOne({short_id: req.params.id});
+
+    if(!recipient)
+        return res.status(404).json({status: -1});
+
+    let friend = await User.find(
+            {_id: req.user.id},
+            {friends: 1},
+        ).populate({    
+            path: "friends",
+            match: {recipient: {$eq: recipient.id}}
+        });
+
+    if(friend[0].friends.length > 0) {
+        return res.status(200).json({status: friend[0].friends[0].friendStatus})
+    } else
+        return res.status(200).json({status: 0})
+})
+
+router.post("/friend/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    const recipient = await User.findOne({short_id: req.body.id});
+
+    if(recipient) {
+        const req_doc = await Friend.findOneAndUpdate(
+            {requester: req.user.id, recipient: recipient.id},
+            {$set: { friendStatus: 2 }},
+            {upsert: true, new: true, useFindAndModify: false}
+        )
+
+        const rec_doc = await Friend.findOneAndUpdate(
+            {requester: recipient.id, recipient: req.user.id},
+            {$set: { friendStatus: 3 }},
+            {upsert: true, new: true, useFindAndModify: false}
+        )
+
+        if(!req.user.friends.includes(req_doc.id)) {
+            req.user.friends.push(req_doc.id);
+            await req.user.save();
+        }
+
+        if(!recipient.friends.includes(rec_doc.id)) {
+            recipient.friends.push(rec_doc.id);
+            await recipient.save();
+        }
+
+        res.status(200).json({status: req_doc.friendStatus});
+    }
+})
+router.put("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    const recipient = await User.findOne({short_id: req.params.id});
+
+    if(recipient) {
+        await Friend.findOneAndUpdate(
+            {requester: req.user.id, recipient: recipient.id},
+            {$set: { friendStatus: 1 }},
+            {useFindAndModify: false}
+        )
+
+        await Friend.findOneAndUpdate(
+            {requester: recipient.id, recipient: req.user.id},
+            {$set: { friendStatus: 1 }},
+            {useFindAndModify: false}
+        )
+
+        res.status(200).json({status: 1});
+    }
+})
+router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), async(req, res) => {
+    let recipient = await User.findOne({short_id: req.params.id});
+
+    if(recipient) {
+        let req_doc = await Friend.findOneAndRemove(
+            {requester: req.user.id, recipient: recipient.id},
+            {useFindAndModify: false}
+        )
+        let rec_doc = await Friend.findOneAndRemove(
+            {requester: recipient.id, recipient: req.user.id},
+            {useFindAndModify: false}
+        )
+
+        if(req.user.friends.includes(req_doc._id)) {
+            req.user.friends.splice(req.user.friends.indexOf(req_doc.id, 1));
+            await req.user.save();
+        }
+
+        if(recipient.friends.includes(rec_doc._id)) {
+            recipient.friends.splice(recipient.friends.indexOf(rec_doc.id, 1));
+            await recipient.save();
+        }
+
+        res.status(200).json({status: 0});
+    }
 })
 
 module.exports = router;
