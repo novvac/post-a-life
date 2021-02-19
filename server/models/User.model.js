@@ -7,7 +7,10 @@ const User = new Schema({
     lastName: String,
     email: String,
     password: String,
-    friends: [],
+    friends: [{
+        type: Schema.Types.ObjectId,
+        ref: "Friend",
+    }],
     avatar: {
         type: String,
         default: "default-avatar.png"

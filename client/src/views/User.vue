@@ -22,12 +22,30 @@
             <v-divider class="mt-5"></v-divider>
             <v-row class="ma-0 mx-5 my-3" align="center">
                 <div v-if="id != user.short_id" class="d-flex">
-                    <v-btn text class="caption text-capitalize elevation-0 ml-2">
-                        <v-icon class="mr-2" small>mdi-account-plus</v-icon>
-                        Dodaj do znajomych
-                    </v-btn>
+                    <base-menu>
+                        <template v-slot:activator>
+                            <v-btn text class="caption text-capitalize" :color="friendButton.color" @click="loadedUser.friendStatus === 0 ? invitationManager('post') : ''">
+                                <v-icon class="mr-2" small>mdi-{{friendButton.icon}}</v-icon>
+                                {{friendButton.text}}
+                            </v-btn>
+                        </template>
 
-                    <v-btn text class="caption text-capitalize elevation-0 ml-2">
+                        <base-card without-padding>
+                            <v-list dense class="pa-0 caption">
+                                <v-list-item
+                                    v-for="item in friendButton.options"
+                                    :key="item.icon"
+                                    link
+                                    @click="invitationManager(item.action)"
+                                >
+                                    <v-icon small class="mr-2">mdi-{{item.icon}}</v-icon>
+                                    {{item.text}}
+                                </v-list-item>
+                            </v-list>
+                        </base-card>
+                    </base-menu>
+
+                    <v-btn text class="caption text-capitalize ml-2">
                         <v-icon class="mr-2" small>mdi-message</v-icon>
                         Wyślij wiadomość
                     </v-btn>
@@ -69,6 +87,7 @@ export default {
             loading: false,
             loadedUser: null,
             msg: null,
+            friendButton: {}
         }
     },
     computed: {
@@ -90,9 +109,14 @@ export default {
 
             this.$http.all([
                 this.$http.get("http://192.168.43.5:3000/api/user/" + this.id),
+                this.$http.get("http://192.168.43.5:3000/api/user/friend/" + this.id),
             ])
-                .then(this.$http.spread((loadedUser) => {
+                .then(this.$http.spread((loadedUser, friendStatus) => {
                     this.loadedUser = loadedUser.data;
+                    this.loadedUser.friendStatus = friendStatus.data.status;
+
+                    this.setFriendButton();
+
                     this.loading = false;
                 }))
                 .catch(err => {
@@ -104,6 +128,54 @@ export default {
                         
                     this.loading = false;
                 })
+        },
+        setFriendButton() {
+            const status = this.loadedUser.friendStatus;
+
+            if(status === 1) {            // ! friends
+                this.friendButton = {icon: "account-multiple", color: "primary", text: "Jesteście znajomymi!"};
+                this.friendButton.options = [
+                    {icon: "account-minus", text: "Usuń ze znajomych", action: "delete"}
+                ];
+            }
+            else if(status === 2) {       // ! pending
+                this.friendButton = {icon: "check", color: "primary", text: "Wysłano zaproszenie"};
+                this.friendButton.options = [
+                    {icon: "undo", text: "Cofnij wysyłanie zaproszenia", action: "delete"}
+                ];
+            }
+            else if(status === 3) {     // ! received
+                this.friendButton = {icon: "account-alert", color: "primary", text: "Otrzymano zaproszenie"};
+                this.friendButton.options = [
+                    {icon: "check", text: "Akceptuj", action: "put"},
+                    {icon: "delete", text: "Usuń", action: "delete"},
+                ];
+            }
+            else if(status === 0) {     // ! not friends
+                this.friendButton = {icon: "account-plus", color: "", text: "Dodaj do znajomych"};
+            }
+            else {                                            // ! error
+                this.friendButton = {icon: "alert-circle", color: "red", text: "Error"};
+            }
+        },
+        invitationManager(action) {
+            let url = "http://192.168.43.5:3000/api/user/friend/";
+            let data = {}
+
+            if(action === "put" || action === "delete") {
+                url += this.id;
+            } else {
+                data.id = this.id
+            }
+
+            this.$http({
+                method: action,
+                url: url,
+                data: data,
+            }).then(res => {
+                this.loadedUser.friendStatus = res.data.status;
+                this.setFriendButton();
+            })
         },
     },
     created() {
