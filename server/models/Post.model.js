@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 let Post = new Schema({
-    text: {
+    mind: {
         type: String,
         required: true,
     },
@@ -10,6 +10,7 @@ let Post = new Schema({
     owner: {
         type: mongoose.Types.ObjectId,
         ref: "User",
+        required: true
     },
     likes: [{
         type: mongoose.Types.ObjectId,
