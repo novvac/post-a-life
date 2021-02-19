@@ -31,6 +31,24 @@
                 </v-btn>
             </v-list-item>
         </v-list>
+
+        <base-snackbar
+            v-model="snackbar"
+            timeout="3000"
+            fixed
+            top
+            right
+        >
+            <v-row class="ma-0" align="center" justify="space-between">
+                <div>
+                    Post został dodany!
+                </div>
+
+                <v-btn icon @click="snackbar = !snackbar">
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </v-row>
+        </base-snackbar>
     </base-card>
 </template>
 
@@ -46,7 +64,8 @@ export default {
         return {
             loading: false,
             payload: {},
-            errors: {}
+            errors: {},
+            snackbar: false,
         }
     },
     computed: {
@@ -57,11 +76,11 @@ export default {
         addPost() {
             this.loading = true;
             this.errors = {};
+            this.snackbar = false;
 
             this.$http.post("http://192.168.43.5:3000/api/post/", this.payload)
                 .then(res => {
-                    console.log(res);
-
+                    this.snackbar = true;
                     this.loading = false;
                 })
                 .catch(err => {

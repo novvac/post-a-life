@@ -1,5 +1,5 @@
 <template>
-    <div class="home pa-5">
+    <div class="home pa-5">       
         <v-row class="ma-0">
             <v-col cols="12" :md="8">
                 <new-post/>
