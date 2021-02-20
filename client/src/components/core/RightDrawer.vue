@@ -16,6 +16,8 @@
                     :key="subitem.to"
                     :to="subitem.to"
                 >
+                    {{subitem}}
+
                     <v-avatar size="36">
                         <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
                     </v-avatar>

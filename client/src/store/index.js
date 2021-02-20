@@ -38,18 +38,20 @@ export default new Vuex.Store({
     },
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {
-        axios.get("http://192.168.43.5:3000/api/user/id/")
-          .then(res => {
-            commit('setUser', res.data.user);
-            resolve(null);
-          })
-          .catch(err => {
-            if(err.response.status === 401) {
-              this.dispatch("LOGOUT");
-            } else {
-              reject(err);
-            }            
-          })
+        axios.all([
+          axios.get("http://192.168.43.5:3000/api/user/id/"),
+          axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+        ]).then(axios.spread((user, friends) => {
+          commit('setUser', user.data.user);
+          commit('setFriends', friends.data.list);
+          resolve(null);
+        }))
+        .catch(err => {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+          
+          reject(err);
+        })
       })
     },
     LOAD_FRIENDS({commit}) {
@@ -61,7 +63,7 @@ export default new Vuex.Store({
           })
           .catch(err => {
             if(err.response.status === 401)
-              this.dispatch("LOGOUT");
+              return this.dispatch("LOGOUT");
             else
               reject(err);
           })
