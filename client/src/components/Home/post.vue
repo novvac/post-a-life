@@ -1,5 +1,5 @@
 <template>
-    <base-card class="post">
+    <base-card class="post" without-padding>
         <template v-slot:title>
             <div class="d-flex align-center">
                 <v-avatar size="36">
@@ -23,13 +23,48 @@
             </v-btn>
         </template>
 
-        <p class="body-2 ma-0 black--text">
+        <p class="body-2 ma-0 my-5 black--textm mx-5">
             {{feed.mind}}
         </p>
+
+        <v-divider></v-divider>
+
+        <v-card-actions class="pa-0 flexmn">
+            <v-btn tile text class="caption text-capitalize py-6">
+                <v-icon small class="mr-2">mdi-heart-outline</v-icon>
+                <b class="mr-1">{{feed.likes.length}}</b> Polubień
+            </v-btn>
+            <v-btn tile text class="caption text-capitalize py-6">
+                <v-icon small class="mr-2">mdi-comment-outline</v-icon>
+                <b class="mr-1">{{feed.comments.length}}</b> Komentarze
+            </v-btn>
+        </v-card-actions>
+
+        <v-divider></v-divider>
+
+        <div class="pa-4 d-flex align-center">
+            <v-avatar size="36">
+                <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
+            </v-avatar>
+
+            <v-text-field
+                outlined
+                rounded
+                placeholder="Napisz komentarz..."
+                dense
+                hide-details
+                class="ml-2 caption"
+                append-icon="mdi-face"
+            />
+        </div>
     </base-card>
 </template>
 
 <script>
+import {
+    mapGetters
+} from 'vuex';
+
 export default {
     name: "Post",
     props: {
@@ -37,6 +72,9 @@ export default {
             type: Object,
             required: true,
         }
+    },
+    computed: {
+        ...mapGetters(['user']),
     }
 }
 </script>

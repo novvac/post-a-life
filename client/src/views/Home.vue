@@ -23,9 +23,10 @@
 
                 <v-btn @click="loadPosts()">load</v-btn>
 
-                <div class="text-center mt-5 caption" v-if="end">
+                <div class="text-center mt-5 caption" v-if="end || max">
                     <v-divider class="mb-5"></v-divider>
-                    <b>Załadowano już wszystkie posty!</b> Odśwież stronę!
+                    <span v-if="end"><b>Załadowano już wszystkie posty!</b> Odśwież stronę!</span>
+                    <span v-else-if="max"><b>Załadowano maksymalną ilość postów.</b> Odśwież stronę!</span>
                 </div>
             </v-col>
             <v-col cols="12" :md="4">
@@ -58,6 +59,8 @@ export default {
             skip: 0,
             limit: 5,
             end: false,
+            max: false,
+            maxFeeds: 50,
         }
     },
     computed: {
@@ -70,8 +73,6 @@ export default {
                 let dt = new Date();
                 this.timestamp = dt.getTime();
             }
-
-            console.log(this.user.friends);
 
             this.loading = true;
             this.$http.post("http://192.168.43.5:3000/api/post/posts/", {
@@ -99,6 +100,14 @@ export default {
     },
     created() {
         this.loadPosts();
+    },
+    watch: {
+        feeds() {
+            if(this.feeds.length > this.maxFeeds) {
+                this.feeds = this.feeds.slice(0, this.maxFeeds);
+                this.max = true;
+            }
+        }
     }
 }
 </script>
