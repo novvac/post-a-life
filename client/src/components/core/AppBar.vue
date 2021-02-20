@@ -24,8 +24,6 @@
                 dense
                 tile
                 v-model="searchValue"
-                @keyup.enter="search()"
-                @click:append="search()"
                 @keyup="fastSearch()"
                 @click:clear="searchValue = ''"
             />
@@ -126,6 +124,10 @@
 </template>
 
 <script>
+import {
+    mapMutations
+} from 'vuex';
+
 export default {
     name: "CoreAppBar",
     data() {
@@ -161,13 +163,7 @@ export default {
         }
     },
     methods: {
-        search() {
-//TODO: main search redirect
-            console.log("searching...");
-            // przenieś użytkownika na stronę wyszukiwania zaawansowanego razem
-            // z wyszukiwanym hasłem. Następnie przed załadowaniem strony
-            // pobierz z serwera dane o haśle i pokaż opcje zaawansowane
-        },
+        ...mapMutations(['LOGOUT']),
         fastSearch() {
             this.found = [];
             this.msg = "";
@@ -205,6 +201,16 @@ export default {
                     })
             }
         }
+    },
+    created() {
+        this.$http.get("http://192.168.43.5:3000/api/user/friends/type/3")
+            .then(res => {
+                this.actions[0].content = res.data.list;
+            })
+            .catch(err => {
+                if(err.response.status === 401)
+                    this.LOGOUT();
+            })
     }
 }
 </script>

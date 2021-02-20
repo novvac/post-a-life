@@ -36,6 +36,10 @@
 </template>
 
 <script>
+import {
+    mapMutations,
+} from 'vuex';
+
 export default {
     name: "CoreRightDrawer",
     data() {
@@ -57,22 +61,26 @@ export default {
         }
     },
     methods: {
-        // ! deprecated - this will be used with wss
-        // loadUsers() {
-        //     this.$http.get("http://192.168.43.5:3000/api/user/friends/")
-        //         .then(res => {
-        //             res.data = res.data.data;
-                    
-        //             for(let user of res.data) {
-        //                 user.to = "/app/user/" + user.short_id;
-        //                 this.items[1].content = res.data;
-        //             }
-        //         })
-        //         .catch(err => {
-        //             console.log(err);
-        //         })
-        // }
+        ...mapMutations(['LOGOUT']),
+        async loadFriends() {
+            await this.$http.get("http://192.168.43.5:3000/api/user/friends/type/1")
+                .then(res => {
+                    this.items[1].content = res.data.list;
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+                })
+        }
     },
+    created() {
+        this.loadFriends();
+    },
+    watch: {
+        $route(to, from) {
+            this.loadFriends();
+        } 
+    }
 }
 </script>
 

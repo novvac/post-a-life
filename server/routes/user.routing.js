@@ -84,8 +84,31 @@ router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.s
     })
 })
 
-router.get("/friends/", passport.authenticate("jwt", {session: false}), async(req, res) => {
-    res.status(200).send(req.user.friends);
+// ! type:
+// ?    1   - friends
+// ?    2   - pending
+// ?    3   - received
+router.get("/friends/type/:type", passport.authenticate("jwt", {session: false}), async(req, res) => {
+    let user = await User.findOne(
+        {_id: req.user.id},
+        {friends: 1},
+    ).populate({
+        path: "friends",
+        match: {friendStatus: req.params.type},
+        select: {'recipient': 1, '_id': 0}
+    });
+
+    // ? get only users id
+    let friendsListMap = user.friends.map(({recipient}) => [recipient]);
+    let friendsList = [];
+
+    for(f of friendsListMap) {
+        await friendsList.push(f[0]);
+    }
+
+    console.log(friendsList);
+    
+    res.status(200).json({list: friendsList});
 })
 
 router.get("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
