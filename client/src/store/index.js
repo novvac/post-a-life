@@ -13,7 +13,7 @@ export default new Vuex.Store({
   getters: {
     user(store) {
       return store.user;
-    }
+    },
   },
   mutations: {
     setUser(store, payload) {
@@ -21,6 +21,9 @@ export default new Vuex.Store({
         store.user = null;
       else
         store.user = payload;
+    },
+    setFriends(store, payload) {
+      store.user.friends = payload;
     }
   },
   actions: {
@@ -46,6 +49,21 @@ export default new Vuex.Store({
             } else {
               reject(err);
             }            
+          })
+      })
+    },
+    LOAD_FRIENDS({commit}) {
+      return new Promise((resolve, reject) => {
+        axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+          .then(res => {
+            commit("setFriends", res.data.list);
+            resolve(null);
+          })
+          .catch(err => {
+            if(err.response.status === 401)
+              this.dispatch("LOGOUT");
+            else
+              reject(err);
           })
       })
     }

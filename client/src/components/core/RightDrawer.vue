@@ -37,7 +37,8 @@
 
 <script>
 import {
-    mapMutations,
+    mapActions,
+    mapGetters,
 } from 'vuex';
 
 export default {
@@ -60,17 +61,15 @@ export default {
             ],
         }
     },
+    computed: {
+        ...mapGetters(['user'])
+    },
     methods: {
-        ...mapMutations(['LOGOUT']),
-        async loadFriends() {
-            await this.$http.get("http://192.168.43.5:3000/api/user/friends/type/1")
-                .then(res => {
-                    this.items[1].content = res.data.list;
-                })
-                .catch(err => {
-                    if(err.response.status === 401)
-                        this.LOGOUT();
-                })
+        ...mapActions(['LOAD_FRIENDS']),
+        loadFriends() {
+            this.LOAD_FRIENDS().then(() => {
+                this.items[1].content = this.user.friends;
+            })
         }
     },
     created() {

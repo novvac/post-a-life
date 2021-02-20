@@ -105,8 +105,6 @@ router.get("/friends/type/:type", passport.authenticate("jwt", {session: false})
     for(f of friendsListMap) {
         await friendsList.push(f[0]);
     }
-
-    console.log(friendsList);
     
     res.status(200).json({list: friendsList});
 })
