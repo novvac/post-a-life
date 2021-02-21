@@ -35,6 +35,7 @@
         <base-snackbar
             v-model="snackbar"
             timeout="3000"
+            color="success"
             fixed
             top
             right

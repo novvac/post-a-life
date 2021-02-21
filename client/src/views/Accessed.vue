@@ -5,7 +5,7 @@
     <core-left-drawer/>
     <core-right-drawer/>
 
-    <v-main id="test">
+    <v-main>
       <router-view></router-view>
     </v-main>
   </div>

@@ -30,8 +30,9 @@
         <v-divider></v-divider>
 
         <v-card-actions class="pa-0 flexmn">
-            <v-btn tile text class="caption text-capitalize py-6">
-                <v-icon small class="mr-2">mdi-heart-outline</v-icon>
+            <v-btn tile text class="caption text-capitalize py-6" @click="addLike">
+                <v-icon small class="mr-2" color="red" v-if="feed.likes.includes(user._id)">mdi-heart</v-icon>
+                <v-icon small class="mr-2" v-else>mdi-heart-outline</v-icon>
                 <b class="mr-1">{{feed.likes.length}}</b> Polubień
             </v-btn>
             <v-btn tile text class="caption text-capitalize py-6">
@@ -57,12 +58,25 @@
                 append-icon="mdi-face"
             />
         </div>
+
+        <base-snackbar v-model="snackbar" color="red" fixed top right>
+            <v-row class="ma-0" align="center" justify="space-between">
+                <div>
+                    {{error}}
+                </div>
+
+                <v-btn icon @click="snackbar = !snackbar">
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </v-row>
+        </base-snackbar>
     </base-card>
 </template>
 
 <script>
 import {
-    mapGetters
+    mapGetters,
+    mapActions
 } from 'vuex';
 
 export default {
@@ -71,6 +85,12 @@ export default {
         feed: {
             type: Object,
             required: true,
+        }
+    },
+    data() {
+        return {
+            snackbar: false,
+            error: "",
         }
     },
     computed: {
@@ -91,6 +111,27 @@ export default {
             hours = hours < 10 ? '0'+hours : hours;
 
             return `${date}-${month}-${dt.getFullYear()}  |  ${hours}:${minutes}`;
+        }
+    },
+    methods: {
+        ...mapActions(['LOGOUT']),
+        addLike() {
+            const url = "http://192.168.43.5:3000/api/post/" + this.feed._id + "/like/";
+            this.$http.put(url)
+                .then(res => {
+                    if(res.data.added) {
+                        this.feed.likes.push(this.user._id);
+                    } else {
+                        this.feed.likes.splice(this.feed.likes.indexOf(this.user._id), 1);
+                    }
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        return this.LOGOUT();
+
+                    this.error = err.response.data.error;
+                    this.snackbar = true;
+                })
         }
     }
 }

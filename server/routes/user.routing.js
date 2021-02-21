@@ -11,7 +11,7 @@ const upload = multer({storage: storage});
 
 // GET CURRENT LOGGED USER
 router.get("/id/", passport.authenticate("jwt", {session: false}), (req, res) => {
-    let {password, _id, __v, email, friends, ...result} = req.user._doc;
+    let {password, __v, email, friends, ...result} = req.user._doc;
     res.status(200).json({user: result});
 })
 
@@ -191,7 +191,7 @@ router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), asy
         )
 
         if(req.user.friends.includes(req_doc._id)) {
-            req.user.friends.splice(req.user.friends.indexOf(req_doc.id, 1));
+            req.user.friends.splice(req.user.friends.indexOf(req_doc.id), 1);
             await req.user.save();
         }
 

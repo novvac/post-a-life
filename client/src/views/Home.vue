@@ -17,12 +17,8 @@
                         style="border-radius: 16px !important;"
                         loading
                         class="mt-4"
-                    />
-                    <v-skeleton-loader
-                        type="card-avatar"
-                        style="border-radius: 16px !important;"
-                        loading
-                        class="mt-4"
+                        v-for="i in 2"
+                        :key="i"
                     />
                 </div>
 

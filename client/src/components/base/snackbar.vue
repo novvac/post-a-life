@@ -2,7 +2,6 @@
     <v-snackbar
         v-bind="$attrs"
         v-on="$listeners"
-        color="success"
     >
         <slot/>
     </v-snackbar>

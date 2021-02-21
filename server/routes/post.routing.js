@@ -45,4 +45,24 @@ router.post("/posts/", passport.authenticate("jwt", {session: false}), async (re
     res.status(200).json({posts: posts});
 })
 
+router.put("/:id/like/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let post = await Post.findById(req.params.id);
+
+    if(post) {
+        let isAdded = false;
+        if(post.likes.includes(req.user.id)) {
+            post.likes.splice(post.likes.indexOf(req.user.id), 1);
+        } else {
+            post.likes.push(req.user.id);
+            isAdded = true;
+        }
+
+        post.save();
+    
+        res.status(200).json({added: isAdded});
+    } else {
+        res.status(404).json({error: "Nie znaleziono posta!"});
+    }
+})
+
 module.exports = router;
