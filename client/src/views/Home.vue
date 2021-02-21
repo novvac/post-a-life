@@ -4,24 +4,27 @@
             <v-col cols="12" :md="8">
                 <new-post/>
 
-                <div>
-                    <post
-                        v-for="feed in feeds"
-                        :key="feed.id"
-                        :feed="feed"
+                <post
+                    v-for="feed in feeds"
+                    :key="feed.id"
+                    :feed="feed"
+                    class="mt-4"
+                />
+
+                <div v-if="loading">
+                    <v-skeleton-loader
+                        type="card-avatar"
+                        style="border-radius: 16px !important;"
+                        loading
+                        class="mt-4"
+                    />
+                    <v-skeleton-loader
+                        type="card-avatar"
+                        style="border-radius: 16px !important;"
+                        loading
                         class="mt-4"
                     />
                 </div>
-
-                <v-skeleton-loader
-                    type="card-avatar"
-                    style="border-radius: 16px !important;"
-                    loading
-                    class="mt-4"
-                    v-if="loading"
-                ></v-skeleton-loader>
-
-                <v-btn @click="loadPosts()">load</v-btn>
 
                 <div class="text-center mt-5 caption" v-if="end || max">
                     <v-divider class="mb-5"></v-divider>
@@ -57,10 +60,11 @@ export default {
             loading: false,
             timestamp: 0,
             skip: 0,
-            limit: 5,
+            limit: 6,
             end: false,
             max: false,
-            maxFeeds: 50,
+            maxFeeds: 75,
+            loadNow: false,
         }
     },
     computed: {
@@ -85,10 +89,12 @@ export default {
                     if(res.data.posts.length < this.limit)
                         this.end = true;
 
+                    document.addEventListener("scroll", this.handleScroll);
+
                     this.feeds = this.feeds.concat(res.data.posts);
-                    console.log(this.feeds);
                     this.loading = false;
-                    this.skip += 5;
+                    this.skip += this.limit;
+                    this.loadNow = false;
                 })
                 .catch(err => {
                     if(err.response.status === 401)
@@ -96,16 +102,35 @@ export default {
                     
                     console.log(err);
                 })
+        },
+        handleScroll() {
+            let rect = document.querySelectorAll(".post")[document.querySelectorAll(".post").length - 1].getBoundingClientRect();
+
+            if(
+                rect.top >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                this.loadNow === false
+            ) {
+                this.loadNow = true;
+            }
         }
     },
     created() {
         this.loadPosts();
+    },
+    destroyed() {
+        document.removeEventListener("scroll", this.handleScroll);
     },
     watch: {
         feeds() {
             if(this.feeds.length > this.maxFeeds) {
                 this.feeds = this.feeds.slice(0, this.maxFeeds);
                 this.max = true;
+            }
+        },
+        loadNow() {
+            if(this.loadNow && !this.end && !this.max) {
+                this.loadPosts();
             }
         }
     }

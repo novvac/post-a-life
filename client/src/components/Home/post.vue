@@ -11,7 +11,7 @@
                         {{feed.owner.firstName}} {{feed.owner.lastName}}
                     </router-link>
                     <p class="ma-0 font-weight-normal caption grey--text">
-                        {{feed.createdAt}}
+                        {{created}}
                     </p>
                 </div>
             </div>
@@ -75,6 +75,23 @@ export default {
     },
     computed: {
         ...mapGetters(['user']),
+        created() {
+            const dt = new Date(this.feed.createdAt);
+
+            let date = dt.getDate();
+            date = date < 10 ? '0'+date : date;
+
+            let month = dt.getMonth()+1;
+            month = month < 10 ? '0'+month : month;
+
+            let minutes = dt.getMinutes();
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+
+            let hours = dt.getHours();
+            hours = hours < 10 ? '0'+hours : hours;
+
+            return `${date}-${month}-${dt.getFullYear()}  |  ${hours}:${minutes}`;
+        }
     }
 }
 </script>
