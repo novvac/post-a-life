@@ -103,9 +103,9 @@ export default {
             let rect = document.querySelectorAll(".post")[document.querySelectorAll(".post").length - 1].getBoundingClientRect();
 
             if(
-                rect.top >= 0 &&
+                
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                this.loadNow === false
+                !this.loadNow
             ) {
                 this.loadNow = true;
             }
