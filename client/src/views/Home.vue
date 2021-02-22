@@ -7,7 +7,7 @@
                 <post
                     v-for="feed in feeds"
                     :key="feed.id"
-                    :feed="feed"
+                    :post="feed"
                     class="mt-4"
                 />
 
@@ -56,10 +56,10 @@ export default {
             loading: false,
             timestamp: 0,
             skip: 0,
-            limit: 6,
+            limit: 4,
             end: false,
             max: false,
-            maxFeeds: 75,
+            maxFeeds: 50,
             loadNow: false,
         }
     },
@@ -103,7 +103,6 @@ export default {
             let rect = document.querySelectorAll(".post")[document.querySelectorAll(".post").length - 1].getBoundingClientRect();
 
             if(
-                
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
                 !this.loadNow
             ) {

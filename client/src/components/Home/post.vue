@@ -3,12 +3,12 @@
         <template v-slot:title>
             <div class="d-flex align-center">
                 <v-avatar size="36">
-                    <v-img :src="'http://192.168.43.5:3000/uploads/' + feed.owner.avatar"></v-img>
+                    <v-img :src="'http://192.168.43.5:3000/uploads/' + post.owner.avatar"></v-img>
                 </v-avatar>
 
                 <div class="ml-2">
-                    <router-link :to="'/app/user/' + feed.owner.short_id" class="d-block">
-                        {{feed.owner.firstName}} {{feed.owner.lastName}}
+                    <router-link :to="'/app/user/' + post.owner.short_id" class="d-block">
+                        {{post.owner.firstName}} {{post.owner.lastName}}
                     </router-link>
                     <p class="ma-0 font-weight-normal caption grey--text">
                         {{createdAt}}
@@ -24,45 +24,51 @@
         </template>
 
         <p class="body-2 ma-0 my-5 black--textm mx-5">
-            {{feed.mind}}
+            {{post.mind}}
         </p>
 
         <v-divider></v-divider>
 
-        <v-card-actions class="pa-0 flexmn">
+        <v-card-actions class="pa-0">
             <v-btn tile text class="caption text-capitalize py-6" @click="addLike">
-                <v-icon small class="mr-2" color="red" v-if="feed.likes.includes(user._id)">mdi-heart</v-icon>
+                <v-icon small class="mr-2" color="red" v-if="post.likes.includes(user._id)">mdi-heart</v-icon>
                 <v-icon small class="mr-2" v-else>mdi-heart-outline</v-icon>
-                <b class="mr-1">{{feed.likes.length}}</b> Polubień
+                <b class="mr-1">{{post.likes.length}}</b> Polubień
             </v-btn>
             <v-btn tile text class="caption text-capitalize py-6" :disabled="comments.loading" @click="toggleComments()">
                 <v-icon small class="mr-2">mdi-comment-outline</v-icon>
-                <b class="mr-1">{{feed.comments.length}}</b> Komentarze
+                <b class="mr-1">{{post.comments.length}}</b> Komentarze
             </v-btn>
         </v-card-actions>
 
         <v-divider/>
 
-        <div class="comments">
-            <!-- ładowanie kolejnych komentarzy -->
-            <comment
-                v-for="cmt in comments.list"
-                :key="cmt._id"
-                :comment="cmt"
-            />
+        <div class="mx-5 mt-3 d-flex flex-column-reverse" v-if="comments.list.length > 0">
+            <div
+                v-for="comment in comments.list"
+                :key="comment.id"
+            >
+                <discussion
+                    :comment="comment"
+                    :timestamp="comments.timestamp"
+                />
+            </div>
+
+            <v-row class="ma-0 mb-2" align="center">
+                <v-btn
+                    small text
+                    class="caption text-none grey lighten-3"
+                    v-if="comments.list.length < post.comments.length"
+                    @click="loadComments()"
+                >
+                    Pokaż wcześniejsze
+                </v-btn>
+
+                <v-spacer></v-spacer>
+
+                <span>{{comments.list.length}} z {{post.comments.length}}</span>
+            </v-row>
         </div>
-
-        <v-row class="ma-0 mx-5 mb-3 caption" justify="start" align="center" v-if="comments.list.length > 0">
-            <v-btn text class="caption text-none grey lighten-3" small @click="loadComments()" v-if="moreComments">
-                Pokaż wcześniejsze
-            </v-btn>
-
-            <v-spacer></v-spacer>
-
-            <p class="ma-0">{{comments.list.length}} z {{feed.comments.length}}</p>
-        </v-row>
-
-        <v-divider class="mt-4" v-if="comments.list.length > 0 || comments.loading"/>
 
         <div class="pa-4 d-flex align-center">
             <v-avatar size="36">
@@ -77,12 +83,12 @@
                 class="ml-2 caption"
                 append-icon="mdi-face"
                 @keyup.enter="addComment()"
-                v-model="comment"
+                v-model="newComment.model"
                 :hide-details="!Boolean(errors.comment)"
                 :error="Boolean(errors.comment)"
                 :error-messages="errors.comment"
-                :loading="commentLoading"
-                :disabled="commentLoading"
+                :loading="newComment.loading"
+                :disabled="newComment.loading"
             />
         </div>
 
@@ -109,13 +115,13 @@ import {
 export default {
     name: "Post",
     props: {
-        feed: {
+        post: {
             type: Object,
             required: true,
         }
     },
     components: {
-        Comment: () => import("@/components/Home/comment.vue"),
+        Discussion: () => import("@/components/Home/discussion"),
     },
     data() {
         return {
@@ -126,20 +132,19 @@ export default {
                 limit: 4,
                 skip: 0,
                 timestamp: 0,
-                list: []
+                list: [],
             },
-            comment: "",
+            newComment: {
+                model: "",
+                loading: false,
+            },
             errors: {},
-            commentLoading: false,
         }
     },
     computed: {
         ...mapGetters(['user']),
         createdAt() { 
-            const loadedTimestamp = new Date();
-            this.comments.timestamp = loadedTimestamp.getTime();
-
-            const dt = new Date(this.feed.createdAt);
+            const dt = new Date(this.post.createdAt);
 
             let date = dt.getDate();
             date = date < 10 ? '0'+date : date;
@@ -155,24 +160,17 @@ export default {
 
             return `${date}-${month}-${dt.getFullYear()}  |  ${hours}:${minutes}`;
         },
-        moreComments() {
-            if(this.comments.list.length < this.feed.comments.length &&
-                this.comments.list.length > 0)
-                return true;
-            else
-                return false;
-        }
     },
     methods: {
         ...mapActions(['LOGOUT']),
         addLike() {
-            const url = "http://192.168.43.5:3000/api/post/" + this.feed._id + "/like/";
+            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/like/";
             this.$http.put(url)
                 .then(res => {
                     if(res.data.added) {
-                        this.feed.likes.push(this.user._id);
+                        this.post.likes.push(this.user._id);
                     } else {
-                        this.feed.likes.splice(this.feed.likes.indexOf(this.user._id), 1);
+                        this.post.likes.splice(this.post.likes.indexOf(this.user._id), 1);
                     }
                 })
                 .catch(err => {
@@ -185,33 +183,37 @@ export default {
         },
         addComment() {
             this.errors = {};
-            this.commentLoading = true;
-            const url = "http://192.168.43.5:3000/api/post/" + this.feed._id + "/comment/";
-            this.$http.post(url, {comment: this.comment})
+            this.newComment.loading = true;
+            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/comment/";
+            this.$http.post(url, {comment: this.newComment.model})
                 .then(res => {
-                    this.commentLoading = false;
-                    this.comment = "";
+                    this.newComment.loading = false;
+                    this.newComment.model = "";
+
+                    //todo: dodaj komentarz dodany przez użytkownika do listy komentarzy
                 })
                 .catch(err => {
                     if(err.response.status === 401)
                         return this.LOGOUT();
 
                     this.errors = err.response.data.errors;
-                    this.commentLoading = false;
-                    this.comment = "";
+                    this.newComment.loading = false;
+                    this.newComment.loading = "";
                 })
         },
         loadComments() {
             this.comments.loading = true;
-            this.$http.post(`http://192.168.43.5:3000/api/post/${this.feed._id}/comments`, {
+            this.$http.post(`http://192.168.43.5:3000/api/post/${this.post._id}/comments`, {
                 timestamp: this.comments.timestamp,
                 skip: this.comments.skip,
                 limit: this.comments.limit,
             })
                 .then(res => {
-                    this.comments.list = this.comments.list.concat(res.data.comments);
-                    this.comments.skip += this.comments.limit;
-                    this.comments.loading = false;
+                    if(res.data.comments.length > 0) {
+                        this.comments.list = this.comments.list.concat(res.data.comments);
+                        this.comments.skip += this.comments.limit;
+                        this.comments.loading = false;  
+                    }
                 })
                 .catch(err => {
                     if(err.response.status === 401)
@@ -223,7 +225,7 @@ export default {
                 })
         },
         toggleComments() {
-            if(this.feed.comments.length > 0) {
+            if(this.post.comments.length > 0) {
                 if(this.comments.list.length > 0) {
                     this.comments.list = [];
                 } else {
@@ -231,7 +233,11 @@ export default {
                     this.loadComments();
                 }
             }
-        }
+        },
+    },
+    created() {
+        const loadedTimestamp = new Date();
+        this.comments.timestamp = loadedTimestamp.getTime();
     }
 }
 </script>
