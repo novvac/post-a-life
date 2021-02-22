@@ -35,7 +35,6 @@ router.post("/:id/sub-comment/", passport.authenticate("jwt", {session: false}),
 
 router.get("/:id/sub-comments/:skip-:limit/:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let startDate = new Date(parseInt(req.params.timestamp));    
-    console.log(startDate);
     let comment = await Comment.find({
         _id: req.params.id,
     }, {
@@ -74,6 +73,35 @@ router.get("/:id/sub-comments/:skip-:limit/:timestamp", passport.authenticate("j
 
     if(comment) {
         res.status(200).json({subComments: comment.subComments});
+    } else {
+        res.status(404).json('error');
+    }
+})
+
+router.put("/:id/vote/:type/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let comment = await Comment.findById(req.params.id);
+
+    if(comment) {
+        const type = req.params.type;
+
+        const userLike = comment.likes.includes(req.user.id);
+        const userDislike = comment.dislikes.includes(req.user.id);
+
+        comment.likes.splice(comment.likes.indexOf(req.user.id), 1);
+        comment.dislikes.splice(comment.dislikes.indexOf(req.user.id), 1);
+
+        if(type == 1) {
+            if(!userLike)
+                comment.likes.push(req.user.id);
+        }
+        else if(type == -1) {
+            if(!userDislike)
+                comment.dislikes.push(req.user.id);
+        }
+
+        comment.save();
+        
+        res.status(200).json('success');
     } else {
         res.status(404).json('error');
     }

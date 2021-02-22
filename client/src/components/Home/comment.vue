@@ -24,15 +24,18 @@
         </v-list-item>
 
         <div class="caption d-flex align-center mt-1">
-            <v-btn small icon>
+            <v-btn small icon :color="comment.likes.includes(user._id) ? 'black' : undefined" @click="vote(1)">
                 <v-icon x-small>mdi-thumb-up</v-icon>
             </v-btn>
 
-            <span class="mx-1 font-weight-bold success--text">
-                {{comment.likes.length - comment.dislikes.length}}
+            <span
+                :class="['mx-1', 'font-weight-bold',
+                votes < 0 ? 'red--text' : votes > 0 ? 'success--text' : undefined]"
+            >
+                {{votes}}
             </span>
 
-            <v-btn small icon>
+            <v-btn small icon :color="comment.dislikes.includes(user._id) ? 'black' : undefined" @click="vote(-1)">
                 <v-icon x-small>mdi-thumb-down</v-icon>
             </v-btn>
 
@@ -69,6 +72,7 @@
 <script>
 import {
     mapActions,
+    mapGetters,
 } from 'vuex';
 
 export default {
@@ -80,12 +84,6 @@ export default {
                 model: "",
                 loading: false,
             },
-            subcomments: {
-                loading: false,
-                limit: 4,
-                skip: 0,
-                list: []
-            }
         }
     },
     props: {
@@ -99,6 +97,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters(['user']),
         createdAt() {
             const dt = new Date();
             const addedTime = new Date(this.comment.createdAt);
@@ -131,6 +130,9 @@ export default {
                 value,
                 suffix,
             }
+        },
+        votes() {
+            return (this.comment.likes.length - this.comment.dislikes.length);
         }
     },
     methods: {
@@ -144,7 +146,6 @@ export default {
                 .then(res => {
                     this.subcomment.loading = false;
                     this.subcomment.model = "";
-                    console.log(res.data);
                 })
                 .catch(err => {
                     if(err.response.status === 401)
@@ -152,6 +153,34 @@ export default {
 
                     this.errors = err.response.data.errors;
                     this.subcomment.loading = false;
+                })
+        },
+        vote(type) {
+            // ? type:  1   =>  like
+            // ? type: -1   =>  dislike
+
+            this.$http.put(`http://192.168.43.5:3000/api/comment/${this.comment._id}/vote/${type}/`)
+                .then(res => {
+                    const userLike = this.comment.likes.includes(this.user._id);
+                    const userDislike = this.comment.dislikes.includes(this.user._id);
+
+                    this.comment.likes.splice(this.comment.likes.indexOf(this.user._id), 1);
+                    this.comment.dislikes.splice(this.comment.dislikes.indexOf(this.user._id), 1);
+
+                    if(type === 1) {
+                        if(!userLike)
+                            this.comment.likes.push(this.user._id);
+                    }
+                    else if(type === -1) {
+                        if(!userDislike)
+                            this.comment.dislikes.push(this.user._id);
+                    }
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+
+                    console.log(err);
                 })
         }
     }
