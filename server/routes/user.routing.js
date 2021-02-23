@@ -28,7 +28,7 @@ router.get('/id/:id', passport.authenticate("jwt", {session: false}), (req, res)
             });
         
         if(doc) {
-            let {_id, email, password, __v, friends, ...result} = doc._doc;
+            let {email, password, __v, friends, ...result} = doc._doc;
             return res.status(200).send(result);
         } else {
             return res.status(404).json({

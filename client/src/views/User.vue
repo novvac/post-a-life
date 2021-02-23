@@ -64,7 +64,35 @@
             <v-divider></v-divider>
 
             <v-row class="ma-0 pa-5">
-                here we go
+                <v-col cols="12" :md="8" class="pa-0">
+                    <v-tabs-items v-model="tab">
+                        <v-tab-item
+                            v-for="t in tabs"
+                            :key="t.component"
+                            transition="fade-transition"
+                        >
+                            <component v-bind="t.data" :is="t.component" bordered/>
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-col>
+                <v-col cols="12" :md="4" class="py-0 pr-0">
+                    <base-card bordered :rounded="0" without-padding style="overflow: hidden;">
+                        <template v-slot:title>
+                            Nawigacja
+                        </template>
+
+                        <v-tabs vertical v-model="tab" grow>
+                            <v-tab
+                                class="justify-start"
+                                v-for="t in tabs"
+                                :key="t.icon"
+                            >
+                                <v-icon class="mr-2 black--text" small>mdi-{{t.icon}}</v-icon>
+                                <span class="body-2 text-none">{{t.text}}</span>
+                            </v-tab>
+                        </v-tabs>
+                    </base-card>
+                </v-col>
             </v-row>
         </base-card>
 
@@ -76,8 +104,8 @@
 
 <script>
 import {
-  mapActions,
-    mapGetters, mapMutations,
+    mapActions,
+    mapGetters,
 } from 'vuex';
 
 export default {
@@ -87,7 +115,13 @@ export default {
             loading: false,
             loadedUser: null,
             msg: null,
-            friendButton: {}
+            friendButton: {},
+            tab: null,
+            tabs: [
+                {icon: "folder-outline", text: "Posty", component: "posts", data: {
+                    ids: []
+                }},
+            ]
         }
     },
     computed: {
@@ -99,6 +133,9 @@ export default {
     components: {
         profileBanner: () => import('@/components/User/profileBanner'),
         avatar: () => import("@/components/User/avatar"),
+        newPost: () => import("@/components/Home/newPost"),
+
+        posts: () => import('@/components/posts'),
     },
     methods: {
         ...mapActions(['LOGOUT']),
@@ -116,6 +153,8 @@ export default {
                     this.loadedUser.friendStatus = friendStatus.data.status;
 
                     this.setFriendButton();
+
+                    this.tabs[0].data.ids.push(loadedUser.data._id);
 
                     this.loading = false;
                 }))

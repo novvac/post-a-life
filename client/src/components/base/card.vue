@@ -2,7 +2,7 @@
     <v-card
         v-bind="$attrs"
         v-on="$listeners"
-        :style="'border-radius:' + rounded + 'px'"
+        :style="styles"
         flat
     >
         <v-card-title v-if="hasTitle || hasAction" class="body-2 font-weight-bold d-flex justify-space-between align-center">
@@ -52,6 +52,10 @@ export default {
         withoutPadding: {
             type: Boolean,
             default: false,
+        },
+        bordered: {
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
@@ -66,6 +70,15 @@ export default {
         },
         hasOtherAction() {
             return !!this.$slots['other-action'];
+        },
+        styles() {
+            let styles = {};
+
+            styles.borderRadius = this.rounded + "px";
+            if(this.bordered)
+                styles.border = "1px solid #ddd";
+
+            return styles;
         }
     }
 }

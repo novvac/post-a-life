@@ -1,5 +1,5 @@
 <template>
-    <base-card class="post" without-padding>
+    <base-card class="post" without-padding v-bind="$attrs">
         <template v-slot:title>
             <div class="d-flex align-center">
                 <v-avatar size="36">
@@ -70,7 +70,7 @@
             </v-row>
         </div>
 
-        <div class="pa-4 d-flex align-center">
+        <div class=" mx-5 mt-5 d-flex">
             <v-avatar size="36">
                 <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
             </v-avatar>
@@ -78,13 +78,14 @@
             <v-text-field
                 outlined
                 rounded
+                :autocomplete="false"
                 placeholder="Napisz komentarz..."
                 dense
                 class="ml-2 caption"
                 append-icon="mdi-face"
                 @keyup.enter="addComment()"
                 v-model="newComment.model"
-                :hide-details="!Boolean(errors.comment)"
+                hint="Kliknięcie przycisku ENTER spowoduje dodanie komentarza!"
                 :error="Boolean(errors.comment)"
                 :error-messages="errors.comment"
                 :loading="newComment.loading"
@@ -184,6 +185,7 @@ export default {
         addComment() {
             this.errors = {};
             this.newComment.loading = true;
+            console.log(this.post._id)
             const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/comment/";
             this.$http.post(url, {comment: this.newComment.model})
                 .then(res => {
@@ -198,7 +200,6 @@ export default {
 
                     this.errors = err.response.data.errors;
                     this.newComment.loading = false;
-                    this.newComment.loading = "";
                 })
         },
         loadComments() {

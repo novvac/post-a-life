@@ -47,8 +47,10 @@ export default new Vuex.Store({
           resolve(null);
         }))
         .catch(err => {
-          if(err.response.status === 401)
-            return this.dispatch("LOGOUT");
+          if(err.response) {
+            if(err.response.status === 401)
+              return this.dispatch("LOGOUT");
+          }
           
           reject(err);
         })
