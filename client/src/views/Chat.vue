@@ -15,7 +15,20 @@
                 </v-btn>
             </template>
 
-            here will be messages
+            <span>xd</span>
+
+            <v-divider class="mb-5 mt-4"></v-divider>
+
+            <v-text-field
+                outlined
+                :autocomplete="false"
+                placeholder="Wyślij wiadomość..."
+                dense
+                class="caption"
+                append-icon="mdi-face"
+                hide-details
+                v-model="message"
+            />
         </base-card>
 
         <base-card v-if="loading || !chat">
@@ -46,6 +59,7 @@ export default {
         return {
             loading: false,
             chat: {},
+            message: "",
         }
     },
     methods: {
