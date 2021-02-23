@@ -64,18 +64,7 @@
             <v-divider></v-divider>
 
             <v-row class="ma-0 pa-5">
-                <v-col cols="12" :md="8" class="pa-0">
-                    <v-tabs-items v-model="tab">
-                        <v-tab-item
-                            v-for="t in tabs"
-                            :key="t.component"
-                            transition="fade-transition"
-                        >
-                            <component v-bind="t.data" :is="t.component" bordered/>
-                        </v-tab-item>
-                    </v-tabs-items>
-                </v-col>
-                <v-col cols="12" :md="4" class="py-0 pr-0">
+                <v-col cols="12" :md="4" class="py-0 pl-0">
                     <base-card bordered :rounded="0" without-padding style="overflow: hidden;">
                         <template v-slot:title>
                             Nawigacja
@@ -92,6 +81,18 @@
                             </v-tab>
                         </v-tabs>
                     </base-card>
+                </v-col>
+
+                <v-col cols="12" :md="8" class="pa-0">
+                    <v-tabs-items v-model="tab">
+                        <v-tab-item
+                            v-for="t in tabs"
+                            :key="t.component"
+                            transition="fade-transition"
+                        >
+                            <component v-bind="t.data" :is="t.component" bordered/>
+                        </v-tab-item>
+                    </v-tabs-items>
                 </v-col>
             </v-row>
         </base-card>
