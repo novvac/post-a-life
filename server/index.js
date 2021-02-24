@@ -11,6 +11,15 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+/* Web sockets */
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({noServer: true});
+
+wss.on('connection', socket => {
+    console.log("New user connected!");
+})
+/* END - Web sockets  */
+
 app.use('/uploads', express.static(path.join(__dirname + "/uploads")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -47,6 +56,13 @@ app.use("/api/post/", post);
 app.use("/api/comment/", comment);
 app.use("/api/message/", message);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log("Server is running!");
+})
+
+server.on("upgrade", (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (socket) => {
+        wss.emit('connection', socket, request);
+        console.log("UPGRADE!");
+    })
 })
