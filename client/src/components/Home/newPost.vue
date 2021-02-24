@@ -9,7 +9,8 @@
         </template>
 
         <template v-slot:action>
-            <v-btn small text class="text-none caption" @click="toggleVisibility()">
+            <span class="caption mr-1">Widoczność:</span>
+            <v-btn x-small text class="text-none caption" @click="toggleVisibility()">
                 <v-icon x-small class="mr-1">mdi-{{visibility.icon}}</v-icon>
                 {{visibility.text}}
             </v-btn>

@@ -30,6 +30,7 @@ router.post("/posts/", passport.authenticate("jwt", {session: false}), async (re
     let startDate = new Date(req.body.timestamp);
     let posts = await Post.find({
         owner: {$in: req.body.ids},
+        visibility: {$lte: req.body.visibility},
         createdAt: {$lt: startDate}
     }).populate({
         path: "owner",
