@@ -2,9 +2,18 @@
     <base-card
         :disabled="loading"
         :loading="loading"
+        class="new-post"
     >
         <template v-slot:title>
             Post something
+        </template>
+
+        <template v-slot:action>
+            <span class="caption mr-1">Widoczność:</span>
+            <v-btn x-small text class="text-none caption" @click="toggleVisibility()">
+                <v-icon x-small class="mr-1">mdi-{{visibility.icon}}</v-icon>
+                {{visibility.text}}
+            </v-btn>
         </template>
 
         <v-list class="pa-0">
@@ -67,6 +76,7 @@ export default {
             payload: {},
             errors: {},
             snackbar: false,
+            visibility: {icon: "account-multiple", text: "Tylko znajomi", code: 1},
         }
     },
     computed: {
@@ -78,6 +88,8 @@ export default {
             this.loading = true;
             this.errors = {};
             this.snackbar = false;
+
+            this.payload.visibility = this.visibility.code;
 
             this.$http.post("http://192.168.43.5:3000/api/post/", this.payload)
                 .then(res => {
@@ -93,11 +105,16 @@ export default {
                     this.payload = {};
                     this.loading = false;
                 })
+        },
+        toggleVisibility() {
+            if(this.visibility.code === 1)
+                this.visibility = {icon: "web", text: "Publiczny", code: 0};
+            else
+                this.visibility = {icon: "account-multiple", text: "Tylko znajomi", code: 1}
         }
     }
 }
 </script>
 
 <style>
-
 </style>

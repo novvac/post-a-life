@@ -12,6 +12,9 @@
                     </router-link>
                     <p class="ma-0 font-weight-normal caption grey--text">
                         {{createdAt}}
+                        <span class="mx-2">•</span>
+                        <v-icon x-small v-if="post.visibility == 1">mdi-account-multiple</v-icon>
+                        <v-icon x-small v-else-if="post.visibility == 0">mdi-web</v-icon>
                     </p>
                 </div>
             </div>

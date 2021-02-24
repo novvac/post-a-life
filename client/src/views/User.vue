@@ -14,6 +14,8 @@
             <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.banner"/>
             <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.avatar"/>
         
+            {{tabs}}
+
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>
                 <p class="ma-0 text-center caption">{{loadedUser.short_id}}</p>
@@ -122,7 +124,8 @@ export default {
             tab: null,
             tabs: [
                 {icon: "folder-outline", text: "Posty", component: "posts", data: {
-                    ids: []
+                    ids: [],
+                    visibility: 0,
                 }},
             ]
         }
@@ -157,7 +160,8 @@ export default {
 
                     this.setFriendButton();
 
-                    this.tabs[0].data.ids.push(loadedUser.data._id);
+                    this.tabs[0].data.ids = loadedUser.data._id;
+                    this.tabs[0].data.visibility = friendStatus.data.status;
 
                     this.loading = false;
                 }))

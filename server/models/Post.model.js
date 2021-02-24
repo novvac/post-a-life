@@ -19,7 +19,11 @@ let Post = new Schema({
     comments: [{
         type: mongoose.Types.ObjectId,
         ref: "Comment",
-    }]
+    }],
+    visibility: {
+        type: String,
+        default: "friends",
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model("Post", Post);

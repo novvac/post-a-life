@@ -38,6 +38,10 @@ export default {
         ids: {
             type: Array,
             required: true,
+        },
+        visibility: {
+            type: Array,
+            default: 0,
         }
     },
     components: {
@@ -70,6 +74,7 @@ export default {
                 timestamp: this.timestamp,
                 skip: this.skip,
                 limit: this.limit,
+                visibility: this.visibility,
             })
                 .then(res => {
                     if(res.data.posts.length < this.limit)
