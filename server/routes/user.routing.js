@@ -15,7 +15,7 @@ router.get("/id/", passport.authenticate("jwt", {session: false}), (req, res) =>
     res.status(200).json({user: result});
 })
 
-// GET USER WITH :id (SHORT_ID)
+// GET USER WITH :id (short_id or ObjectID)
 router.get('/id/:id', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let user = null;
 

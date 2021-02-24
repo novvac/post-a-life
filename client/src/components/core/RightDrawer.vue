@@ -3,6 +3,7 @@
         app
         clipped
         right
+        class="right-drawer"
     >
         <v-list
             v-for="item in items"
@@ -15,16 +16,29 @@
                     v-for="subitem in item.content"
                     :key="subitem.to"
                     :to="subitem.to"
+                    class="d-flex align-center"
                 >
-                    {{subitem}}
-
-                    <v-avatar size="36">
-                        <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
-                    </v-avatar>
+                    <v-badge dot overlap color="success">
+                        <v-avatar size="36">
+                            <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
+                        </v-avatar>
+                    </v-badge>
 
                     <div class="ml-2 d-flex flex-column">
-                        <v-list-item-title class="body-2 font-weight-bold">{{subitem.firstName}} {{subitem.lastName}}</v-list-item-title>
+                        <v-list-item-title class="body-2 font-weight-bold">
+                            <router-link :to="'/app/user/' + subitem.short_id">{{subitem.firstName}} {{subitem.lastName}}</router-link>
+                        </v-list-item-title>
                         <v-list-item-subtitle class="caption grey--text">{{subitem.short_id}}</v-list-item-subtitle>
+                    </div>
+
+                    <div style="position: absolute; right: 12px;">
+                        <v-badge dot overlap color="red">
+                            <router-link :to="'/app/chat/' + subitem.short_id">
+                                <v-btn icon>
+                                    <v-icon small>mdi-message-text-outline</v-icon>
+                                </v-btn>
+                            </router-link>
+                        </v-badge>
                     </div>
                 </v-list-item>
             </div>
@@ -67,24 +81,37 @@ export default {
         ...mapGetters(['user'])
     },
     methods: {
+        ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_FRIENDS']),
         loadFriends() {
             this.LOAD_FRIENDS().then(() => {
-                this.items[1].content = this.user.friends;
+                let bufor = [];
+                for(let id of this.user.friends) {
+                    this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
+                        .then(res => {
+                            bufor.push(res.data);
+                        })
+                        .catch(err => {
+                            if(err.response.status === 401) {
+                                this.LOGOUT();
+                            }
+                        })
+                }
+                this.items[1].content = bufor;
             })
         }
     },
     created() {
         this.loadFriends();
     },
-    watch: {
-        $route(to, from) {
-            this.loadFriends();
-        } 
-    }
 }
 </script>
 
-<style>
-
+<style lang="scss">
+.right-drawer {
+    a {
+        text-decoration: none;
+        color: #333;
+    }
+}
 </style>
