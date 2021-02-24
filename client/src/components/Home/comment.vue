@@ -24,7 +24,7 @@
         </v-list-item>
 
         <div class="caption d-flex align-center mt-1">
-            <v-btn small icon :color="comment.likes.includes(user._id) ? 'black' : undefined" @click="vote(1)">
+            <v-btn small icon :color="comment.likes.includes(user._id) ? 'black' : undefined" :disabled="isOwner" @click="isOwner ? undefined : vote(1)">
                 <v-icon x-small>mdi-thumb-up</v-icon>
             </v-btn>
 
@@ -35,7 +35,7 @@
                 {{votes}}
             </span>
 
-            <v-btn small icon :color="comment.dislikes.includes(user._id) ? 'black' : undefined" @click="vote(-1)">
+            <v-btn small icon :color="comment.dislikes.includes(user._id) ? 'black' : undefined" :disabled="isOwner" @click="isOwner ? undefined : vote(-1)">
                 <v-icon x-small>mdi-thumb-down</v-icon>
             </v-btn>
 
@@ -65,6 +65,11 @@
                     />
                 </base-card>
             </base-menu>
+
+            <v-btn x-small text class="text-none caption ml-2" color="red" v-if="isOwner" @click="deleteComment()">
+                <v-icon x-small>mdi-delete</v-icon>
+                Usuń
+            </v-btn>
         </div>
     </div>
 </template>
@@ -133,6 +138,9 @@ export default {
         },
         votes() {
             return (this.comment.likes.length - this.comment.dislikes.length);
+        },
+        isOwner() {
+            return this.comment.owner.short_id === this.user.short_id;
         }
     },
     methods: {
@@ -175,6 +183,18 @@ export default {
                         if(!userDislike)
                             this.comment.dislikes.push(this.user._id);
                     }
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+
+                    console.log(err);
+                })
+        },
+        deleteComment() {
+            this.$http.delete(`http://192.168.43.5:3000/api/comment/${this.comment._id}/`)
+                .then(res => {
+                    console.log(res);
                 })
                 .catch(err => {
                     if(err.response.status === 401)

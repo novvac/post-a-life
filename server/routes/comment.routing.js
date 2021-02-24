@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../passport/index");
 const Comment = require("../models/Comment.model");
+const Post = require("../models/Post.model");
 
 const validateCommentData = require("../validators/commentAddValidator");
 router.post("/:id/sub-comment/", passport.authenticate("jwt", {session: false}), async (req, res) => {
@@ -20,8 +21,10 @@ router.post("/:id/sub-comment/", passport.authenticate("jwt", {session: false}),
     if(comment) {
         let subcomment = await new Comment({
             text: req.body.comment,
-            owner: req.user.id
+            owner: req.user.id,
         })
+
+        subcomment.subComments = null;
     
         comment.subComments.push(subcomment._id);
         subcomment.save();
@@ -104,6 +107,47 @@ router.put("/:id/vote/:type/", passport.authenticate("jwt", {session: false}), a
         res.status(200).json('success');
     } else {
         res.status(404).json('error');
+    }
+})
+
+router.delete("/:id/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let comment = await Comment.findById(req.params.id).populate({
+        path: "owner",
+        select: {
+            _id: 1,
+        }
+    });
+
+    if(comment) {
+        if(comment.owner.id === req.user.id) {
+            let post = await Post.findById(comment.post);
+            if(post) {
+                post.comments.splice(post.comments.indexOf(comment.id), 1);
+                post.save();
+            }
+
+            if(comment.subComments === null) {
+                let parentComment = await Comment.findOne({
+                    subComments: {$in: comment.id}
+                })
+                if(parentComment) {
+                    parentComment.subComments.splice(parentComment.subComments.indexOf(comment.id), 1);
+                    parentComment.save();
+                }
+            } else { 
+                await Comment.deleteMany({
+                    _id: {$in: comment.subComments}
+                })
+            }
+
+            await Comment.deleteOne({_id: req.params.id})
+
+            return res.status(200).json("success");
+        } else {
+            return res.status(418).json('error');
+        }
+    } else {
+        return res.status(404).json('not found');
     }
 })
 
