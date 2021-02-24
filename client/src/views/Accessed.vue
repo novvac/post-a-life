@@ -5,7 +5,7 @@
     <core-left-drawer/>
     <core-right-drawer/>
 
-    <v-main>
+    <v-main style="min-height: 100vh;">
       <router-view></router-view>
     </v-main>
   </div>

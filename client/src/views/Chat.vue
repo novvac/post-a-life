@@ -1,5 +1,5 @@
 <template>
-    <div class="chat ma-5">
+    <div class="chat ma-5" style="height: calc(100% - 40px)">
         <base-card v-if="!loading && chat" height="100%">
             <template v-slot:title>
                 <v-avatar size="28" class="mr-2">
@@ -15,20 +15,29 @@
                 </v-btn>
             </template>
 
-            <span>xd</span>
+            <div class="d-flex flex-column justify-space-between" style="height: 100%">
+                <div class="messages d-flex flex-column-reverse">
+                    <div class="message d-flex">
+                        <v-avatar size="36">
+                            <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
+                        </v-avatar>
 
-            <v-divider class="mb-5 mt-4"></v-divider>
+                        <div class="ml-3 body-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta nisi, odit molestiae explicabo laborum reiciendis dolorum, qui doloremque dolorem mollitia velit dolore fuga sit. Earum ad quis nisi quisquam repudiandae?</div>
+                    </div>
+                </div>
 
-            <v-text-field
-                outlined
-                :autocomplete="false"
-                placeholder="Wyślij wiadomość..."
-                dense
-                class="caption"
-                append-icon="mdi-face"
-                hide-details
-                v-model="message"
-            />
+                <v-text-field
+                    outlined
+                    :autocomplete="false"
+                    placeholder="Wyślij wiadomość..."
+                    dense
+                    class="caption mt-5"
+                    append-icon="mdi-face"
+                    hide-details
+                    v-model="message"
+                    style="flex: none;"
+                />
+            </div>
         </base-card>
 
         <base-card v-if="loading || !chat">
@@ -80,8 +89,19 @@ export default {
 
 <style lang="scss">
 .chat {
+    max-height: calc(100vh - 104px);
     a {
         text-decoration: none;
+    }
+
+    .v-card__text {
+        height: calc(100% - 68px)
+    }
+
+    .messages {
+        height: 100%;
+        max-height: 100%;
+        overflow-y: scroll;
     }
 }
 </style>
