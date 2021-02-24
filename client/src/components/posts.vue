@@ -40,7 +40,7 @@ export default {
             required: true,
         },
         visibility: {
-            type: Array,
+            type: Number,
             default: 0,
         }
     },

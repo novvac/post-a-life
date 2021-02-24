@@ -142,7 +142,7 @@ export default {
             searchValue: "",
             actions: [
                 {
-                    title: "Znajomi",
+                    title: "Zaproszenia do znajomych!",
                     icon: "account-plus-outline",
                     content: [],
                     component: () => import('../AppBarComponents/friends'),
@@ -176,8 +176,21 @@ export default {
                 }, 250)
             }
         },
+        loadReceived() {
+            this.$http.get("http://192.168.43.5:3000/api/user/friends/type/3")
+                .then(res => {
+                    this.actions[0].content = res.data.list;
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+                })
+        }
     },
     watch: {
+        $route(to, from) {
+            this.loadReceived();
+        },
         isSearching() {
             if(this.isSearching) {
                 this.waitingForData = true;
@@ -203,14 +216,7 @@ export default {
         }
     },
     created() {
-        this.$http.get("http://192.168.43.5:3000/api/user/friends/type/3")
-            .then(res => {
-                this.actions[0].content = res.data.list;
-            })
-            .catch(err => {
-                if(err.response.status === 401)
-                    this.LOGOUT();
-            })
+        this.loadReceived();
     }
 }
 </script>

@@ -13,8 +13,6 @@
         <base-card without-padding v-else-if="!loading && !msg">
             <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.banner"/>
             <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.avatar"/>
-        
-            {{tabs}}
 
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>
@@ -145,6 +143,7 @@ export default {
     },
     methods: {
         ...mapActions(['LOGOUT']),
+        ...mapActions(['INVITATION_MANAGER']),
         loadUser() {
             this.msg = null;
             this.loadedUser = {},
@@ -160,8 +159,14 @@ export default {
 
                     this.setFriendButton();
 
-                    this.tabs[0].data.ids = loadedUser.data._id;
+                    if(this.tabs[0].data.ids.length === 0)
+                        this.tabs[0].data.ids.push(loadedUser.data._id);
+                    else
+                        this.tabs[0].data.ids = loadedUser.data._id;
                     this.tabs[0].data.visibility = friendStatus.data.status;
+
+                    if(this.user.short_id === this.id)
+                        this.tabs[0].data.visibility = 1;
 
                     this.loading = false;
                 }))
@@ -205,21 +210,11 @@ export default {
             }
         },
         invitationManager(action) {
-            let url = "http://192.168.43.5:3000/api/user/friend/";
-            let data = {}
-
-            if(action === "put" || action === "delete") {
-                url += this.id;
-            } else {
-                data.id = this.id
-            }
-
-            this.$http({
-                method: action,
-                url: url,
-                data: data,
+            this.INVITATION_MANAGER({
+                action: action,
+                id: this.id,
             }).then(res => {
-                this.loadedUser.friendStatus = res.data.status;
+                this.loadedUser.friendStatus = res;
                 this.setFriendButton();
             })
         },

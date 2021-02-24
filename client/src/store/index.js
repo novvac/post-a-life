@@ -72,6 +72,35 @@ export default new Vuex.Store({
             reject(err);
           })
       })
+    },
+    INVITATION_MANAGER({commit}, payload) {
+      return new Promise((resolve, reject) => {
+        let url = "http://192.168.43.5:3000/api/user/friend/";
+        let data = {}
+
+        console.log(payload);
+
+        if(payload.action === "put" || payload.action === "delete") {
+            url += payload.id;
+        } else {
+            data.id = payload.id
+        }
+
+        axios({
+            method: payload.action,
+            url: url,
+            data: data,
+        }).then(res => {
+            resolve(res.data.status);
+        }).catch(err => {
+          if(err.response) {
+            if(err.response.status === 401)
+              return this.dispatch("LOGOUT");
+          }
+
+          reject(err);
+        })
+      })
     }
   },
   modules: {

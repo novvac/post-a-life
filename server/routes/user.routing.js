@@ -16,30 +16,28 @@ router.get("/id/", passport.authenticate("jwt", {session: false}), (req, res) =>
 })
 
 // GET USER WITH :id (SHORT_ID)
-router.get('/id/:id', passport.authenticate("jwt", {session: false}), (req, res) => {
-    User.findOne({short_id: req.params.id}, (err, doc) => {
-        if(err)
-            return res.status(500).json({
-                error: {
-                    code: "SERV_f82s",
-                    msg: "Server error",
-                    details: "Wystąpił nieoczekiwany błąd! Prosimy o kontakt!"
-                }
-            });
-        
-        if(doc) {
-            let {email, password, __v, friends, ...result} = doc._doc;
-            return res.status(200).send(result);
-        } else {
-            return res.status(404).json({
-                error: {
-                    code: "UDE_5f82",
-                    msg: "User does not exist",
-                    details: "Użytkownik o podanym ID nie istnieje!"
-                }
-            });
-        }
-    })
+router.get('/id/:id', passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let user = null;
+
+    // check if request param (id) is short_id or ObjectID
+    var regex = new RegExp("^[0-9a-fA-F]{24}$")
+    if(regex.test(req.params.id)) {
+        user = await User.findOne({
+            _id: mongoose.Types.ObjectId(req.params.id)
+        })
+    } else {
+        user = await User.findOne({
+            short_id: req.params.id
+        })
+    }
+
+    // if user was found - send his data to client. Otherwise send 404 error
+    if(user) {
+        let {email, password, __v, friends, ...result} = user._doc;
+        return res.status(200).send(result);
+    } else {
+        return res.status(404).json('error');
+    }
 })
 
 // UPLOAD NEW BANNER AND SET THEM FOR LOGGED USER

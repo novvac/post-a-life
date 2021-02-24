@@ -5,8 +5,6 @@
                 <new-post class="mb-6"/>
 
                 <posts :ids="user.friends" :visibility="1"/>
-
-                //todo: public posts (tabs -> [friends], [public]) - visibility: 0
             </v-col>
             <v-col cols="12" :md="4">
                 <stories class="mb-5"/>
