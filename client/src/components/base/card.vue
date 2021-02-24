@@ -10,14 +10,12 @@
                 <slot name="title"/>
             </div>
 
-            <base-menu>
+            <base-menu v-if="hasAction">
                 <template v-slot:activator>
-                    <slot v-if="hasAction" name="action"/>
+                    <slot name="action"/>
                 </template>
 
-                <base-card :rounded="0">
-                    Content here
-                </base-card>
+                <slot name="action-content"/>
             </base-menu>
         </v-card-title>
 
