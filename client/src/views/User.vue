@@ -45,10 +45,12 @@
                         </base-card>
                     </base-menu>
 
-                    <v-btn text class="caption text-capitalize ml-2">
-                        <v-icon class="mr-2" small>mdi-message</v-icon>
-                        Wyślij wiadomość
-                    </v-btn>
+                    <router-link :to="'/app/chat/' + loadedUser.short_id">
+                        <v-btn text class="caption text-capitalize ml-2">
+                            <v-icon class="mr-2" small>mdi-message</v-icon>
+                            Wyślij wiadomość
+                        </v-btn>
+                    </router-link>
                 </div>
 
                 <v-spacer></v-spacer>
@@ -229,6 +231,10 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss">
+.user {
+    a {
+        text-decoration: none;
+    }
+}
 </style>

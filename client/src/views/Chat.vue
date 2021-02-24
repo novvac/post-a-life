@@ -1,44 +1,47 @@
 <template>
     <div class="chat ma-5" style="height: calc(100% - 40px)">
-        <base-card v-if="!loading && chat" height="100%">
-            <template v-slot:title>
-                <v-avatar size="28" class="mr-2">
-                    <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
-                </v-avatar>
-                    
-                <span>Jan Kowalski</span>
-            </template>
+        <span v-if="!loading && chat">
+            <base-card height="100%">
+                <template v-slot:title>
+                    <v-avatar size="28" class="mr-2">
+                        <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
+                    </v-avatar>
+                        
+                    <span>Jan Kowalski</span>
+                </template>
 
-            <template v-slot:action>
-                <v-btn icon>
-                    <v-icon small>mdi-dots-horizontal</v-icon>
-                </v-btn>
-            </template>
+                <template v-slot:action>
+                    <v-btn icon>
+                        <v-icon small>mdi-dots-horizontal</v-icon>
+                    </v-btn>
+                </template>
 
-            <div class="d-flex flex-column justify-space-between" style="height: 100%">
-                <div class="messages d-flex flex-column-reverse">
-                    <div class="message d-flex">
-                        <v-avatar size="36">
-                            <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
-                        </v-avatar>
+                <div class="d-flex flex-column justify-space-between" style="height: 100%">
+                    <div class="messages d-flex flex-column-reverse">
+                        <div class="message d-flex">
+                            <v-avatar size="36">
+                                <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
+                            </v-avatar>
 
-                        <div class="ml-3 body-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta nisi, odit molestiae explicabo laborum reiciendis dolorum, qui doloremque dolorem mollitia velit dolore fuga sit. Earum ad quis nisi quisquam repudiandae?</div>
+                            <div class="ml-3 body-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta nisi, odit molestiae explicabo laborum reiciendis dolorum, qui doloremque dolorem mollitia velit dolore fuga sit. Earum ad quis nisi quisquam repudiandae?</div>
+                        </div>
                     </div>
-                </div>
 
-                <v-text-field
-                    outlined
-                    :autocomplete="false"
-                    placeholder="Wyślij wiadomość..."
-                    dense
-                    class="caption mt-5"
-                    append-icon="mdi-face"
-                    hide-details
-                    v-model="message"
-                    style="flex: none;"
-                />
-            </div>
-        </base-card>
+                    <v-text-field
+                        outlined
+                        :autocomplete="false"
+                        placeholder="Wyślij wiadomość..."
+                        dense
+                        class="caption mt-5"
+                        append-icon="mdi-face"
+                        hide-details
+                        v-model="message"
+                        style="flex: none;"
+                        @click.enter="sendMessage()"
+                    />
+                </div>
+            </base-card>
+        </span>
 
         <base-card v-if="loading || !chat">
             <v-progress-circular
@@ -62,18 +65,45 @@
 </template>
 
 <script>
+import {
+    mapActions
+} from 'vuex';
+
 export default {
     name: "Chat",
     data() {
         return {
             loading: false,
-            chat: {},
+            chat: null,
             message: "",
         }
     },
+    computed: {
+        id() {
+            return this.$route.params.id;
+        }
+    },
     methods: {
+        ...mapActions(['LOGOUT']),
         loadChat() {
+            this.chat = null;
             this.loading = false;
+            this.$http.get(`http://192.168.43.5:3000/api/message/user/${this.id}/messages/`)
+                .then(res => {
+                    console.log(res);
+                    this.chat = {
+                        test: "test"
+                    };
+                })
+                .catch(err => {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+                    
+                    console.log(err);
+                })
+        },
+        sendMessage() {
+
         }
     },
     created() {
