@@ -9,11 +9,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
+    socket: null,
   },
   getters: {
     user(store) {
       return store.user;
     },
+    socket(store) {
+      return store.socket;
+    }
   },
   mutations: {
     setUser(store, payload) {
@@ -24,13 +28,27 @@ export default new Vuex.Store({
     },
     setFriends(store, payload) {
       store.user.friends = payload;
+    },
+    setSocket(store, payload) {
+      if(!payload)
+        store.socket = null;
+      else
+        store.socket = payload;
     }
   },
   actions: {
     setUser({commit}, payload) {
       commit('setUser', payload)
     },
+    OPEN_SOCKET({commit}) {
+      if(this.state.socket === null) {
+        let ws = new WebSocket("ws://192.168.43.5:3000/");
+
+        commit('setSocket', ws);
+      }
+    },
     LOGOUT({commit}) {
+      commit('setSocket', null);
       if(VueCookies.get("token"))
         VueCookies.remove("token");
       router.push("/auth/login");

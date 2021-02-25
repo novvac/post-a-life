@@ -34,6 +34,7 @@ export default {
   },
   methods: {
     ...mapActions(['LOAD_USER']),
+    ...mapActions(['OPEN_SOCKET']),
     loadUser() {
       if(!this.user) {
         this.loading = true;
@@ -45,10 +46,13 @@ export default {
   },
   created() {
     this.loadUser();
+
+    this.OPEN_SOCKET();
   },
   watch: {
     $route(to, from) {
       this.loadUser();
+      this.OPEN_SOCKET();
     }
   }
 }

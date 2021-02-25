@@ -3,11 +3,16 @@
         <span v-if="!loading && chat">
             <base-card height="100%">
                 <template v-slot:title>
-                    <v-avatar size="28" class="mr-2">
-                        <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
-                    </v-avatar>
-                        
-                    <span>Jan Kowalski</span>
+                    <v-row class="ma-0" align="center">
+                        <v-avatar size="36" class="mr-2">
+                            <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
+                        </v-avatar>
+                            
+                        <div class="d-flex flex-column">
+                            <span>{{chat.user.firstName}} {{chat.user.lastName}}</span>
+                            <span class="caption success--text">Aktywny teraz</span>
+                        </div>
+                    </v-row>
                 </template>
 
                 <template v-slot:action>
@@ -18,13 +23,7 @@
 
                 <div class="d-flex flex-column justify-space-between" style="height: 100%">
                     <div class="messages d-flex flex-column-reverse">
-                        <div class="message d-flex">
-                            <v-avatar size="36">
-                                <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
-                            </v-avatar>
-
-                            <div class="ml-3 body-2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Soluta nisi, odit molestiae explicabo laborum reiciendis dolorum, qui doloremque dolorem mollitia velit dolore fuga sit. Earum ad quis nisi quisquam repudiandae?</div>
-                        </div>
+                        <!-- Messages -->
                     </div>
 
                     <v-text-field
@@ -90,12 +89,11 @@ export default {
             this.loading = false;
             this.$http.get(`http://192.168.43.5:3000/api/message/user/${this.id}/messages/`)
                 .then(res => {
-                    console.log(res);
-                    this.chat = {
-                        test: "test"
-                    };
+                    this.chat = {};
+                    this.chat.user = res.data.user;
                 })
                 .catch(err => {
+                    console.log(err);
                     if(err.response.status === 401)
                         this.LOGOUT();
                     
