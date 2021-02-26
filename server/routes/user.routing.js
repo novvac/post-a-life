@@ -6,6 +6,7 @@ const passport = require("../passport/index");
 const multer = require('multer');
 const mongoose = require("mongoose");
 const storage = require('../config/multer');
+const { wss, clients, findSocket } = require("../config/ws");
 
 const upload = multer({storage: storage});
 
@@ -152,6 +153,10 @@ router.post("/friend/", passport.authenticate("jwt", {session: false}), async (r
             recipient.friends.push(rec_doc.id);
             await recipient.save();
         }
+
+        let index = findSocket(recipient.id);
+        if(index !== -1)
+            clients[index].ws.send("Masz nowe zaproszenie!");
 
         res.status(200).json({status: req_doc.friendStatus});
     }

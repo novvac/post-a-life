@@ -30,8 +30,10 @@ export default new Vuex.Store({
       store.user.friends = payload;
     },
     setSocket(store, payload) {
-      if(!payload)
+      if(!payload) {
+        store.socket.close();
         store.socket = null;
+      }
       else
         store.socket = payload;
     }
@@ -44,7 +46,22 @@ export default new Vuex.Store({
       if(this.state.socket === null) {
         let ws = new WebSocket("ws://192.168.43.5:3000/");
 
-        commit('setSocket', ws);
+        ws.onopen = function(event) {
+          let data = {token: null};
+          if(VueCookies.get("token"))
+            data.token = VueCookies.get("token");
+          
+          ws.send(JSON.stringify(data));
+        }
+
+        ws.onmessage = function(msg) {
+          console.log(msg.data);
+        }
+
+        if(VueCookies.get("token"))
+          commit('setSocket', ws);
+        else
+          this.dispatch('LOGOUT');
       }
     },
     LOGOUT({commit}) {

@@ -12,19 +12,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 /* Web sockets */
-const WebSocket = require("ws");
-const wss = new WebSocket.Server({noServer: true});
-
-wss.on('connection', socket => {
-    console.log("New user connected!");
-})
-/* END - Web sockets  */
+const { wss } = require("./config/ws");
 
 app.use('/uploads', express.static(path.join(__dirname + "/uploads")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 app.use(cors({
     origin: [
         'http://localhost:8080',

@@ -39,6 +39,7 @@ export default {
       if(!this.user) {
         this.loading = true;
         this.LOAD_USER().then(() => {
+          this.OPEN_SOCKET();
           this.loading = false;
         })
       }
@@ -46,13 +47,10 @@ export default {
   },
   created() {
     this.loadUser();
-
-    this.OPEN_SOCKET();
   },
   watch: {
     $route(to, from) {
       this.loadUser();
-      this.OPEN_SOCKET();
     }
   }
 }
