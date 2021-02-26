@@ -32,12 +32,16 @@ wss.on("connection", function connection(ws, request, client) {
     })
 })
 
-function findSocket(id) {
-    return clients.findIndex(el => el.id === id);
+function socketExec(ids, action) {
+    for(var i=0; i<ids.length; i++) {
+        let index = clients.map((item) => item.id).indexOf(ids[i]);
+        if(index !== -1)
+            clients[index].ws.send(action);
+    }
 }
 
 module.exports = {
     wss,
     clients,
-    findSocket
+    socketExec
 }

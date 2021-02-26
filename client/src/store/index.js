@@ -9,6 +9,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
+    receivedInvitations: [],
     socket: null,
   },
   getters: {
@@ -17,7 +18,10 @@ export default new Vuex.Store({
     },
     socket(store) {
       return store.socket;
-    }
+    },
+    receivedInvitations(store) {
+      return store.receivedInvitations;
+    },
   },
   mutations: {
     setUser(store, payload) {
@@ -36,6 +40,9 @@ export default new Vuex.Store({
       }
       else
         store.socket = payload;
+    },
+    setReceivedInvitations(store, payload) {
+      store.receivedInvitations = payload;
     }
   },
   actions: {
@@ -54,12 +61,9 @@ export default new Vuex.Store({
           ws.send(JSON.stringify(data));
         }
 
-        ws.onmessage = function(msg) {
-          if(msg.data === "LOAD_INVITATIONS")
-            console.log("ŁADUJ ZAPROSZENIA KURWA XDDD");
-          
-          console.log('lol');
-        }
+        ws.addEventListener("message", (e) => {
+          this.dispatch(e.data);
+        })
 
         if(VueCookies.get("token"))
           commit('setSocket', ws);
@@ -141,7 +145,14 @@ export default new Vuex.Store({
       })
     },
     LOAD_INVITATIONS({commit}) {
-      console.log("ładowanie zaproszeń");
+      axios.get("http://192.168.43.5:3000/api/user/friends/type/3")
+        .then(res => {
+          commit("setReceivedInvitations", res.data.list);
+        })
+        .catch(err => {
+            if(err.response.status === 401)
+                this.LOGOUT();
+        })
     }
   },
   modules: {

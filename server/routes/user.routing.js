@@ -6,7 +6,7 @@ const passport = require("../passport/index");
 const multer = require('multer');
 const mongoose = require("mongoose");
 const storage = require('../config/multer');
-const { wss, clients, findSocket } = require("../config/ws");
+const { clients, socketExec } = require("../config/ws");
 
 const upload = multer({storage: storage});
 
@@ -154,10 +154,8 @@ router.post("/friend/", passport.authenticate("jwt", {session: false}), async (r
             await recipient.save();
         }
 
-        let index = findSocket(recipient.id);
-        console.log(clients);
-        if(index !== -1)
-            clients[index].ws.send("LOAD_INVITATIONS");
+        // sockets
+        socketExec([recipient.id, req.user.id], "LOAD_INVITATIONS");
 
         res.status(200).json({status: req_doc.friendStatus});
     }
@@ -178,6 +176,9 @@ router.put("/friend/:id", passport.authenticate("jwt", {session: false}), async 
             {useFindAndModify: false}
         )
 
+        // sockets
+        socketExec([recipient.id, req.user.id], "LOAD_INVITATIONS");
+
         res.status(200).json({status: 1});
     }
 })
@@ -194,15 +195,22 @@ router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), asy
             {useFindAndModify: false}
         )
 
-        if(req.user.friends.includes(req_doc._id)) {
-            req.user.friends.splice(req.user.friends.indexOf(req_doc.id), 1);
-            await req.user.save();
+        if(req_doc) {
+            if(req.user.friends.includes(req_doc._id)) {
+                req.user.friends.splice(req.user.friends.indexOf(req_doc.id), 1);
+                await req.user.save();
+            }
         }
 
-        if(recipient.friends.includes(rec_doc._id)) {
-            recipient.friends.splice(recipient.friends.indexOf(rec_doc.id, 1));
-            await recipient.save();
+        if(rec_doc) {
+            if(recipient.friends.includes(rec_doc._id)) {
+                recipient.friends.splice(recipient.friends.indexOf(rec_doc.id, 1));
+                await recipient.save();
+            }
         }
+        
+        // sockets
+        socketExec([recipient.id, req.user.id], "LOAD_INVITATIONS");
 
         res.status(200).json({status: 0});
     }
