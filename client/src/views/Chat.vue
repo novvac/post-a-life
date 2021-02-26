@@ -7,14 +7,12 @@
             />
         </base-card>
 
-
-
         <span v-if="!loading && chat">
             <base-card height="100%">
                 <template v-slot:title>
                     <v-row class="ma-0" align="center">
                         <v-avatar size="36" class="mr-2">
-                            <v-img src="http://192.168.43.5:3000/uploads/default-avatar.png"></v-img>
+                            <v-img :src="'http://192.168.43.5:3000/uploads/' + chat.user.avatar"></v-img>
                         </v-avatar>
                             
                         <div class="d-flex flex-column">
@@ -32,7 +30,18 @@
 
                 <div class="d-flex flex-column justify-space-between" style="height: 100%">
                     <div class="messages d-flex flex-column-reverse">
-                        <!-- Messages -->
+                        <div
+                            v-for="msg in chat.messages"
+                            :key="msg.text"
+                            :class="['message', msg.sender._id === user._id ? 'sender' : undefined]"
+                        >
+                            <v-avatar size="32">
+                                <v-img v-if="msg.sender._id !== user._id" :src="'http://192.168.43.5:3000/uploads/' + chat.user.avatar"></v-img>
+                                <v-img v-else :src="'http://192.168.43.5:3000/uploads/' + msg.sender.avatar"></v-img>
+                            </v-avatar>
+                            
+                            <div class="msg">{{msg.text}}</div>
+                        </div>
                     </div>
 
                     <v-text-field
@@ -85,6 +94,7 @@ export default {
         id() {
             return this.$route.params.id;
         },
+        ...mapGetters(['user']),
         ...mapGetters(['friends']),
     },
     methods: {
@@ -156,6 +166,24 @@ export default {
         height: 100%;
         max-height: 100%;
         overflow-y: scroll;
+
+        .message {
+            display: flex;
+            align-items: center;
+            margin: 8px;
+
+            .msg {
+                margin-left: 12px;
+            }
+            &.sender {
+                flex-direction: row-reverse;
+                
+                .msg {
+                    margin-left: 0;
+                    margin-right: 12px;
+                }
+            }
+        }
     }
 }
 </style>

@@ -260,7 +260,14 @@ router.get("/:id/messages/", passport.authenticate("jwt", {session: false}), asy
                 {sender: req.user.id, recipient: recipient._id},
                 {sender: recipient._id, recipient: req.user.id}
             ]
-        })
+        }, {}, {
+            sort: {createdAt: -1}
+        }).limit(12).populate({
+            path: "sender",
+            select: {
+                avatar: 1,
+            }
+        });
 
         res.status(200).json({user: recipient, messages});
     } else {
