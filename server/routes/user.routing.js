@@ -108,9 +108,6 @@ router.get("/friends/type/:type", passport.authenticate("jwt", {session: false})
 
     if(req.params.type == 1) {
         req.user.friends = friendsList;
-        console.log(req.user.friends);
-
-        // wyślij informację do wszystkich znajomych którzy na socket
     }
     
     res.status(200).json({list: friendsList});
