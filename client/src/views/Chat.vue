@@ -42,7 +42,7 @@
             </base-card>
         </span>
 
-        <base-card v-if="loading || !chat">
+        <base-card v-if="!loading || !chat">
             <v-progress-circular
                 color="primary"
                 indeterminate
@@ -65,6 +65,7 @@
 
 <script>
 import {
+    mapGetters,
     mapActions
 } from 'vuex';
 
@@ -80,24 +81,28 @@ export default {
     computed: {
         id() {
             return this.$route.params.id;
-        }
+        },
+        ...mapGetters(['friends']),
     },
     methods: {
         ...mapActions(['LOGOUT']),
         loadChat() {
             this.chat = null;
-            this.loading = false;
+            this.loading = true;
             this.$http.get(`http://192.168.43.5:3000/api/message/user/${this.id}/messages/`)
                 .then(res => {
-                    this.chat = {};
-                    this.chat.user = res.data.user;
+                    if(this.friends.includes(res.data.user._id)) {
+                        this.chat = {};
+                        this.chat.user = res.data.user;
+                    }
+                    this.loading = false;
                 })
                 .catch(err => {
-                    console.log(err);
                     if(err.response.status === 401)
                         this.LOGOUT();
                     
                     console.log(err);
+                    this.loading = false;
                 })
         },
         sendMessage() {

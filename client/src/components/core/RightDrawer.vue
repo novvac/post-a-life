@@ -18,7 +18,7 @@
                     :to="subitem.to"
                     class="d-flex align-center"
                 >
-                    <v-badge dot overlap color="success">
+                    <v-badge dot overlap :color="subitem.isActive ? 'success' : 'transparent'">
                         <v-avatar size="36">
                             <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
                         </v-avatar>
@@ -75,6 +75,7 @@ export default {
                     content: []
                 }
             ],
+            heartbeat: null,
         }
     },
     computed: {
@@ -83,17 +84,23 @@ export default {
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_FRIENDS']),
-        loadFriends() {
-            this.LOAD_FRIENDS().then(() => {
-                this.loadFriendsDetails();
+        async loadFriends() {
+            await this.LOAD_FRIENDS().then(() => {
+                this.loadFriendsDetails().then(res => {
+                    this.setHeartbeat();
+                });
             })
         },
-        loadFriendsDetails() {
+        async loadFriendsDetails() {
             let bufor = [];
             for(let id of this.friends) {
-                this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
+                await this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
                     .then(res => {
-                        bufor.push(res.data);
+                        let obj = res.data;
+                        obj.isActive = false;
+                        bufor.push(obj);
+
+                        this.loadActiveUsers();
                     })
                     .catch(err => {
                         if(err.response.status === 401) {
@@ -102,6 +109,29 @@ export default {
                     })
             }
             this.items[1].content = bufor;
+        },
+        setHeartbeat() {
+            clearInterval(this.heartbeat);
+            if(!this.heartbeat) {
+                this.heartbeat = setInterval(this.loadActiveUsers, 2500);   // ! DEBUG <- change 2500 -> 15000 or 30000 later
+            }
+        },
+        loadActiveUsers() {
+            this.$http.post("http://192.168.43.5:3000/api/user/active-friends", {
+                ids: this.friends,
+            })
+                .then(res => {
+                    let items = this.items[1].content;
+                    for(var i=0; i<items.length; i++) {
+                        let found = res.data.find(el => el.id === items[i]._id);
+                        let index = items.findIndex(el => el.id === found._id);
+                        if(index > -1)
+                            this.items[1].content[index].isActive = found.isActive;
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     },
     created() {
@@ -109,7 +139,6 @@ export default {
     },
     watch: {
         friends() {
-            console.log("OK");
             this.loadFriendsDetails();
         }
     }

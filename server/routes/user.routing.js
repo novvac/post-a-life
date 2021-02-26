@@ -104,6 +104,13 @@ router.get("/friends/type/:type", passport.authenticate("jwt", {session: false})
     for(f of friendsListMap) {
         await friendsList.push(f[0]);
     }
+
+    if(req.params.type == 1) {
+        req.user.friends = friendsList;
+        console.log(req.user.friends);
+
+        // wyślij informację do wszystkich znajomych którzy na socket
+    }
     
     res.status(200).json({list: friendsList});
 })
@@ -216,6 +223,22 @@ router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), asy
 
         res.status(200).json({status: 0});
     }
+});
+
+router.post("/active-friends/", passport.authenticate("jwt", {session: false}), (req, res) => {
+    let mapClients = clients.map((item) => item.id);
+
+    let dataToSend = [];
+    for(var i=0; i<req.body.ids.length; i++) {
+        let index = mapClients.indexOf(req.body.ids[i]);
+
+        let obj = {
+            id: req.body.ids[i],
+            isActive: index > -1 ? true : false
+        }
+        dataToSend.push(obj);
+    }
+    res.status(200).json(dataToSend);
 })
 
 module.exports = router;
