@@ -178,6 +178,7 @@ router.put("/friend/:id", passport.authenticate("jwt", {session: false}), async 
 
         // sockets
         socketExec([recipient.id, req.user.id], "LOAD_INVITATIONS");
+        socketExec([recipient.id, req.user.id], "LOAD_FRIENDS");
 
         res.status(200).json({status: 1});
     }
@@ -211,6 +212,7 @@ router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), asy
         
         // sockets
         socketExec([recipient.id, req.user.id], "LOAD_INVITATIONS");
+        socketExec([recipient.id, req.user.id], "LOAD_FRIENDS");
 
         res.status(200).json({status: 0});
     }

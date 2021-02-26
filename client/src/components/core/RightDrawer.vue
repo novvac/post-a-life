@@ -78,32 +78,41 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['user'])
+        ...mapGetters(['friends'])
     },
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_FRIENDS']),
         loadFriends() {
             this.LOAD_FRIENDS().then(() => {
-                let bufor = [];
-                for(let id of this.user.friends) {
-                    this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
-                        .then(res => {
-                            bufor.push(res.data);
-                        })
-                        .catch(err => {
-                            if(err.response.status === 401) {
-                                this.LOGOUT();
-                            }
-                        })
-                }
-                this.items[1].content = bufor;
+                this.loadFriendsDetails();
             })
+        },
+        loadFriendsDetails() {
+            let bufor = [];
+            for(let id of this.friends) {
+                this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
+                    .then(res => {
+                        bufor.push(res.data);
+                    })
+                    .catch(err => {
+                        if(err.response.status === 401) {
+                            this.LOGOUT();
+                        }
+                    })
+            }
+            this.items[1].content = bufor;
         }
     },
     created() {
         this.loadFriends();
     },
+    watch: {
+        friends() {
+            console.log("OK");
+            this.loadFriendsDetails();
+        }
+    }
 }
 </script>
 

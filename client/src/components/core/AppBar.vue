@@ -208,7 +208,6 @@ export default {
         },
         receivedInvitations() {
             this.actions[0].content = this.receivedInvitations;
-            console.log(this.actions[0])
         }
     },
     created() {

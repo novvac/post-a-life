@@ -9,6 +9,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
+    friends: null,
     receivedInvitations: [],
     socket: null,
   },
@@ -18,6 +19,9 @@ export default new Vuex.Store({
     },
     socket(store) {
       return store.socket;
+    },
+    friends(store) {
+      return store.friends;
     },
     receivedInvitations(store) {
       return store.receivedInvitations;
@@ -31,7 +35,10 @@ export default new Vuex.Store({
         store.user = payload;
     },
     setFriends(store, payload) {
-      store.user.friends = payload;
+      if(payload)
+        store.friends = payload;
+      else
+        store.friends = null;
     },
     setSocket(store, payload) {
       if(!payload) {
