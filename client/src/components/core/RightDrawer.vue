@@ -113,7 +113,7 @@ export default {
         setHeartbeat() {
             clearInterval(this.heartbeat);
             if(!this.heartbeat) {
-                this.heartbeat = setInterval(this.loadActiveUsers, 2500);   // ! DEBUG <- change 2500 -> 15000 or 30000 later
+                this.heartbeat = setInterval(this.loadActiveUsers, 5000);   // ! DEBUG <- change 2500 -> 15000 or 30000 later
             }
         },
         loadActiveUsers() {
@@ -122,9 +122,10 @@ export default {
             })
                 .then(res => {
                     let items = this.items[1].content;
+                    let mapItems = items.map(item => item._id);
                     for(var i=0; i<items.length; i++) {
                         let found = res.data.find(el => el.id === items[i]._id);
-                        let index = items.findIndex(el => el.id === found._id);
+                        let index = mapItems.indexOf(found.id);
                         if(index > -1)
                             this.items[1].content[index].isActive = found.isActive;
                     }
