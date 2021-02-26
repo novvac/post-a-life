@@ -155,8 +155,9 @@ router.post("/friend/", passport.authenticate("jwt", {session: false}), async (r
         }
 
         let index = findSocket(recipient.id);
+        console.log(clients);
         if(index !== -1)
-            clients[index].ws.send("Masz nowe zaproszenie!");
+            clients[index].ws.send("LOAD_INVITATIONS");
 
         res.status(200).json({status: req_doc.friendStatus});
     }

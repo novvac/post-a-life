@@ -13,27 +13,22 @@ wss.on("connection", function connection(ws, request, client) {
             if(err) {
                 console.log("Invalid token!");
             } else {
-                const id = decoded.id;
+                let id = decoded.id;
 
-                let index = clients.findIndex(el => el.id === id);
-                if(index !== -1) {
-                    clients[index].ws = ws;
-                    // console.log("Socket updated!");
+                let index = clients.map((item) => item.id).indexOf(id);
+                if(index === -1) {
+                    clients.push({id, ws});
                 } else {
-                    const obj = {
-                        id,
-                        ws
-                    }
-                    clients.push(obj);
-                    // console.log("Socket successfully added!");
+                    clients[index].ws = ws;
                 }
             }
         })
     })
 
     ws.on("close", function() {
-        let index = clients.findIndex(el => el.ws == ws);
-        clients = clients.splice(index, 1);
+        let index = clients.map((item) => item.ws).indexOf(ws);
+        
+        clients.splice(index, 1);
     })
 })
 

@@ -55,7 +55,10 @@ export default new Vuex.Store({
         }
 
         ws.onmessage = function(msg) {
-          console.log(msg.data);
+          if(msg.data === "LOAD_INVITATIONS")
+            console.log("ŁADUJ ZAPROSZENIA KURWA XDDD");
+          
+          console.log('lol');
         }
 
         if(VueCookies.get("token"))
@@ -136,6 +139,9 @@ export default new Vuex.Store({
           reject(err);
         })
       })
+    },
+    LOAD_INVITATIONS({commit}) {
+      console.log("ładowanie zaproszeń");
     }
   },
   modules: {
