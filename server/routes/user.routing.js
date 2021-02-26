@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const Friend = require("../models/Friend.model");
+const Message = require("../models/Message.model");
 const passport = require("../passport/index");
 const multer = require('multer');
 const mongoose = require("mongoose");
@@ -239,6 +240,54 @@ router.post("/active-friends/", passport.authenticate("jwt", {session: false}), 
         dataToSend.push(obj);
     }
     res.status(200).json(dataToSend);
+})
+
+// ! GET LASTEST MESSAGES
+router.get("/:id/messages/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let recipient = null;
+
+    if(req.params.id !== req.user.short_id) {
+        recipient = await User.findOne({
+            short_id: req.params.id,
+        }, {
+            avatar: 1,
+            firstName: 1,
+            lastName: 1,
+            short_id: 1,
+        })
+    }
+
+    if(recipient) {
+        let messages = await Message.find({
+            $or: [
+                {sender: req.user.id, recipient: recipient._id},
+                {sender: recipient._id, recipient: req.user.id}
+            ]
+        })
+
+        res.status(200).json({user: recipient, messages});
+    } else {
+        res.status(404).json('error');
+    }
+})
+
+// ! ADD NEW MESSAGE
+router.post("/:id/message/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let recipient = await User.findOne({
+        short_id: req.params.id
+    }, {
+        _id: 1,
+    })
+    
+    let message = await new Message({
+        sender: req.user.id,
+        recipient: recipient._id,
+        text: req.body.message,
+    })
+
+    message.save();
+    
+    res.status(200).json('sucess');
 })
 
 module.exports = router;

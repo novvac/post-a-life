@@ -1,5 +1,14 @@
 <template>
     <div class="chat ma-5" style="height: calc(100% - 40px)">
+        <base-card v-if="loading">
+            <v-progress-circular
+                color="primary"
+                indeterminate
+            />
+        </base-card>
+
+
+
         <span v-if="!loading && chat">
             <base-card height="100%">
                 <template v-slot:title>
@@ -36,20 +45,14 @@
                         hide-details
                         v-model="message"
                         style="flex: none;"
-                        @click.enter="sendMessage()"
+                        @keyup.enter="sendMessage()"
                     />
                 </div>
             </base-card>
         </span>
 
-        <base-card v-if="!loading || !chat">
-            <v-progress-circular
-                color="primary"
-                indeterminate
-                v-if="loading"
-            />
-
-            <div class="d-flex align-center justify-space-between" v-if="!loading && !chat">
+        <base-card v-if="!loading && !chat">
+            <div class="d-flex align-center justify-space-between">
                 <span>Nie możesz rozpocząć konwersacji z wybranym użytkownikiem!</span>
 
                 <router-link to="/app">
@@ -89,11 +92,14 @@ export default {
         loadChat() {
             this.chat = null;
             this.loading = true;
-            this.$http.get(`http://192.168.43.5:3000/api/message/user/${this.id}/messages/`)
+            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/`)
                 .then(res => {
                     if(this.friends.includes(res.data.user._id)) {
                         this.chat = {};
                         this.chat.user = res.data.user;
+
+                        this.chat.messages = res.data.messages;
+                        console.log(this.chat)
                     }
                     this.loading = false;
                 })
@@ -106,7 +112,22 @@ export default {
                 })
         },
         sendMessage() {
+            if(this.message.length > 0) {
+                this.$http.post(`http://192.168.43.5:3000/api/user/${this.id}/message/`, {
+                    message: this.message
+                })
+                    .then(res => {
+                        this.message = "";
+                    })
+                    .catch(err => {
+                        if(err.response) {
+                            if(err.reponse.status === 401)
+                                this.LOGOUT();
+                        }
 
+                        console.log(err);
+                    })
+            }
         }
     },
     created() {
