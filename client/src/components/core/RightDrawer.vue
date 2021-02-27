@@ -5,6 +5,7 @@
         right
         class="right-drawer"
     >
+        {{newMessage}}
         <v-list
             v-for="item in items"
             :key="item.subheader"
@@ -18,7 +19,7 @@
                     :to="subitem.to"
                     class="d-flex align-center"
                 >
-                    <v-badge dot overlap color="success">
+                    <v-badge dot overlap :color="subitem.isActive ? 'success' : 'transparent'">
                         <v-avatar size="36">
                             <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
                         </v-avatar>
@@ -32,7 +33,7 @@
                     </div>
 
                     <div style="position: absolute; right: 12px;">
-                        <v-badge dot overlap color="red">
+                        <v-badge dot overlap :color="subitem.hasUnread ? 'red' : 'transparent'">
                             <router-link :to="'/app/chat/' + subitem.short_id">
                                 <v-btn icon>
                                     <v-icon small>mdi-message-text-outline</v-icon>
@@ -75,35 +76,104 @@ export default {
                     content: []
                 }
             ],
+            heartbeat: null,
         }
     },
     computed: {
-        ...mapGetters(['user'])
+        ...mapGetters(['friends']),
+        ...mapGetters(['newMessage']),
     },
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_FRIENDS']),
-        loadFriends() {
-            this.LOAD_FRIENDS().then(() => {
-                let bufor = [];
-                for(let id of this.user.friends) {
-                    this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
-                        .then(res => {
-                            bufor.push(res.data);
-                        })
-                        .catch(err => {
-                            if(err.response.status === 401) {
-                                this.LOGOUT();
-                            }
-                        })
-                }
-                this.items[1].content = bufor;
+        ...mapActions(['RESET_NEW_MESSAGE']),
+        async loadFriends() {
+            await this.LOAD_FRIENDS().then(() => {
+                this.loadFriendsDetails().then(res => {
+                    this.setHeartbeat();
+                });
             })
+        },
+        async loadFriendsDetails() {
+            let bufor = [];
+            for(let id of this.friends) {
+                await this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
+                    .then(res => {
+                        let obj = res.data;
+                        obj.isActive = false;
+                        obj.hasUnread = false;
+                        bufor.push(obj);
+
+                        this.loadActiveUsers();
+                        this.loadUnreadMessages();
+                    })
+                    .catch(err => {
+                        if(err.response.status === 401) {
+                            this.LOGOUT();
+                        }
+                    })
+            }
+            this.items[1].content = bufor;
+        },
+        setHeartbeat() {
+            clearInterval(this.heartbeat);
+            if(!this.heartbeat) {
+                this.heartbeat = setInterval(this.loadActiveUsers, 5000);   // ! DEBUG <- change 2500 -> 15000 or 30000 later
+            }
+        },
+        loadActiveUsers() {
+            this.$http.post("http://192.168.43.5:3000/api/user/active-friends", {
+                ids: this.friends,
+            })
+                .then(res => {
+                    let items = this.items[1].content;
+                    let mapItems = items.map(item => item._id);
+                    for(var i=0; i<items.length; i++) {
+                        let found = res.data.find(el => el.id === items[i]._id);
+                        let index = mapItems.indexOf(found.id);
+                        if(index > -1)
+                            this.items[1].content[index].isActive = found.isActive;
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        },
+        async loadUnreadMessages() {
+            await this.$http.get("http://192.168.43.5:3000/api/user/unread-messages")
+                .then(res => {
+                    let mapItems = this.items[1].content.map(item => item._id);
+                    let mapResponse = res.data.map(item => item.sender);
+
+                    for(var i=0; i<mapItems.length; i++) {
+                        let index = mapResponse.indexOf(mapItems[i]);
+                        
+                        if(index == -1) {
+                            this.items[1].content[i].hasUnread = false;
+                        } else {
+                            this.items[1].content[i].hasUnread = true;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     },
     created() {
         this.loadFriends();
     },
+    watch: {
+        $route(to, from) {
+            this.loadUnreadMessages();
+        },
+        friends() {
+            this.loadFriendsDetails();
+        },
+        newMessage() {
+            this.loadUnreadMessages();
+        }
+    }
 }
 </script>
 

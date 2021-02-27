@@ -9,10 +9,26 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
+    friends: null,
+    receivedInvitations: [],
+    socket: null,
+    newMessage: false,
   },
   getters: {
     user(store) {
       return store.user;
+    },
+    socket(store) {
+      return store.socket;
+    },
+    friends(store) {
+      return store.friends;
+    },
+    receivedInvitations(store) {
+      return store.receivedInvitations;
+    },
+    newMessage(store) {
+      return store.newMessage;
     },
   },
   mutations: {
@@ -23,14 +39,54 @@ export default new Vuex.Store({
         store.user = payload;
     },
     setFriends(store, payload) {
-      store.user.friends = payload;
+      if(payload)
+        store.friends = payload;
+      else
+        store.friends = null;
+    },
+    setSocket(store, payload) {
+      if(!payload) {
+        store.socket.close();
+        store.socket = null;
+      }
+      else
+        store.socket = payload;
+    },
+    setReceivedInvitations(store, payload) {
+      store.receivedInvitations = payload;
+    },
+    setNewMessage(store, payload) {
+      store.newMessage = payload;
     }
   },
   actions: {
     setUser({commit}, payload) {
       commit('setUser', payload)
     },
+    OPEN_SOCKET({commit}) {
+      if(this.state.socket === null) {
+        let ws = new WebSocket("ws://192.168.43.5:3000/");
+
+        ws.onopen = function(event) {
+          let data = {token: null};
+          if(VueCookies.get("token"))
+            data.token = VueCookies.get("token");
+          
+          ws.send(JSON.stringify(data));
+        }
+
+        ws.addEventListener("message", (e) => {
+          this.dispatch(e.data);
+        })
+
+        if(VueCookies.get("token"))
+          commit('setSocket', ws);
+        else
+          this.dispatch('LOGOUT');
+      }
+    },
     LOGOUT({commit}) {
+      commit('setSocket', null);
       if(VueCookies.get("token"))
         VueCookies.remove("token");
       router.push("/auth/login");
@@ -78,8 +134,6 @@ export default new Vuex.Store({
         let url = "http://192.168.43.5:3000/api/user/friend/";
         let data = {}
 
-        console.log(payload);
-
         if(payload.action === "put" || payload.action === "delete") {
             url += payload.id;
         } else {
@@ -101,6 +155,22 @@ export default new Vuex.Store({
           reject(err);
         })
       })
+    },
+    LOAD_INVITATIONS({commit}) {
+      axios.get("http://192.168.43.5:3000/api/user/friends/type/3")
+        .then(res => {
+          commit("setReceivedInvitations", res.data.list);
+        })
+        .catch(err => {
+            if(err.response.status === 401)
+                this.LOGOUT();
+        })
+    },
+    NEW_MESSAGE({commit}) {
+      commit('setNewMessage', true);
+    },
+    RESET_NEW_MESSAGE({commit}) {
+      commit('setNewMessage', false);
     }
   },
   modules: {

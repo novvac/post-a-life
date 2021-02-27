@@ -34,10 +34,12 @@ export default {
   },
   methods: {
     ...mapActions(['LOAD_USER']),
+    ...mapActions(['OPEN_SOCKET']),
     loadUser() {
       if(!this.user) {
         this.loading = true;
         this.LOAD_USER().then(() => {
+          this.OPEN_SOCKET();
           this.loading = false;
         })
       }

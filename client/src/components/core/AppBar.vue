@@ -125,7 +125,8 @@
 
 <script>
 import {
-    mapMutations
+    mapGetters,
+    mapActions
 } from 'vuex';
 
 export default {
@@ -153,17 +154,15 @@ export default {
                     content: [],
                     component: () => import('../AppBarComponents/notifications'),
                 },
-                {
-                    title: "Wiadomości",
-                    icon: "message-text-outline",
-                    content: [],
-                    component: () => import('../AppBarComponents/chats'),
-                }
             ]
         }
     },
+    computed: {
+        ...mapGetters(['receivedInvitations']),
+    },
     methods: {
-        ...mapMutations(['LOGOUT']),
+        ...mapActions(['LOGOUT']),
+        ...mapActions(['LOAD_INVITATIONS']),
         fastSearch() {
             this.found = [];
             this.msg = "";
@@ -176,21 +175,8 @@ export default {
                 }, 250)
             }
         },
-        loadReceived() {
-            this.$http.get("http://192.168.43.5:3000/api/user/friends/type/3")
-                .then(res => {
-                    this.actions[0].content = res.data.list;
-                })
-                .catch(err => {
-                    if(err.response.status === 401)
-                        this.LOGOUT();
-                })
-        }
     },
     watch: {
-        $route(to, from) {
-            this.loadReceived();
-        },
         isSearching() {
             if(this.isSearching) {
                 this.waitingForData = true;
@@ -213,10 +199,13 @@ export default {
                         this.waitingForData = false;
                     })
             }
+        },
+        receivedInvitations() {
+            this.actions[0].content = this.receivedInvitations;
         }
     },
     created() {
-        this.loadReceived();
+        this.LOAD_INVITATIONS();
     }
 }
 </script>
