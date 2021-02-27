@@ -29,7 +29,7 @@
                 </template>
 
                 <div class="d-flex flex-column justify-space-between" style="height: 100%">
-                    <div class="messages d-flex flex-column-reverse">
+                    <div class="messages d-flex flex-column-reverse" v-show="messages.length > 0">
                         <div
                             v-for="msg in messages"
                             :key="msg.createdAt"
@@ -103,6 +103,7 @@ export default {
         ...mapActions(['LOGOUT']),
         ...mapActions(['RESET_NEW_MESSAGE']),
         async loadChat(type) {
+            this.messages = [];
             this.chat = null;
             this.loading = true;
             let limit = 12;
@@ -114,6 +115,7 @@ export default {
                         this.chat.user = res.data.user;
 
                         this.messages = this.messages.concat(res.data.messages);
+                        this.RESET_NEW_MESSAGE();
                     }
                     this.loading = false;
                 })
@@ -162,6 +164,8 @@ export default {
                 .then(res => {
                     this.messages.unshift(res.data.messages[0]);
                     document.querySelector(".messages").scroll(0,0);
+
+                    this.RESET_NEW_MESSAGE();
                 })
                 .catch(err => {
                     if(err.response) {
@@ -184,7 +188,6 @@ export default {
             if(this.newMessage === true) {
                 this.loadNewMessage();
             }
-            this.RESET_NEW_MESSAGE();
         }
     }
 }

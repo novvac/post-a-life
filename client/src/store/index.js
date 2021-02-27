@@ -29,7 +29,7 @@ export default new Vuex.Store({
     },
     newMessage(store) {
       return store.newMessage;
-    }
+    },
   },
   mutations: {
     setUser(store, payload) {
@@ -169,9 +169,11 @@ export default new Vuex.Store({
         })
     },
     NEW_MESSAGE({commit}) {
+      console.log("SET NOW");
       commit('setNewMessage', true);
     },
     RESET_NEW_MESSAGE({commit}) {
+      console.log("RESET NOW");
       commit('setNewMessage', false);
     }
   },

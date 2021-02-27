@@ -5,6 +5,7 @@
         right
         class="right-drawer"
     >
+        {{newMessage}}
         <v-list
             v-for="item in items"
             :key="item.subheader"
@@ -79,11 +80,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['friends'])
+        ...mapGetters(['friends']),
+        ...mapGetters(['newMessage']),
     },
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_FRIENDS']),
+        ...mapActions(['RESET_NEW_MESSAGE']),
         async loadFriends() {
             await this.LOAD_FRIENDS().then(() => {
                 this.loadFriendsDetails().then(res => {
@@ -136,13 +139,20 @@ export default {
                     console.log(err);
                 })
         },
-        loadUnreadMessages() {
-            this.$http.get("http://192.168.43.5:3000/api/user/unread-messages")
+        async loadUnreadMessages() {
+            await this.$http.get("http://192.168.43.5:3000/api/user/unread-messages")
                 .then(res => {
                     let mapItems = this.items[1].content.map(item => item._id);
-                    for(var i=0; i<res.data.length; i++) {
-                        let index = mapItems.indexOf(res.data[i].sender);
-                        this.items[1].content[index].hasUnread = true;
+                    let mapResponse = res.data.map(item => item.sender);
+
+                    for(var i=0; i<mapItems.length; i++) {
+                        let index = mapResponse.indexOf(mapItems[i]);
+                        
+                        if(index == -1) {
+                            this.items[1].content[i].hasUnread = false;
+                        } else {
+                            this.items[1].content[i].hasUnread = true;
+                        }
                     }
                 })
                 .catch(err => {
@@ -154,8 +164,14 @@ export default {
         this.loadFriends();
     },
     watch: {
+        $route(to, from) {
+            this.loadUnreadMessages();
+        },
         friends() {
             this.loadFriendsDetails();
+        },
+        newMessage() {
+            this.loadUnreadMessages();
         }
     }
 }
