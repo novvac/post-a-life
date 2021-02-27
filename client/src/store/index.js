@@ -134,8 +134,6 @@ export default new Vuex.Store({
         let url = "http://192.168.43.5:3000/api/user/friend/";
         let data = {}
 
-        console.log(payload);
-
         if(payload.action === "put" || payload.action === "delete") {
             url += payload.id;
         } else {
@@ -169,11 +167,9 @@ export default new Vuex.Store({
         })
     },
     NEW_MESSAGE({commit}) {
-      console.log("SET NOW");
       commit('setNewMessage', true);
     },
     RESET_NEW_MESSAGE({commit}) {
-      console.log("RESET NOW");
       commit('setNewMessage', false);
     }
   },

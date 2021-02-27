@@ -240,7 +240,7 @@ router.post("/active-friends/", passport.authenticate("jwt", {session: false}), 
 })
 
 // ! GET LASTEST MESSAGES
-router.get("/:id/messages/:limit", passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.get("/:id/messages/:skip-:limit", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let recipient = null;
 
     if(req.params.id !== req.user.short_id) {
@@ -262,7 +262,7 @@ router.get("/:id/messages/:limit", passport.authenticate("jwt", {session: false}
             ]
         }, {}, {
             sort: {createdAt: -1}
-        }).limit(parseInt(req.params.limit)).populate({
+        }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit)).populate({
             path: "sender",
             select: {
                 avatar: 1,

@@ -1,13 +1,6 @@
 <template>
     <div class="chat ma-5" style="height: calc(100% - 40px)">
-        <base-card v-if="loading">
-            <v-progress-circular
-                color="primary"
-                indeterminate
-            />
-        </base-card>
-
-        <span v-if="!loading && chat">
+        <span v-if="chat">
             <base-card height="100%">
                 <template v-slot:title>
                     <v-row class="ma-0" align="center">
@@ -29,6 +22,12 @@
                 </template>
 
                 <div class="d-flex flex-column justify-space-between" style="height: 100%">
+                    <v-progress-circular
+                        color="primary"
+                        indeterminate
+                        v-if="loading"
+                    />
+
                     <div class="messages d-flex flex-column-reverse" v-show="messages.length > 0">
                         <div
                             v-for="msg in messages"
@@ -42,6 +41,10 @@
                             
                             <div class="msg">{{msg.text}}</div>
                         </div>
+
+                        <v-btn text class="ma-5" color="primary" @click="loadChat" v-if="!end" :disabled="loading" :loading="loading">
+                            Załaduj więcej
+                        </v-btn>
                     </div>
 
                     <v-text-field
@@ -60,7 +63,7 @@
             </base-card>
         </span>
 
-        <base-card v-if="!loading && !chat">
+        <base-card v-else>
             <div class="d-flex align-center justify-space-between">
                 <span>Nie możesz rozpocząć konwersacji z wybranym użytkownikiem!</span>
 
@@ -89,6 +92,7 @@ export default {
             chat: null,
             messages: [],
             message: "",
+            end: false
         }
     },
     computed: {
@@ -103,16 +107,18 @@ export default {
         ...mapActions(['LOGOUT']),
         ...mapActions(['RESET_NEW_MESSAGE']),
         async loadChat(type) {
-            this.messages = [];
-            this.chat = null;
             this.loading = true;
             let limit = 12;
 
-            await this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/${limit}`)
+            await this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/${this.messages.length}-${limit}`)
                 .then(res => {
                     if(this.friends.includes(res.data.user._id)) {
-                        this.chat = {};
+                        if(!this.chat)
+                            this.chat = {};
                         this.chat.user = res.data.user;
+
+                        if(res.data.messages.length < limit)
+                            this.end = true;
 
                         this.messages = this.messages.concat(res.data.messages);
                         this.RESET_NEW_MESSAGE();
@@ -182,6 +188,8 @@ export default {
     },
     watch: {
         $route(to, from) {
+            this.messages = [];
+            this.chat = null;
             this.loadChat();
         },
         newMessage() {
