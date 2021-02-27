@@ -166,7 +166,7 @@ export default {
             }
         },
         loadNewMessage() {
-            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/1`)
+            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/0-1`)
                 .then(res => {
                     this.messages.unshift(res.data.messages[0]);
                     document.querySelector(".messages").scroll(0,0);

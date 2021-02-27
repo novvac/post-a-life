@@ -85,10 +85,9 @@
             >
                 <template v-slot:activator>
                     <v-btn icon>
-                        <v-badge dot color="error" v-if="action.content.length">
+                        <v-badge dot :color="action.content.length ? 'error' : 'transparent'">
                             <v-icon>mdi-{{action.icon}}</v-icon>
                         </v-badge>
-                        <v-icon v-else>mdi-{{action.icon}}</v-icon>
                     </v-btn>
                 </template>
 

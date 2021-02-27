@@ -45,7 +45,7 @@
                         </base-card>
                     </base-menu>
 
-                    <router-link :to="'/app/chat/' + loadedUser.short_id">
+                    <router-link :to="'/app/chat/' + loadedUser.short_id" v-if="loadedUser.friendStatus === 1">
                         <v-btn text class="caption text-capitalize ml-2">
                             <v-icon class="mr-2" small>mdi-message</v-icon>
                             Wyślij wiadomość
@@ -163,7 +163,12 @@ export default {
                         this.tabs[0].data.ids.push(loadedUser.data._id);
                     else
                         this.tabs[0].data.ids = loadedUser.data._id;
-                    this.tabs[0].data.visibility = friendStatus.data.status;
+                    
+
+                    if(friendStatus.data.status != 1)
+                        this.tabs[0].data.visibility = 0;
+                    else
+                        this.tabs[0].data.visibility = friendStatus.data.status;
 
                     if(this.user.short_id === this.id)
                         this.tabs[0].data.visibility = 1;

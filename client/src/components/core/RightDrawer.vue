@@ -5,7 +5,6 @@
         right
         class="right-drawer"
     >
-        {{newMessage}}
         <v-list
             v-for="item in items"
             :key="item.subheader"
