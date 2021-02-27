@@ -42,13 +42,11 @@ const user = require("./routes/user.routing");
 const main = require("./routes/main.routing");
 const post = require("./routes/post.routing");
 const comment = require("./routes/comment.routing");
-const message = require("./routes/message.routing");
 app.use("/api/auth/", auth);
 app.use("/api/user/", user);
 app.use("/api/main/", main);
 app.use("/api/post/", post);
 app.use("/api/comment/", comment);
-app.use("/api/message/", message);
 
 const server = app.listen(PORT, () => {
     console.log("Server is running!");

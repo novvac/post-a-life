@@ -154,12 +154,6 @@ export default {
                     content: [],
                     component: () => import('../AppBarComponents/notifications'),
                 },
-                {
-                    title: "Wiadomości",
-                    icon: "message-text-outline",
-                    content: [],
-                    component: () => import('../AppBarComponents/chats'),
-                }
             ]
         }
     },

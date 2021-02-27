@@ -269,6 +269,14 @@ router.get("/:id/messages/", passport.authenticate("jwt", {session: false}), asy
             }
         });
 
+        await Message.updateMany({
+            $or: [
+                {sender: recipient._id, recipient: req.user.id}
+            ]
+        }, {}, {
+            sort: {createdAt: -1}
+        }).limit(12).set({readed: true});
+
         res.status(200).json({user: recipient, messages});
     } else {
         res.status(404).json('error');
@@ -290,8 +298,30 @@ router.post("/:id/message/", passport.authenticate("jwt", {session: false}), asy
     })
 
     message.save();
+
+    // sockets
+    console.log(recipient._id);
+    socketExec([recipient._id, req.user.id], "NEW_MESSAGE");
     
     res.status(200).json('sucess');
+})
+
+// ! LOAD UNREAD MESSAGES
+router.get("/unread-messages/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let result = await Message.aggregate([
+        {$project: {
+            sender: 1,
+            recipient: 1,
+            readed: 1,
+            _id: 0,
+        }},
+        {$match: {
+            recipient: mongoose.Types.ObjectId(req.user.id),
+            readed: false
+        }},
+    ])
+    
+    res.status(200).json(result);
 })
 
 module.exports = router;

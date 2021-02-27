@@ -32,7 +32,7 @@
                     <div class="messages d-flex flex-column-reverse">
                         <div
                             v-for="msg in chat.messages"
-                            :key="msg.text"
+                            :key="msg.createdAt"
                             :class="['message', msg.sender._id === user._id ? 'sender' : undefined]"
                         >
                             <v-avatar size="32">

@@ -32,7 +32,7 @@
                     </div>
 
                     <div style="position: absolute; right: 12px;">
-                        <v-badge dot overlap color="red">
+                        <v-badge dot overlap :color="subitem.hasUnread ? 'red' : 'transparent'">
                             <router-link :to="'/app/chat/' + subitem.short_id">
                                 <v-btn icon>
                                     <v-icon small>mdi-message-text-outline</v-icon>
@@ -98,9 +98,11 @@ export default {
                     .then(res => {
                         let obj = res.data;
                         obj.isActive = false;
+                        obj.hasUnread = false;
                         bufor.push(obj);
 
                         this.loadActiveUsers();
+                        this.loadUnreadMessages();
                     })
                     .catch(err => {
                         if(err.response.status === 401) {
@@ -128,6 +130,19 @@ export default {
                         let index = mapItems.indexOf(found.id);
                         if(index > -1)
                             this.items[1].content[index].isActive = found.isActive;
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+        },
+        loadUnreadMessages() {
+            this.$http.get("http://192.168.43.5:3000/api/user/unread-messages")
+                .then(res => {
+                    let mapItems = this.items[1].content.map(item => item._id);
+                    for(var i=0; i<res.data.length; i++) {
+                        let index = mapItems.indexOf(res.data[i].sender);
+                        this.items[1].content[index].hasUnread = true;
                     }
                 })
                 .catch(err => {
