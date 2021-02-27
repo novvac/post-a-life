@@ -12,6 +12,7 @@ export default new Vuex.Store({
     friends: null,
     receivedInvitations: [],
     socket: null,
+    newMessage: false,
   },
   getters: {
     user(store) {
@@ -26,6 +27,9 @@ export default new Vuex.Store({
     receivedInvitations(store) {
       return store.receivedInvitations;
     },
+    newMessage(store) {
+      return store.newMessage;
+    }
   },
   mutations: {
     setUser(store, payload) {
@@ -50,6 +54,9 @@ export default new Vuex.Store({
     },
     setReceivedInvitations(store, payload) {
       store.receivedInvitations = payload;
+    },
+    setNewMessage(store, payload) {
+      store.newMessage = payload;
     }
   },
   actions: {
@@ -160,6 +167,12 @@ export default new Vuex.Store({
             if(err.response.status === 401)
                 this.LOGOUT();
         })
+    },
+    NEW_MESSAGE({commit}) {
+      commit('setNewMessage', true);
+    },
+    RESET_NEW_MESSAGE({commit}) {
+      commit('setNewMessage', false);
     }
   },
   modules: {

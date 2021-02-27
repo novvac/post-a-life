@@ -34,7 +34,7 @@ wss.on("connection", function connection(ws, request, client) {
 
 function socketExec(ids, action) {
     for(var i=0; i<ids.length; i++) {
-        let index = clients.map((item) => item.id).indexOf(ids[i]);
+        let index = clients.map((item) => item.id).indexOf(ids[i].toString());
         if(index !== -1)
             clients[index].ws.send(action);
     }

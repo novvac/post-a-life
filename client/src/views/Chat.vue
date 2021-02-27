@@ -31,7 +31,7 @@
                 <div class="d-flex flex-column justify-space-between" style="height: 100%">
                     <div class="messages d-flex flex-column-reverse">
                         <div
-                            v-for="msg in chat.messages"
+                            v-for="msg in messages"
                             :key="msg.createdAt"
                             :class="['message', msg.sender._id === user._id ? 'sender' : undefined]"
                         >
@@ -87,6 +87,7 @@ export default {
         return {
             loading: false,
             chat: null,
+            messages: [],
             message: "",
         }
     },
@@ -96,26 +97,31 @@ export default {
         },
         ...mapGetters(['user']),
         ...mapGetters(['friends']),
+        ...mapGetters(['newMessage'])
     },
     methods: {
         ...mapActions(['LOGOUT']),
-        loadChat() {
+        ...mapActions(['RESET_NEW_MESSAGE']),
+        async loadChat(type) {
             this.chat = null;
             this.loading = true;
-            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/`)
+            let limit = 12;
+
+            await this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/${limit}`)
                 .then(res => {
                     if(this.friends.includes(res.data.user._id)) {
                         this.chat = {};
                         this.chat.user = res.data.user;
 
-                        this.chat.messages = res.data.messages;
-                        console.log(this.chat)
+                        this.messages = this.messages.concat(res.data.messages);
                     }
                     this.loading = false;
                 })
                 .catch(err => {
-                    if(err.response.status === 401)
-                        this.LOGOUT();
+                    if(err.response) {
+                        if(err.response.status === 401)
+                            this.LOGOUT();
+                    }
                     
                     console.log(err);
                     this.loading = false;
@@ -127,7 +133,19 @@ export default {
                     message: this.message
                 })
                     .then(res => {
+                        let obj = {
+                            readed: false,
+                            sender: {
+                                avatar: this.user.avatar,
+                                _id: this.user._id
+                            },
+                            recipient: this.chat.user._id,
+                            text: this.message
+                        }
+                        this.messages.unshift(obj);
+
                         this.message = "";
+                        document.querySelector(".messages").scroll(0,0);
                     })
                     .catch(err => {
                         if(err.response) {
@@ -138,6 +156,21 @@ export default {
                         console.log(err);
                     })
             }
+        },
+        loadNewMessage() {
+            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/1`)
+                .then(res => {
+                    this.messages.unshift(res.data.messages[0]);
+                    document.querySelector(".messages").scroll(0,0);
+                })
+                .catch(err => {
+                    if(err.response) {
+                        if(err.response.status === 401)
+                            this.LOGOUT();
+                    }
+                    
+                    console.log(err);
+                })
         }
     },
     created() {
@@ -146,6 +179,12 @@ export default {
     watch: {
         $route(to, from) {
             this.loadChat();
+        },
+        newMessage() {
+            if(this.newMessage === true) {
+                this.loadNewMessage();
+            }
+            this.RESET_NEW_MESSAGE();
         }
     }
 }

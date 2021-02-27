@@ -240,7 +240,7 @@ router.post("/active-friends/", passport.authenticate("jwt", {session: false}), 
 })
 
 // ! GET LASTEST MESSAGES
-router.get("/:id/messages/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.get("/:id/messages/:limit", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let recipient = null;
 
     if(req.params.id !== req.user.short_id) {
@@ -262,7 +262,7 @@ router.get("/:id/messages/", passport.authenticate("jwt", {session: false}), asy
             ]
         }, {}, {
             sort: {createdAt: -1}
-        }).limit(12).populate({
+        }).limit(parseInt(req.params.limit)).populate({
             path: "sender",
             select: {
                 avatar: 1,
@@ -300,8 +300,7 @@ router.post("/:id/message/", passport.authenticate("jwt", {session: false}), asy
     message.save();
 
     // sockets
-    console.log(recipient._id);
-    socketExec([recipient._id, req.user.id], "NEW_MESSAGE");
+    socketExec([recipient._id], "NEW_MESSAGE");
     
     res.status(200).json('sucess');
 })
