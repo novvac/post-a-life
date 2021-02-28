@@ -8,16 +8,18 @@
                 Wydarzenia
             </span>
 
-            <div
-                class="hero-box mt-5"
-            >
-                <event-hero style="left: 0;"/>
-                <event-hero style="left: 620px;"/>
-            </div>
+            <v-row class="ma-0 mt-2">
+                <v-col cols="12" :md="6" class="px-0 pr-md-2">
+                    <event-hero src="najman.png" :event="{title: 'Poszukiwanie Stanowskiego i Najmana chuja jebanego'}"/>
+                </v-col>
+                <v-col cols="12" :md="6" class="px-0 pl-md-2">
+                    <event-hero src="event-bg-2.png" :event="{title: 'Nauka zdalna to ścierwa tak samo jak PiS'}"/>
+                </v-col>
+            </v-row>
         </div>
 
         <v-row class="ma-0 mt-8">
-            <v-col cols="12" :md="9">
+            <v-col cols="12" :md="8">
                 <v-row class="ma-0" align="center" justify="space-between">
                     <v-btn color="primary" class="caption py-5 text-none" style="border-radius: 8px">
                         Wszystko
@@ -33,7 +35,7 @@
                     ></v-select>
                 </v-row>
             </v-col>
-            <v-col cols="12" :md="3">
+            <v-col cols="12" :md="4">
                 zaproszenia, wydarzenia użytkownika itp.
             </v-col>
         </v-row>
@@ -41,6 +43,7 @@
 </template>
 
 <script>
+
 export default {
     name: "Events",
     components: {
@@ -50,11 +53,4 @@ export default {
 </script>
 
 <style lang="scss">
-* {
-    user-select: none;
-}
-.hero-box {
-    position: relative;
-    min-height: 320px;
-}
 </style>
