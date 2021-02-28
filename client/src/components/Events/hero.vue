@@ -1,7 +1,7 @@
 <template>
     <div
         class="event-hero pa-5 white--text black"
-        :style="{width: breakpoint ? '50%' : '100%'}"
+        :style="{width: breakpoint ? '600px' : '100%'}"
     >
         {{breakpoint}}
     </div>
@@ -20,6 +20,8 @@ export default {
 
 <style lang="scss">
 .event-hero {
-    border-radius: 16px;
+    border-radius: 22px;
+    position: absolute;
+    height: 100%;
 }
 </style>
