@@ -10,10 +10,10 @@
 
             <v-row class="ma-0 mt-2">
                 <v-col cols="12" :md="6" class="px-0 pr-md-2">
-                    <event-hero src="najman.png" :event="{title: 'Poszukiwanie Stanowskiego i Najmana chuja jebanego'}"/>
+                    <event-hero src="najman.png" :event="{title: 'Nazwa nowego wydarzenia'}"/>
                 </v-col>
                 <v-col cols="12" :md="6" class="px-0 pl-md-2">
-                    <event-hero src="event-bg-2.png" :event="{title: 'Nauka zdalna to ścierwa tak samo jak PiS'}"/>
+                    <event-hero src="event-bg-2.png" :event="{title: 'Nazawa innego wydarzenia'}"/>
                 </v-col>
             </v-row>
         </div>
@@ -34,6 +34,12 @@
                         style="flex: none; border-radius: 8px; box-shadow: 0 !important;"
                     ></v-select>
                 </v-row>
+
+                <div class="events-list mt-5">
+                    <event-inline src="najman.png" :event="{title: 'Nazwa nowego wydarzenia'}"/>
+                    <event-inline class="mt-3" src="event-bg-1.png" :event="{title: 'Zdam maturę na 30 percent'}"/>
+                    <event-inline class="mt-3" src="event-bg-2.png" :event="{title: 'POLSKA DLA POLAKÓW - nie no żartuje xd'}"/>
+                </div>
             </v-col>
             <v-col cols="12" :md="4">
                 zaproszenia, wydarzenia użytkownika itp.
@@ -48,6 +54,7 @@ export default {
     name: "Events",
     components: {
         EventHero: () => import('@/components/Events/hero'),
+        EventInline: () => import('@/components/Events/inline')
     },
 }
 </script>

@@ -17,12 +17,12 @@
                     <v-chip class="caption chip ml-2" small>
                         <v-icon x-small class="mr-2">mdi-check</v-icon>
                         <span>92</span>
-                        <div class="ml-1">Weźmie udział</div>
+                        <div class="ml-1">weźmie udział</div>
                     </v-chip>      
                 </div>
 
                 <v-btn class="caption chip text-none ml-3 button" x-small color="white">
-                    <v-icon x-small>mdi-check</v-icon>
+                    <v-icon x-small>mdi-bullhorn</v-icon>
                     <div class="ml-2">Zaproś znajomych</div>
                 </v-btn>           
             </div>
