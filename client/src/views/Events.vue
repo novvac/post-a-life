@@ -1,12 +1,20 @@
 <template>
     <div class="events ma-5" style="overflow: hidden;">
         <div class="hero">
-            <p class="ma-0 caption">
-                Najpopularniejsze wśród znajomych
-            </p>
-            <span class="font-weight-bold display-1">
-                Wydarzenia
-            </span>
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <p class="ma-0 caption">
+                        Najpopularniejsze wśród znajomych
+                    </p>
+                    <span class="font-weight-bold display-1">
+                        Wydarzenia
+                    </span>
+                </div>
+
+                <v-btn icon large class="grey lighten-3">
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+            </div>
 
             <v-row class="ma-0 mt-2">
                 <v-col cols="12" :md="6" class="px-0 pr-md-2">
@@ -42,7 +50,7 @@
                 </div>
             </v-col>
             <v-col cols="12" :md="4">
-                zaproszenia, wydarzenia użytkownika itp.
+                <owner-events/>
             </v-col>
         </v-row>
     </div>
@@ -54,7 +62,8 @@ export default {
     name: "Events",
     components: {
         EventHero: () => import('@/components/Events/hero'),
-        EventInline: () => import('@/components/Events/inline')
+        EventInline: () => import('@/components/Events/inline'),
+        OwnerEvents: () => import('@/components/Events/owner'),
     },
 }
 </script>
