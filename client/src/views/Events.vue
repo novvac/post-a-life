@@ -28,6 +28,10 @@
 
         <v-row class="ma-0 mt-8">
             <v-col cols="12" :md="8">
+                <span class="font-weight-bold mb-3 d-block">
+                    Nadchodzące wydarzenia
+                </span>
+
                 <v-row class="ma-0" align="center" justify="space-between">
                     <v-btn color="primary" class="caption py-5 text-none" style="border-radius: 8px">
                         Wszystko
@@ -51,6 +55,7 @@
             </v-col>
             <v-col cols="12" :md="4">
                 <owner-events/>
+                <invitations class="mt-5"/>
             </v-col>
         </v-row>
     </div>
@@ -64,6 +69,7 @@ export default {
         EventHero: () => import('@/components/Events/hero'),
         EventInline: () => import('@/components/Events/inline'),
         OwnerEvents: () => import('@/components/Events/owner'),
+        Invitations: () => import('@/components/Events/invitations'),
     },
 }
 </script>
