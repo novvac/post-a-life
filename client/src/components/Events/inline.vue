@@ -1,5 +1,5 @@
 <template>
-    <base-card class="ma-0 event-inline" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})">
+    <base-card class="ma-0 event-inline py-3 py-md-0" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})">
         <v-row class="ma-0" align="center">
             <v-col class="d-none d-md-block pa-0" cols="12" :md="3">
                 <v-img :src="require('../../assets/'+src)" style="border-radius:16px" height="120"/>
@@ -26,7 +26,7 @@
                     </v-btn>           
                 </div>
 
-                <p class="mt-3 pa-0 ma-0 text-truncate body-2 font-weight-bold black--text">
+                <p class="mt-3 pa-0 ma-0 text-truncate body-1 font-weight-bold black--text">
                     {{event.title}}
                 </p>
                 <p class="mb-3 pa-0 ma-0 text-truncate caption">
@@ -73,6 +73,8 @@ export default {
 
 <style lang="scss">
 .event-inline {
+    cursor: default !important;
+
     .chip {
         transition: 300ms;
 

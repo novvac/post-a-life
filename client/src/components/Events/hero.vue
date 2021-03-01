@@ -83,6 +83,7 @@ export default {
     position: relative;
     box-shadow: 0;
     transition: 300ms;
+    cursor: default !important;
 
     .overlay {
         transition: 300ms;

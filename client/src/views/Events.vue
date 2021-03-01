@@ -26,7 +26,12 @@
             </v-row>
         </div>
 
-        <v-row class="ma-0 mt-8">
+        <v-row class="ma-0 mt-8" style="flex-direction: row-reverse">
+            <v-col cols="12" :md="4">
+                <owner-events/>
+                <invitations class="mt-5"/>
+            </v-col>
+
             <v-col cols="12" :md="8">
                 <span class="font-weight-bold mb-3 d-block">
                     Nadchodzące wydarzenia
@@ -53,17 +58,13 @@
                     <event-inline class="mt-3" src="event-bg-2.png" :event="{title: 'POLSKA DLA POLAKÓW - nie no żartuje xd'}"/>
                 </div>
             </v-col>
-            <v-col cols="12" :md="4">
-                <owner-events/>
-                <invitations class="mt-5"/>
-            </v-col>
         </v-row>
 
         <!-- DIALOG WINDOW -->
         <v-dialog v-model="eventsDialog" persistent max-width="1000px">
             <base-card without-padding>
-                <div class="pa-5">
-                    <v-row class="ma-0" align="center">
+                <div>
+                    <v-row class="ma-0 pa-5" align="center">
                         <v-spacer></v-spacer>
 
                         <v-btn icon @click="SET_EVENTS_DIALOG(null)">
