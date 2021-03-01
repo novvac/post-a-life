@@ -11,7 +11,7 @@
                     </span>
                 </div>
 
-                <v-btn icon large class="grey lighten-3">
+                <v-btn icon large class="grey lighten-3" @click="SET_EVENTS_DIALOG({component: 'new-event', id: null})">
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
             </div>
@@ -58,19 +58,50 @@
                 <invitations class="mt-5"/>
             </v-col>
         </v-row>
+
+        <!-- DIALOG WINDOW -->
+        <v-dialog v-model="eventsDialog" persistent max-width="1000px">
+            <base-card without-padding>
+                <div class="pa-5">
+                    <v-row class="ma-0" align="center">
+                        <v-spacer></v-spacer>
+
+                        <v-btn icon @click="SET_EVENTS_DIALOG(null)">
+                            <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                    </v-row>
+
+                    <component v-if="eventsDialog" :is="eventsDialog.component"/>
+                </div>
+            </base-card>
+        </v-dialog>
     </div>
 </template>
 
 <script>
+import {
+    mapGetters,
+    mapActions
+} from 'vuex';
 
 export default {
     name: "Events",
     components: {
         EventHero: () => import('@/components/Events/hero'),
         EventInline: () => import('@/components/Events/inline'),
-        OwnerEvents: () => import('@/components/Events/owner'),
-        Invitations: () => import('@/components/Events/invitations'),
+
+        OwnerEvents: () => import('@/components/Events/widgets/owner'),
+        Invitations: () => import('@/components/Events/widgets/invitations'),
+
+        NewEvent: () => import('@/components/Events/dialog/newEvent'),
+        EventDetails: () => import('@/components/Events/dialog/eventDetails'),
     },
+    computed: {
+        ...mapGetters(['eventsDialog']),
+    },
+    methods: {
+        ...mapActions(['SET_EVENTS_DIALOG']),
+    }
 }
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-    <base-card class="ma-0 event-inline" dense>
+    <base-card class="ma-0 event-inline" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})">
         <v-row class="ma-0" align="center">
             <v-col class="d-none d-md-block pa-0" cols="12" :md="3">
                 <v-img :src="require('../../assets/'+src)" style="border-radius:16px" height="120"/>
@@ -49,6 +49,10 @@
 </template>
 
 <script>
+import {
+    mapActions,
+} from 'vuex';
+
 export default {
     name: "EventInline",
     props: {
@@ -60,6 +64,9 @@ export default {
             type: Object,
             required: true,
         }
+    },
+    methods: {
+        ...mapActions(['SET_EVENTS_DIALOG']),
     }
 }
 </script>

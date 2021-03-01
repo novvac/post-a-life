@@ -13,6 +13,7 @@ export default new Vuex.Store({
     receivedInvitations: [],
     socket: null,
     newMessage: false,
+    eventsDialog: null,
   },
   getters: {
     user(store) {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     newMessage(store) {
       return store.newMessage;
     },
+    eventsDialog(store) {
+      return store.eventsDialog;
+    }
   },
   mutations: {
     setUser(store, payload) {
@@ -57,6 +61,9 @@ export default new Vuex.Store({
     },
     setNewMessage(store, payload) {
       store.newMessage = payload;
+    },
+    setEventsDialog(store, payload) {
+      store.eventsDialog = payload;
     }
   },
   actions: {
@@ -171,6 +178,9 @@ export default new Vuex.Store({
     },
     RESET_NEW_MESSAGE({commit}) {
       commit('setNewMessage', false);
+    },
+    SET_EVENTS_DIALOG({commit}, payload) {
+      commit('setEventsDialog', payload);
     }
   },
   modules: {

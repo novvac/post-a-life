@@ -1,7 +1,9 @@
 <template>
-    <div
+    <base-card
         class="event-hero pa-5 white--text"
         :style="{backgroundImage: 'url(' + require('../../assets/' + this.src) + ')'}"
+        to="#"
+        @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})"
     >
         <div class="overlay"></div>
 
@@ -28,7 +30,7 @@
             </div>
 
             <div>
-                <div class="text-h5 font-weight-bold text-truncate">
+                <div class="text-h5 font-weight-bold white--text text-truncate">
                     {{event.title}}
                 </div>
                 <div class="body-2 text-truncate" style="color: #ccc"> 
@@ -46,11 +48,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </base-card>
 </template>
 
 <script>
-//TODO: move title on hover 
+import {
+    mapActions,
+} from 'vuex';
 
 export default {
     name: "EventHero",
@@ -64,6 +68,9 @@ export default {
             required: true,
         }
     },
+    methods: {
+        ...mapActions(['SET_EVENTS_DIALOG']),
+    }
 }
 </script>
 
