@@ -36,17 +36,9 @@ mongoose.connection.on("error", () => {
     console.log("[DATABASE] [ERR] database is not connected!");
 })
 
-// routing
-const auth = require("./routes/auth.routing");
-const user = require("./routes/user.routing");
-const main = require("./routes/main.routing");
-const post = require("./routes/post.routing");
-const comment = require("./routes/comment.routing");
-app.use("/api/auth/", auth);
-app.use("/api/user/", user);
-app.use("/api/main/", main);
-app.use("/api/post/", post);
-app.use("/api/comment/", comment);
+// api
+const api = require("./routes/index");
+app.use("/api", api);
 
 const server = app.listen(PORT, () => {
     console.log("Server is running!");
