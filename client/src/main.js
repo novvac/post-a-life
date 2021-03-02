@@ -12,6 +12,7 @@ Vue.config.productionTip = false;
 // ajax
 Vue.prototype.$http = axios;
 axios.interceptors.request.use(function(config) {
+  config.baseURL = "http://192.168.43.5:3000/api/";
   let token = null;
   if(VueCookies.get("token"))
     token = VueCookies.get("token");

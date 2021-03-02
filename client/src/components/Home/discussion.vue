@@ -80,7 +80,7 @@ export default {
         ...mapActions(['LOGOUT']),
         loadSubComments() {
             this.loading = true;
-            const url = `http://192.168.43.5:3000/api/comment/${this.comment._id}/sub-comments/${this.skip}-${this.limit}/${this.timestamp}`;
+            const url = `comment/${this.comment._id}/sub-comments/${this.skip}-${this.limit}/${this.timestamp}`;
             this.$http.get(url)
                 .then(res => {
                     this.subComments = this.subComments.concat(res.data.subComments);

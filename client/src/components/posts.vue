@@ -70,7 +70,7 @@ export default {
             }
 
             this.loading = true;
-            this.$http.post("http://192.168.43.5:3000/api/post/posts/", {
+            this.$http.post("post/posts/", {
                 ids: this.ids,
                 timestamp: this.timestamp,
                 skip: this.skip,
