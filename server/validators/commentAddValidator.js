@@ -6,7 +6,7 @@ function validateCommentData(data) {
 
     const comment = data.comment ? data.comment : "";
 
-    if(Validator.isEmpty(comment))
+    if(Validator.isEmpty(comment, {ignore_whitespace: true}))
         errors.comment = "Uzupełnij to pole!";
     else if(!Validator.isLength(comment, {min: 1, max: 256})) 
         errors.comment = "Komentarz może mieć maksymalnie 256 znaków!";

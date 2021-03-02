@@ -7,12 +7,12 @@ function validateSignInData(data) {
     const email = data.email ? data.email : "";
     const password = data.password ? data.password : "";
 
-    if(Validator.isEmpty(email))
+    if(Validator.isEmpty(email, {ignore_whitespace: true}))
         errors.email = "Uzupełnij to pole!";
     else if(!Validator.isEmail(email))
         errors.email = "Wpisz poprawny email!";
 
-    if(Validator.isEmpty(password))
+    if(Validator.isEmpty(password, {ignore_whitespace: true}))
         errors.password = "Uzupełnij to pole!";
 
     return {
