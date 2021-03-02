@@ -168,7 +168,7 @@ export default {
     methods: {
         ...mapActions(['LOGOUT']),
         addLike() {
-            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/like/";
+            const url = "post/" + this.post._id + "/like/";
             this.$http.put(url)
                 .then(res => {
                     if(res.data.added) {
@@ -189,7 +189,7 @@ export default {
             this.errors = {};
             this.newComment.loading = true;
             console.log(this.post._id)
-            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/comment/";
+            const url = "post/" + this.post._id + "/comment/";
             this.$http.post(url, {comment: this.newComment.model})
                 .then(res => {
                     this.newComment.loading = false;
@@ -207,7 +207,7 @@ export default {
         },
         loadComments() {
             this.comments.loading = true;
-            this.$http.post(`http://192.168.43.5:3000/api/post/${this.post._id}/comments`, {
+            this.$http.post(`post/${this.post._id}/comments`, {
                 timestamp: this.comments.timestamp,
                 skip: this.comments.skip,
                 limit: this.comments.limit,

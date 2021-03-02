@@ -61,7 +61,7 @@ export default {
         },
     },
     created() {
-        this.$http.get("http://192.168.43.5:3000/api/user/id/" + this.item)
+        this.$http.get("user/id/" + this.item)
             .then(res => {
                 this.invitation = res.data;
             })

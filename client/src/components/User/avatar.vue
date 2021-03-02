@@ -43,7 +43,7 @@ export default {
         changeAvatar() {
             const formData = new FormData();
             formData.append("avatar", this.selectedFile);
-            this.$http.post("http://192.168.43.5:3000/api/user/avatar/", formData)
+            this.$http.post("user/avatar/", formData)
                 .then(res => {
                     // TODO: success message
                     // console.log(res);

@@ -102,8 +102,8 @@ export default new Vuex.Store({
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {
         axios.all([
-          axios.get("http://192.168.43.5:3000/api/user/id/"),
-          axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+          axios.get("user/id/"),
+          axios.get("user/friends/type/1")
         ]).then(axios.spread((user, friends) => {
           commit('setUser', user.data.user);
           commit('setFriends', friends.data.list);
@@ -121,7 +121,7 @@ export default new Vuex.Store({
     },
     LOAD_FRIENDS({commit}) {
       return new Promise((resolve, reject) => {
-        axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+        axios.get("user/friends/type/1")
           .then(res => {
             commit("setFriends", res.data.list);
             resolve(null);
@@ -138,7 +138,7 @@ export default new Vuex.Store({
     },
     INVITATION_MANAGER({commit}, payload) {
       return new Promise((resolve, reject) => {
-        let url = "http://192.168.43.5:3000/api/user/friend/";
+        let url = "user/friend/";
         let data = {}
 
         if(payload.action === "put" || payload.action === "delete") {
@@ -164,7 +164,7 @@ export default new Vuex.Store({
       })
     },
     LOAD_INVITATIONS({commit}) {
-      axios.get("http://192.168.43.5:3000/api/user/friends/type/3")
+      axios.get("user/friends/type/3")
         .then(res => {
           commit("setReceivedInvitations", res.data.list);
         })

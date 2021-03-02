@@ -45,7 +45,7 @@ export default {
             this.errors = {};
             this.msg = "";
 
-            const url = "http://192.168.43.5:3000/api/auth/login";
+            const url = "auth/login";
             this.$http.post(url, this.credentials)
                 .then((res) => {
                     this.msg = "Zalogowano! Zaraz nastąpi przekierowanie!";

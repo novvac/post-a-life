@@ -148,7 +148,7 @@ export default {
         addSubcomment() {
             this.errors = {};
             this.subcomment.loading = true;
-            this.$http.post(`http://192.168.43.5:3000/api/comment/${this.comment._id}/sub-comment/`, {
+            this.$http.post(`comment/${this.comment._id}/sub-comment/`, {
                 comment: this.subcomment.model,
             })
                 .then(res => {
@@ -167,7 +167,7 @@ export default {
             // ? type:  1   =>  like
             // ? type: -1   =>  dislike
 
-            this.$http.put(`http://192.168.43.5:3000/api/comment/${this.comment._id}/vote/${type}/`)
+            this.$http.put(`comment/${this.comment._id}/vote/${type}/`)
                 .then(res => {
                     const userLike = this.comment.likes.includes(this.user._id);
                     const userDislike = this.comment.dislikes.includes(this.user._id);
@@ -192,7 +192,7 @@ export default {
                 })
         },
         deleteComment() {
-            this.$http.delete(`http://192.168.43.5:3000/api/comment/${this.comment._id}/`)
+            this.$http.delete(`comment/${this.comment._id}/`)
                 .then(res => {
                     console.log(res);
                 })

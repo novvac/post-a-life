@@ -91,7 +91,7 @@ export default {
 
             this.payload.visibility = this.visibility.code;
 
-            this.$http.post("http://192.168.43.5:3000/api/post/", this.payload)
+            this.$http.post("post/", this.payload)
                 .then(res => {
                     this.snackbar = true;
                     this.loading = false;

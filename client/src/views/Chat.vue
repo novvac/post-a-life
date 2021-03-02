@@ -110,7 +110,7 @@ export default {
             this.loading = true;
             let limit = 12;
 
-            await this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/${this.messages.length}-${limit}`)
+            await this.$http.get(`user/${this.id}/messages/${this.messages.length}-${limit}`)
                 .then(res => {
                     if(this.friends.includes(res.data.user._id)) {
                         if(!this.chat)
@@ -137,7 +137,7 @@ export default {
         },
         sendMessage() {
             if(this.message.length > 0) {
-                this.$http.post(`http://192.168.43.5:3000/api/user/${this.id}/message/`, {
+                this.$http.post(`user/${this.id}/message/`, {
                     message: this.message
                 })
                     .then(res => {
@@ -166,7 +166,7 @@ export default {
             }
         },
         loadNewMessage() {
-            this.$http.get(`http://192.168.43.5:3000/api/user/${this.id}/messages/0-1`)
+            this.$http.get(`user/${this.id}/messages/0-1`)
                 .then(res => {
                     this.messages.unshift(res.data.messages[0]);
                     document.querySelector(".messages").scroll(0,0);
