@@ -23,7 +23,7 @@ router.post("/", passport.authenticate("jwt", {session: false}), async (req, res
     // TODO: spam protector
     // TODO: image(s) upload system
     
-    return res.status(200).send(post);
+    return res.status(200).send('success');
 })
 
 router.post("/posts/", passport.authenticate("jwt", {session: false}), async (req, res) => {
