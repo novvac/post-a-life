@@ -14,6 +14,8 @@
                 :counter="64"
                 prepend-icon="mdi-format-size"
                 v-model="event.title"
+                :error="Boolean(errors.title)"
+                :error-messages="errors.title"
             />
 
             <v-textarea
@@ -25,12 +27,16 @@
                 hint="Podaj szczegóły wydarzenia i zachęć odbiorcę do wzięcia udziału!"
                 persistent-hint
                 v-model="event.description"
+                :error="Boolean(errors.description)"
+                :error-messages="errors.description"
             />
 
             <p class="ma-0 mt-3">
                 <v-icon>mdi-calendar</v-icon>
                 Data wydarzenia
             </p>
+
+            <span class="red--text d-block" v-if="Boolean(errors.date)" caption>{{errors.date}}</span>
 
             <v-date-picker
                 full-width
@@ -47,22 +53,39 @@
                 hint="Dodaj zdjęcie wydarzenia do zwiększenia uwagi odbiorcy!"
                 persistent-hint
                 clearable
-                accept="image/png, image/jpeg, image/jpg"
+                accept="image/*"
+                v-model="selectedFile"
                 :rules="rules"
-                v-model="event.image"
+                :error="Boolean(errors.image)"
+                :error-messages="errors.image"
             />
+
+            <v-divider class="my-5"></v-divider>
+
+            <v-btn :disabled="loading" :loading="loading" class="success" @click="addEvent()">Utwórz wydarzenie</v-btn>
         </div>
     </div>
 </template>
 
 <script>
+import {
+    mapActions
+} from 'vuex';
+
 export default {
     name: "NewEvent",
     data() {
         return {
             event: {},
+            selectedFile: null,
+            loading: false,
+            errors: {},
             rules: [
-                value => !value || value.size < 4000000 || "Wielkość obrazu nie może przekraczać 4MB"
+                value => {
+                    if(value && value.size > 2000000)
+                        return "Plik jest za duży! Może mieć maksymalnie 2Mb!";
+                    return true;
+                }
             ]
         }
     },
@@ -81,6 +104,42 @@ export default {
             today += dt.getDate();
 
             return today;
+        }
+    },
+    methods: {
+        ...mapActions(['LOGOUT']),
+        addEvent() {
+            const formData = new FormData();
+            formData.append("event-image", this.selectedFile);
+
+            this.errors = {};
+            if(!this.selectedFile) {
+                this.errors.image = "Uzupełnij to pole!";
+                return;
+            }
+            if(this.selectedFile.type.substr(0,5) != "image") {
+                this.errors.image = "Niepoprawny typ pliku!";
+                this.selectedFile = null;
+                return;
+            }
+            this.loading = true;
+            this.$http.post("event", this.event).then(res => {
+                this.$http.post(`event/${res.data}/image`, formData).then(res => {
+                    this.loading = false;
+                    this.event = {};
+                    this.selectedFile = null;
+                }).catch(err => {
+                    console.log(err);
+                })
+            }).catch(err => {
+                if(err.response) {
+                    if(err.response.status === 401)
+                        return this.LOGOUT();
+                }
+
+                this.errors = err.response.data.errors;
+                this.loading = false;
+            })
         }
     }
 }
