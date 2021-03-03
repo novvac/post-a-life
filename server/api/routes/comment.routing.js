@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../passport/index");
-const Comment = require("../models/Comment.model");
-const Post = require("../models/Post.model");
+const passport = require("../../passport/index");
+const Comment = require("../../models/Comment.model");
+const Post = require("../../models/Post.model");
 
-const validateCommentData = require("../validators/commentAddValidator");
+const validateCommentData = require("../../validators/commentAddValidator");
 router.post("/:id/sub-comment/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const { errors, isCorrect } = validateCommentData(req.body);
 

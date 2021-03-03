@@ -20,7 +20,7 @@
                 >
                     <v-badge dot overlap :color="subitem.isActive ? 'success' : 'transparent'">
                         <v-avatar size="36">
-                            <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
+                            <v-img :src="$http.defaults.baseURL + 'uploads/' + subitem.avatar"></v-img>
                         </v-avatar>
                     </v-badge>
 

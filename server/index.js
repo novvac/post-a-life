@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 /* Web sockets */
 const { wss } = require("./config/ws");
 
-app.use('/uploads', express.static(path.join(__dirname + "/uploads")));
+app.use('/api/uploads', express.static(path.join(__dirname + "/api/uploads")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -37,7 +37,7 @@ mongoose.connection.on("error", () => {
 })
 
 // api
-const api = require("./routes/index");
+const api = require("./api/routes/index");
 app.use("/api", api);
 
 const server = app.listen(PORT, () => {

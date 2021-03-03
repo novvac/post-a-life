@@ -11,8 +11,8 @@
         </base-card>
 
         <base-card without-padding v-else-if="!loading && !msg">
-            <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.banner"/>
-            <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.avatar"/>
+            <profile-banner :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.banner"/>
+            <avatar :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.avatar"/>
 
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>

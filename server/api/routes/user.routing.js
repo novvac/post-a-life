@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.model");
-const Friend = require("../models/Friend.model");
-const Message = require("../models/Message.model");
-const passport = require("../passport/index");
+const User = require("../../models/User.model");
+const Friend = require("../../models/Friend.model");
+const Message = require("../../models/Message.model");
+const passport = require("../../passport/index");
 const multer = require('multer');
 const mongoose = require("mongoose");
-const storage = require('../config/multer');
-const { clients, socketExec } = require("../config/ws");
+const storage = require('../../config/multer');
+const { clients, socketExec } = require("../../config/ws");
 
 const upload = multer({storage: storage});
 

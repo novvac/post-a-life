@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../passport/index");
-const Post = require("../models/Post.model");
-const Comment = require("../models/Comment.model");
+const passport = require("../../passport/index");
+const Post = require("../../models/Post.model");
+const Comment = require("../../models/Comment.model");
 
-const validatePostData = require("../validators/postAddValidator");
+const validatePostData = require("../../validators/postAddValidator");
 router.post("/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const { errors, isCorrect } = validatePostData(req.body);
 
@@ -67,7 +67,7 @@ router.put("/:id/like/", passport.authenticate("jwt", {session: false}), async (
     }
 })
 
-const validateCommentData = require("../validators/commentAddValidator");
+const validateCommentData = require("../../validators/commentAddValidator");
 router.post("/:id/comment/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const { errors, isCorrect } = validateCommentData(req.body);
 

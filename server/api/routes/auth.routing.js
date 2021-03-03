@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const User = require("../models/User.model");
+const User = require("../../models/User.model");
 const jwt = require("jsonwebtoken");
-const config = require("../config/keys");
+const config = require("../../config/keys");
 
 function encodeShortID(num) {
     let encoded =  num.toString(36);
@@ -17,7 +17,7 @@ function decodeShortID(encoded) {
     return parseInt(encoded, 36);
 }
 
-const validateSignUpData = require("../validators/signUpValidator");
+const validateSignUpData = require("../../validators/signUpValidator");
 router.post('/register', (req, res) => {
     const { errors, isCorrect } = validateSignUpData(req.body);
 
@@ -70,7 +70,7 @@ router.post('/register', (req, res) => {
     })
 })
 
-const validateSignInData = require("../validators/signInValidator");
+const validateSignInData = require("../../validators/signInValidator");
 router.post('/login', (req, res, next) => {
     const { errors, isCorrect } = validateSignInData(req.body);
 

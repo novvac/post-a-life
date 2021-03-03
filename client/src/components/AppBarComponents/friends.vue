@@ -6,7 +6,7 @@
         <div class="d-flex justify-space-between align-center">
             <v-row class="ma-0" align="center">
                 <v-avatar size="36">
-                    <v-img :src="'http://192.168.43.5:3000/uploads/' + this.invitation.avatar"></v-img>
+                    <v-img :src="$http.defaults.baseURL + 'uploads/' + this.invitation.avatar"></v-img>
                 </v-avatar>
 
                 <div class="ml-2">

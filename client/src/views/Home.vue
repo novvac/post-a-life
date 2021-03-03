@@ -4,7 +4,7 @@
             <v-col cols="12" :md="8">
                 <new-post class="mb-6"/>
 
-                <posts :ids="user.friends" :visibility="1"/>
+                <posts :ids="friends" :visibility="1"/>
             </v-col>
             <v-col cols="12" :md="4">
                 <stories class="mb-5"/>
@@ -28,7 +28,7 @@ export default {
         Posts: () => import("@/components/posts"),
     },
     computed: {
-        ...mapGetters(['user'])
+        ...mapGetters(['friends'])
     }
 }
 </script>

@@ -5,7 +5,7 @@
                 <template v-slot:title>
                     <v-row class="ma-0" align="center">
                         <v-avatar size="36" class="mr-2">
-                            <v-img :src="'http://192.168.43.5:3000/uploads/' + chat.user.avatar"></v-img>
+                            <v-img :src="$http.defaults.baseURL + 'uploads/' + chat.user.avatar"></v-img>
                         </v-avatar>
                             
                         <div class="d-flex flex-column">
@@ -35,8 +35,8 @@
                             :class="['message', msg.sender._id === user._id ? 'sender' : undefined]"
                         >
                             <v-avatar size="32">
-                                <v-img v-if="msg.sender._id !== user._id" :src="'http://192.168.43.5:3000/uploads/' + chat.user.avatar"></v-img>
-                                <v-img v-else :src="'http://192.168.43.5:3000/uploads/' + msg.sender.avatar"></v-img>
+                                <v-img v-if="msg.sender._id !== user._id" :src="$http.defaults.baseURL + 'uploads/' + chat.user.avatar"></v-img>
+                                <v-img v-else :src="$http.defaults.baseURL + 'uploads/' + msg.sender.avatar"></v-img>
                             </v-avatar>
                             
                             <div class="msg">{{msg.text}}</div>
