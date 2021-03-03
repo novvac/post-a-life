@@ -8,7 +8,7 @@
             <v-list class="pa-0">
                 <v-list-item class="ma-0 pa-0">
                     <v-avatar size="36">
-                        <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
+                        <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"></v-img>
                     </v-avatar>
 
                     <div class="ml-3 d-flex align-center justify-space-between" style="width: 100%">

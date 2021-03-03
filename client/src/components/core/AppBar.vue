@@ -52,7 +52,7 @@
                         @click="searchValue = ''"
                     >
                         <v-avatar size="36">
-                            <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"/>
+                            <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"/>
                         </v-avatar>
 
                         <div class="ml-2">

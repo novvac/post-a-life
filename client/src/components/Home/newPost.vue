@@ -19,7 +19,7 @@
         <v-list class="pa-0">
             <v-list-item class="pa-0 d-flex align-start justify-start">
                 <v-avatar>
-                    <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
+                    <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"></v-img>
                 </v-avatar>
 
                 <v-textarea

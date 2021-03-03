@@ -3,7 +3,7 @@
         <template v-slot:title>
             <div class="d-flex align-center">
                 <v-avatar size="36">
-                    <v-img :src="'http://192.168.43.5:3000/uploads/' + post.owner.avatar"></v-img>
+                    <v-img :src="$http.defaults.baseURL + 'uploads/' + post.owner.avatar"></v-img>
                 </v-avatar>
 
                 <div class="ml-2">
@@ -75,7 +75,7 @@
 
         <div class=" mx-5 mt-5 d-flex">
             <v-avatar size="36">
-                <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
+                <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"></v-img>
             </v-avatar>
 
             <v-text-field
