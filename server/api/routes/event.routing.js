@@ -20,6 +20,19 @@ router.get('/', passport.authenticate("jwt", {session: false}), async (req, res)
     return res.status(200).json({events: events});
 })
 
+// ! ##############################
+// ! GET EVENT WITH ID
+// ! ##############################
+router.get("/:id", passport.authenticate("jwt", {session: false}), async(req, res) => {
+    const event = await Event.findById(req.params.id);
+
+    if(event) {
+        return res.status(200).json({event: event});
+    } else {
+        return res.status(404).json('error');
+    }
+})
+
 const validateEventData = require("../../validators/eventAddValidator");
 // ! #####################
 // ! ADD NEW EVENT
