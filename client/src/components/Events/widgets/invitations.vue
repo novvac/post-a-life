@@ -18,8 +18,6 @@
                 link
                 dense
             >
-                <v-icon>mdi-{{invitation.icon}}</v-icon>
-
                 <v-list-item-title class="body-2 font-weight-bold ml-3">{{invitation.text}}</v-list-item-title>
             </v-list-item>
         </v-list>

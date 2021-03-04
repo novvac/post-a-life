@@ -14,28 +14,32 @@
             <v-list-item
                 v-for="event in events"
                 :key="event.text"
-                class="mt-1 px-2"
+                class="mt-1 px-0"
                 link
                 dense
+                @click="SET_EVENTS_DIALOG({component: 'event-details', id: event._id})"
             >
-                <v-icon>mdi-{{event.icon}}</v-icon>
-
-                <v-list-item-title class="body-2 font-weight-bold ml-3">{{event.text}}</v-list-item-title>
+                <v-list-item-title caption class="ml-3">{{event.title}}</v-list-item-title>
             </v-list-item>
         </v-list>
     </base-card>
 </template>
 
 <script>
+import {
+    mapActions,
+} from 'vuex';
+
 export default {
     name: "OwnerEvents",
-    data() {
-        return {
-            events: [
-                {icon: "gift", text: "Collect your dream!"},
-                {icon: "crown", text: "F**k covid!"},
-            ]
+    props: {
+        events: {
+            type: Array,
+            required: true,
         }
+    },
+    methods: {
+        ...mapActions(['SET_EVENTS_DIALOG']),
     }
 }
 </script>

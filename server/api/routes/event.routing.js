@@ -7,6 +7,18 @@ const multer = require("multer");
 const storage = require("../../config/multer");
 const upload = multer({storage: storage});
 
+// ! ###############################
+// ! GET USER EVENTS
+// ! ###############################
+router.get('/', passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let events = await Event.find({
+        owner: req.user.id,
+    }).select({
+        title: 1,
+    })
+
+    return res.status(200).json({events: events});
+})
 
 const validateEventData = require("../../validators/eventAddValidator");
 // ! #####################

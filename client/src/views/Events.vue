@@ -1,6 +1,6 @@
 <template>
     <div class="events ma-5" style="overflow: hidden;">
-        <div class="hero">
+        <div class="hero mb-8" v-if="false"> <!-- ! DEBUG -->
             <div class="d-flex align-center justify-space-between">
                 <div>
                     <p class="ma-0 caption">
@@ -26,9 +26,9 @@
             </v-row>
         </div>
 
-        <v-row class="ma-0 mt-8" style="flex-direction: row-reverse">
+        <v-row class="ma-0" style="flex-direction: row-reverse">
             <v-col cols="12" :md="4">
-                <owner-events/>
+                <owner-events :events="userEvents"/>
                 <invitations class="mt-5"/>
             </v-col>
 
@@ -99,9 +99,25 @@ export default {
     },
     computed: {
         ...mapGetters(['eventsDialog']),
+        ...mapGetters(['userEvents']),
     },
     methods: {
         ...mapActions(['SET_EVENTS_DIALOG']),
+        ...mapActions(['LOAD_USER_EVENTS']),
+        loadUserEvents() {
+            this.LOAD_USER_EVENTS();
+        }
+    },
+    created() {
+        this.loadUserEvents();
+    },
+    watch: {
+        userEvents() {
+            console.log(this.userEvents);
+        },
+        $route(from, to) {
+            this.loadUserEvents();
+        }
     }
 }
 </script>

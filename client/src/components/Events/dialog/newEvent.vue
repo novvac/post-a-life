@@ -108,6 +108,8 @@ export default {
     },
     methods: {
         ...mapActions(['LOGOUT']),
+        ...mapActions(['SET_EVENTS_DIALOG']),
+        ...mapActions(['LOAD_USER_EVENTS']),
         addEvent() {
             const formData = new FormData();
             formData.append("event-image", this.selectedFile);
@@ -128,6 +130,9 @@ export default {
                     this.loading = false;
                     this.event = {};
                     this.selectedFile = null;
+                    this.SET_EVENTS_DIALOG(null);
+
+                    this.LOAD_USER_EVENTS();
                 }).catch(err => {
                     console.log(err);
                 })
