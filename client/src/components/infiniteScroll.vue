@@ -43,6 +43,10 @@ export default {
         visibility: {
             type: Number,
             default: 0,
+        },
+        endpoint: {
+            type: String,
+            default: 'post',
         }
     },
     components: {
@@ -70,20 +74,16 @@ export default {
             }
 
             this.loading = true;
-            this.$http.post("post/posts/", {
-                ids: this.ids,
-                timestamp: this.timestamp,
-                skip: this.skip,
-                limit: this.limit,
-                visibility: this.visibility,
-            })
+            const computedURL = `${this.endpoint}/${this.skip}-${this.limit}-${this.visibility}-${this.timestamp}`
+            this.$http.get(computedURL)
                 .then(res => {
-                    if(res.data.posts.length < this.limit)
+                    if(res.data.length < this.limit)
                         this.end = true;
 
-                    document.addEventListener("scroll", this.handleScroll);
+                    if(res.data.length > 0)
+                        document.addEventListener("scroll", this.handleScroll);
 
-                    this.feeds = this.feeds.concat(res.data.posts);
+                    this.feeds = this.feeds.concat(res.data);
                     this.loading = false;
                     this.skip += this.limit;
                     this.loadNow = false;
