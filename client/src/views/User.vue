@@ -121,7 +121,7 @@ export default {
             friendButton: {},
             tab: null,
             tabs: [
-                {icon: "folder-outline", text: "Posty", component: "posts", data: {
+                {icon: "folder-outline", text: "Posty", component: "infinite-scroll", data: {
                     ids: [],
                     visibility: 0,
                 }},
@@ -139,7 +139,7 @@ export default {
         avatar: () => import("@/components/User/avatar"),
         newPost: () => import("@/components/Home/newPost"),
 
-        posts: () => import('@/components/posts'),
+        infiniteScroll: () => import('@/components/infiniteScroll'),
     },
     methods: {
         ...mapActions(['LOGOUT']),

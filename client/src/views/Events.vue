@@ -57,6 +57,8 @@
                     <event-inline class="mt-3" src="event-bg-1.png" :event="{title: 'Zdam maturę na 30 percent'}"/>
                     <event-inline class="mt-3" src="event-bg-2.png" :event="{title: 'POLSKA DLA POLAKÓW - nie no żartuje xd'}"/>
                 </div>
+
+                <infinite-scroll endpoint="event" component="event-inline"/>
             </v-col>
         </v-row>
 
@@ -96,6 +98,8 @@ export default {
 
         NewEvent: () => import('@/components/Events/dialog/newEvent'),
         EventDetails: () => import('@/components/Events/dialog/eventDetails'),
+        
+        InfiniteScroll: () => import('@/components/infiniteScroll'),
     },
     computed: {
         ...mapGetters(['eventsDialog']),
@@ -112,9 +116,6 @@ export default {
         this.loadUserEvents();
     },
     watch: {
-        userEvents() {
-            console.log(this.userEvents);
-        },
         $route(from, to) {
             this.loadUserEvents();
         }

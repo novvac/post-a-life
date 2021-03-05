@@ -144,7 +144,7 @@ export default new Vuex.Store({
       })
     },
     async LOAD_USER_EVENTS({commit}) {
-      await axios.get("event").then(res => {
+      await axios.get("event/user-events").then(res => {
         commit('setUserEvents', res.data.events);
       }).catch(err => {
         if(err.response) {

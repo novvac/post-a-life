@@ -7,10 +7,25 @@ const multer = require("multer");
 const storage = require("../../config/multer");
 const upload = multer({storage: storage});
 
+// ! ##########################################
+// ! GET ALL EVENTS (WITHOUT LOGGED USER)
+// ! ##########################################
+router.get("/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let startDate = new Date(parseInt(req.params.timestamp));
+    let events = await Event.find({
+        owner: {$ne: req.user.id},
+        createdAt: {$lt: startDate}
+    }).sort({
+        createdAt: -1,
+    }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit));;
+
+    return res.status(200).json(events);
+})
+
 // ! ###############################
 // ! GET USER EVENTS
 // ! ###############################
-router.get('/', passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.get('/user-events/', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let events = await Event.find({
         owner: req.user.id,
     }).select({
