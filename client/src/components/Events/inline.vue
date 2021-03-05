@@ -1,8 +1,8 @@
 <template>
-    <base-card class="ma-0 event-inline py-3 py-md-0" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})">
+    <base-card class="ma-0 event-inline py-3 py-md-0" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: data._id})">
         <v-row class="ma-0" align="center">
             <v-col class="d-none d-md-block pa-0" cols="12" :md="3">
-                <v-img :src="require('../../assets/'+src)" style="border-radius:16px" height="120"/>
+                <v-img :src="$http.defaults.baseURL + 'uploads/' + data.image" style="border-radius:16px" height="120"/>
             </v-col>
             <v-col cols="12" :md="9" class="py-0">
                 <div class="d-flex justify-space-between">
@@ -27,7 +27,7 @@
                 </div>
 
                 <p class="mt-3 pa-0 ma-0 text-truncate body-1 font-weight-bold black--text">
-                    {{event.title}}
+                    {{data.title}}
                 </p>
                 <p class="mb-3 pa-0 ma-0 text-truncate caption">
                     Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae ea nihil accusantium qui distinctio voluptates nulla ratione neque adipisci placeat, aut fugit? Corrupti architecto dignissimos quisquam quam maxime ex vero?
@@ -56,11 +56,7 @@ import {
 export default {
     name: "EventInline",
     props: {
-        src: {
-            type: String,
-            required: true,
-        },
-        event: {
+        data: {
             type: Object,
             required: true,
         }

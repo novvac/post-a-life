@@ -1,10 +1,11 @@
 <template>
     <div class="posts">
-        <post
+        <component
+            :is="component"
             v-for="feed in feeds"
             :key="feed.id"
-            :post="feed"
-            class="mb-4"
+            :data="feed"
+            class="mb-4 infinite-el"
             v-bind="$attrs"
         />
 
@@ -36,13 +37,13 @@ import {
 export default {
     name: "Posts",
     props: {
-        ids: {
-            type: Array,
-            required: true,
-        },
         visibility: {
             type: Number,
             default: 0,
+        },
+        component: {
+            type: String,
+            default: 'post'
         },
         endpoint: {
             type: String,
@@ -51,6 +52,7 @@ export default {
     },
     components: {
         Post: () => import("@/components/Home/post"),
+        EventInline: () => import('@/components/Events/inline')
     },
     data() {
         return {
@@ -72,6 +74,7 @@ export default {
                 let dt = new Date();
                 this.timestamp = dt.getTime();
             }
+            console.log("OK");
 
             this.loading = true;
             const computedURL = `${this.endpoint}/${this.skip}-${this.limit}-${this.visibility}-${this.timestamp}`
@@ -96,7 +99,7 @@ export default {
                 })
         },
         handleScroll() {
-            let rect = document.querySelectorAll(".post")[document.querySelectorAll(".post").length - 1].getBoundingClientRect();
+            let rect = document.querySelectorAll(".infinite-el")[document.querySelectorAll(".infinite-el").length - 1].getBoundingClientRect();
 
             if(
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
