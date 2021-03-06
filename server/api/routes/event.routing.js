@@ -158,7 +158,7 @@ router.put("/:id/:type/", passport.authenticate("jwt", {session: false}), async 
             }
         }
 
-        await event.save();
+        event.save();
 
         return res.status(200).json(event);
     } else {

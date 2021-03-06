@@ -260,8 +260,8 @@ export default new Vuex.Store({
     SET_INVITE_FRIENDS({commit}, payload) {
       commit('setInviteFriends', payload);
     },
-    DELETE_EVENT_INVITE({commit}, payload) {
-      axios.delete('event/invitation/' + payload).then(res => {
+    async DELETE_EVENT_INVITE({commit}, payload) {
+      await axios.delete('event/invitation/' + payload).then(res => {
         this.dispatch("LOAD_INVITATIONS_EVENTS");
       }).catch(err => {
         if(err.response) {

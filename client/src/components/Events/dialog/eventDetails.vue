@@ -87,6 +87,7 @@ export default {
         ...mapActions(['LOAD_INTERESTED_EVENTS']),
         ...mapActions(['LOAD_PARTICIPANT_EVENTS']),
         ...mapActions(['SET_INVITE_FRIENDS']),
+        ...mapActions(['DELETE_EVENT_INVITE']),
         async loadEvent() {
             await this.$http.get("event/" + this.eventsDialog.id).then(res => {
                 this.event = res.data.event;
@@ -99,8 +100,9 @@ export default {
                 console.log(err);
             })
         },
-        eventAction(type) {
-            this.$http.put(`event/${this.event._id}/${type}`).then(res => {
+        async eventAction(type) {
+            await this.DELETE_EVENT_INVITE(this.event._id);
+            await this.$http.put(`event/${this.event._id}/${type}`).then(res => {
 
                 let interested = this.event.interested.includes(this.user._id);
                 let participant = this.event.participants.includes(this.user._id);
