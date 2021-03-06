@@ -52,7 +52,7 @@
                         @click="searchValue = ''"
                     >
                         <v-avatar size="36">
-                            <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"/>
+                            <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"/>
                         </v-avatar>
 
                         <div class="ml-2">
@@ -179,7 +179,7 @@ export default {
         isSearching() {
             if(this.isSearching) {
                 this.waitingForData = true;
-                this.$http.get("http://192.168.43.5:3000/api/main/fast-search/" + this.searchValue.split(" ").join("_"))
+                this.$http.get("main/fast-search/" + this.searchValue.split(" ").join("_"))
                     .then(res => {
                         this.msg = "";
                         this.found = res.data.data;

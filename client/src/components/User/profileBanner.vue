@@ -39,7 +39,7 @@ export default {
         changeBanner() {
             const formData = new FormData();
             formData.append("banner", this.selectedFile);
-            this.$http.post("http://192.168.43.5:3000/api/user/banner/", formData)
+            this.$http.post("user/banner/", formData)
                 .then(res => {
                     // TODO: success message
                     // console.log(res);

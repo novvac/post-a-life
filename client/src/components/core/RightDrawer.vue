@@ -20,7 +20,7 @@
                 >
                     <v-badge dot overlap :color="subitem.isActive ? 'success' : 'transparent'">
                         <v-avatar size="36">
-                            <v-img :src="'http://192.168.43.5:3000/uploads/' + subitem.avatar"></v-img>
+                            <v-img :src="$http.defaults.baseURL + 'uploads/' + subitem.avatar"></v-img>
                         </v-avatar>
                     </v-badge>
 
@@ -96,7 +96,7 @@ export default {
         async loadFriendsDetails() {
             let bufor = [];
             for(let id of this.friends) {
-                await this.$http.get("http://192.168.43.5:3000/api/user/id/" + id)
+                await this.$http.get("user/id/" + id)
                     .then(res => {
                         let obj = res.data;
                         obj.isActive = false;
@@ -121,7 +121,7 @@ export default {
             }
         },
         loadActiveUsers() {
-            this.$http.post("http://192.168.43.5:3000/api/user/active-friends", {
+            this.$http.post("user/active-friends", {
                 ids: this.friends,
             })
                 .then(res => {
@@ -139,7 +139,7 @@ export default {
                 })
         },
         async loadUnreadMessages() {
-            await this.$http.get("http://192.168.43.5:3000/api/user/unread-messages")
+            await this.$http.get("user/unread-messages")
                 .then(res => {
                     let mapItems = this.items[1].content.map(item => item._id);
                     let mapResponse = res.data.map(item => item.sender);

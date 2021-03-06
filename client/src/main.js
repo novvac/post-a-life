@@ -11,7 +11,10 @@ import './components/base/index';
 Vue.config.productionTip = false;
 // ajax
 Vue.prototype.$http = axios;
+const BASEURL = 'http://192.168.43.5:3000/api/';
+axios.defaults.baseURL = BASEURL
 axios.interceptors.request.use(function(config) {
+  config.baseURL = BASEURL;
   let token = null;
   if(VueCookies.get("token"))
     token = VueCookies.get("token");

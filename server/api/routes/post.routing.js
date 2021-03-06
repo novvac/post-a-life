@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../passport/index");
-const Post = require("../models/Post.model");
-const Comment = require("../models/Comment.model");
+const passport = require("../../passport/index");
+const Post = require("../../models/Post.model");
+const User = require("../../models/User.model");
+const Comment = require("../../models/Comment.model");
 
-const validatePostData = require("../validators/postAddValidator");
+const validatePostData = require("../../validators/postAddValidator");
 router.post("/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const { errors, isCorrect } = validatePostData(req.body);
 
@@ -23,14 +24,32 @@ router.post("/", passport.authenticate("jwt", {session: false}), async (req, res
     // TODO: spam protector
     // TODO: image(s) upload system
     
-    return res.status(200).send(post);
+    return res.status(200).send('success');
 })
 
-router.post("/posts/", passport.authenticate("jwt", {session: false}), async (req, res) => {
-    let startDate = new Date(req.body.timestamp);
+router.get("/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let startDate = new Date(parseInt(req.params.timestamp));
+
+    let friends = await User.findOne({
+        _id: req.user.id
+    }).select({
+        friends: 1,
+    }).populate({
+        path: "friends",
+        select: {
+            friendStatus: 1,
+            recipient: 1,
+            _id: 0,
+        },
+        match: {
+            friendStatus: {$eq: 1}
+        }
+    });
+    let friendsMap = friends.friends.map(item => item.recipient);
+
     let posts = await Post.find({
-        owner: {$in: req.body.ids},
-        visibility: {$lte: req.body.visibility},
+        owner: {$in: friendsMap},
+        visibility: {$lte: req.params.visibility},
         createdAt: {$lt: startDate}
     }).populate({
         path: "owner",
@@ -42,9 +61,9 @@ router.post("/posts/", passport.authenticate("jwt", {session: false}), async (re
         },
     }).sort({
         createdAt: -1,
-    }).skip(parseInt(req.body.skip)).limit(parseInt(req.body.limit));
+    }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit));
     
-    res.status(200).json({posts: posts});
+    res.status(200).json(posts);
 })
 
 router.put("/:id/like/", passport.authenticate("jwt", {session: false}), async (req, res) => {
@@ -67,7 +86,8 @@ router.put("/:id/like/", passport.authenticate("jwt", {session: false}), async (
     }
 })
 
-const validateCommentData = require("../validators/commentAddValidator");
+const validateCommentData = require("../../validators/commentAddValidator");
+const UserModel = require("../../models/User.model");
 router.post("/:id/comment/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const { errors, isCorrect } = validateCommentData(req.body);
 

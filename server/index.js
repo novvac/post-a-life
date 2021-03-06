@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 /* Web sockets */
 const { wss } = require("./config/ws");
 
-app.use('/uploads', express.static(path.join(__dirname + "/uploads")));
+app.use('/api/uploads', express.static(path.join(__dirname + "/api/uploads")));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -36,17 +36,9 @@ mongoose.connection.on("error", () => {
     console.log("[DATABASE] [ERR] database is not connected!");
 })
 
-// routing
-const auth = require("./routes/auth.routing");
-const user = require("./routes/user.routing");
-const main = require("./routes/main.routing");
-const post = require("./routes/post.routing");
-const comment = require("./routes/comment.routing");
-app.use("/api/auth/", auth);
-app.use("/api/user/", user);
-app.use("/api/main/", main);
-app.use("/api/post/", post);
-app.use("/api/comment/", comment);
+// api
+const api = require("./api/routes/index");
+app.use("/api", api);
 
 const server = app.listen(PORT, () => {
     console.log("Server is running!");

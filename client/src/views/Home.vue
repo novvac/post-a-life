@@ -4,7 +4,7 @@
             <v-col cols="12" :md="8">
                 <new-post class="mb-6"/>
 
-                <posts :ids="user.friends" :visibility="1"/>
+                <infinite-scroll :ids="friends" :visibility="1"/>
             </v-col>
             <v-col cols="12" :md="4">
                 <stories class="mb-5"/>
@@ -25,10 +25,10 @@ export default {
         NewPost: () => import('@/components/Home/newPost'),
         Stories: () => import('@/components/Home/stories'),
         Events: () => import('@/components/Home/events'),
-        Posts: () => import("@/components/posts"),
+        InfiniteScroll: () => import("@/components/infiniteScroll"),
     },
     computed: {
-        ...mapGetters(['user'])
+        ...mapGetters(['friends'])
     }
 }
 </script>

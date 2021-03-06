@@ -1,10 +1,11 @@
 <template>
     <div class="posts">
-        <post
+        <component
+            :is="component"
             v-for="feed in feeds"
             :key="feed.id"
-            :post="feed"
-            class="mb-4"
+            :data="feed"
+            class="mb-4 infinite-el"
             v-bind="$attrs"
         />
 
@@ -36,17 +37,22 @@ import {
 export default {
     name: "Posts",
     props: {
-        ids: {
-            type: Array,
-            required: true,
-        },
         visibility: {
             type: Number,
             default: 0,
+        },
+        component: {
+            type: String,
+            default: 'post'
+        },
+        endpoint: {
+            type: String,
+            default: 'post',
         }
     },
     components: {
         Post: () => import("@/components/Home/post"),
+        EventInline: () => import('@/components/Events/inline')
     },
     data() {
         return {
@@ -68,22 +74,19 @@ export default {
                 let dt = new Date();
                 this.timestamp = dt.getTime();
             }
+            console.log("OK");
 
             this.loading = true;
-            this.$http.post("http://192.168.43.5:3000/api/post/posts/", {
-                ids: this.ids,
-                timestamp: this.timestamp,
-                skip: this.skip,
-                limit: this.limit,
-                visibility: this.visibility,
-            })
+            const computedURL = `${this.endpoint}/${this.skip}-${this.limit}-${this.visibility}-${this.timestamp}`
+            this.$http.get(computedURL)
                 .then(res => {
-                    if(res.data.posts.length < this.limit)
+                    if(res.data.length < this.limit)
                         this.end = true;
 
-                    document.addEventListener("scroll", this.handleScroll);
+                    if(res.data.length > 0)
+                        document.addEventListener("scroll", this.handleScroll);
 
-                    this.feeds = this.feeds.concat(res.data.posts);
+                    this.feeds = this.feeds.concat(res.data);
                     this.loading = false;
                     this.skip += this.limit;
                     this.loadNow = false;
@@ -96,7 +99,7 @@ export default {
                 })
         },
         handleScroll() {
-            let rect = document.querySelectorAll(".post")[document.querySelectorAll(".post").length - 1].getBoundingClientRect();
+            let rect = document.querySelectorAll(".infinite-el")[document.querySelectorAll(".infinite-el").length - 1].getBoundingClientRect();
 
             if(
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&

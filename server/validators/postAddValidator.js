@@ -6,7 +6,7 @@ function validatePostData(data) {
 
     const mind = data.mind ? data.mind : "";
 
-    if(Validator.isEmpty(mind))
+    if(Validator.isEmpty(mind, {ignore_whitespace: true}))
         errors.mind = "Uzupełnij to pole!";
     else if(!Validator.isLength(mind, {min: 2, max: 2048}))  // TODO: min: 16
         errors.mind = "To pole musi zawierać od 12 do 2048 znaków!";

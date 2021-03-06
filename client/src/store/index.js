@@ -10,9 +10,15 @@ export default new Vuex.Store({
   state: {
     user: null,
     friends: null,
+    userEvents: null,
+    invitationsEvents: [],
+    interestedEvents: [],
+    participantEvents: [],
     receivedInvitations: [],
     socket: null,
     newMessage: false,
+    eventsDialog: null,
+    inviteFriends: {dialog: false},
   },
   getters: {
     user(store) {
@@ -24,12 +30,30 @@ export default new Vuex.Store({
     friends(store) {
       return store.friends;
     },
+    userEvents(store) {
+      return store.userEvents;
+    },
+    invitationsEvents(store) {
+      return store.invitationsEvents;
+    },
+    interestedEvents(store) {
+      return store.interestedEvents;
+    },
+    participantEvents(store) {
+      return store.participantEvents;
+    },
     receivedInvitations(store) {
       return store.receivedInvitations;
     },
     newMessage(store) {
       return store.newMessage;
     },
+    eventsDialog(store) {
+      return store.eventsDialog;
+    },
+    inviteFriends(store) {
+      return store.inviteFriends;
+    }
   },
   mutations: {
     setUser(store, payload) {
@@ -44,6 +68,18 @@ export default new Vuex.Store({
       else
         store.friends = null;
     },
+    setUserEvents(store, payload) {
+      store.userEvents = payload;
+    },
+    setInvitationsEvents(store, payload) {
+      store.invitationsEvents = payload;
+    },
+    setInterestedEvents(store, payload) {
+      store.interestedEvents = payload;
+    },
+    setParticipantEvents(store, payload) {
+      store.participantEvents = payload;
+    },
     setSocket(store, payload) {
       if(!payload) {
         store.socket.close();
@@ -57,6 +93,12 @@ export default new Vuex.Store({
     },
     setNewMessage(store, payload) {
       store.newMessage = payload;
+    },
+    setEventsDialog(store, payload) {
+      store.eventsDialog = payload;
+    },
+    setInviteFriends(store, payload) {
+      store.inviteFriends = payload;
     }
   },
   actions: {
@@ -95,8 +137,8 @@ export default new Vuex.Store({
     LOAD_USER({commit}) {
       return new Promise((resolve, reject) => {
         axios.all([
-          axios.get("http://192.168.43.5:3000/api/user/id/"),
-          axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+          axios.get("user/id/"),
+          axios.get("user/friends/type/1")
         ]).then(axios.spread((user, friends) => {
           commit('setUser', user.data.user);
           commit('setFriends', friends.data.list);
@@ -114,7 +156,7 @@ export default new Vuex.Store({
     },
     LOAD_FRIENDS({commit}) {
       return new Promise((resolve, reject) => {
-        axios.get("http://192.168.43.5:3000/api/user/friends/type/1")
+        axios.get("user/friends/type/1")
           .then(res => {
             commit("setFriends", res.data.list);
             resolve(null);
@@ -129,9 +171,49 @@ export default new Vuex.Store({
           })
       })
     },
+    async LOAD_INVITATIONS_EVENTS({commit}) {
+      await axios.get("event/invitations/").then(res => {
+        commit('setInvitationsEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
+      })
+    },
+    async LOAD_USER_EVENTS({commit}) {
+      await axios.get("event/user-events").then(res => {
+        commit('setUserEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
+      })
+    },
+    async LOAD_INTERESTED_EVENTS({commit}) {
+      await axios.get("event/interested").then(res => {
+        commit('setInterestedEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
+      })
+    },
+    async LOAD_PARTICIPANT_EVENTS({commit}) {
+      await axios.get("event/participant").then(res => {
+        commit('setParticipantEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
+      })
+    },
     INVITATION_MANAGER({commit}, payload) {
       return new Promise((resolve, reject) => {
-        let url = "http://192.168.43.5:3000/api/user/friend/";
+        let url = "user/friend/";
         let data = {}
 
         if(payload.action === "put" || payload.action === "delete") {
@@ -157,7 +239,7 @@ export default new Vuex.Store({
       })
     },
     LOAD_INVITATIONS({commit}) {
-      axios.get("http://192.168.43.5:3000/api/user/friends/type/3")
+      axios.get("user/friends/type/3")
         .then(res => {
           commit("setReceivedInvitations", res.data.list);
         })
@@ -171,6 +253,23 @@ export default new Vuex.Store({
     },
     RESET_NEW_MESSAGE({commit}) {
       commit('setNewMessage', false);
+    },
+    SET_EVENTS_DIALOG({commit}, payload) {
+      commit('setEventsDialog', payload);
+    },
+    SET_INVITE_FRIENDS({commit}, payload) {
+      commit('setInviteFriends', payload);
+    },
+    async DELETE_EVENT_INVITE({commit}, payload) {
+      await axios.delete('event/invitation/' + payload).then(res => {
+        this.dispatch("LOAD_INVITATIONS_EVENTS");
+      }).catch(err => {
+        if(err.response) {
+          if(err.reponse.status === 401)
+            this.dispatch("LOGOUT");
+        }
+        console.log(err);
+      })
     }
   },
   modules: {

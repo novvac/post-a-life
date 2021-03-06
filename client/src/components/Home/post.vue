@@ -3,18 +3,18 @@
         <template v-slot:title>
             <div class="d-flex align-center">
                 <v-avatar size="36">
-                    <v-img :src="'http://192.168.43.5:3000/uploads/' + post.owner.avatar"></v-img>
+                    <v-img :src="$http.defaults.baseURL + 'uploads/' + data.owner.avatar"></v-img>
                 </v-avatar>
 
                 <div class="ml-2">
-                    <router-link :to="'/app/user/' + post.owner.short_id" class="d-block">
-                        {{post.owner.firstName}} {{post.owner.lastName}}
+                    <router-link :to="'/app/user/' + data.owner.short_id" class="d-block">
+                        {{data.owner.firstName}} {{data.owner.lastName}}
                     </router-link>
                     <p class="ma-0 font-weight-normal caption grey--text">
                         {{createdAt}}
                         <span class="mx-2">•</span>
-                        <v-icon x-small v-if="post.visibility == 1">mdi-account-multiple</v-icon>
-                        <v-icon x-small v-else-if="post.visibility == 0">mdi-web</v-icon>
+                        <v-icon x-small v-if="data.visibility == 1">mdi-account-multiple</v-icon>
+                        <v-icon x-small v-else-if="data.visibility == 0">mdi-web</v-icon>
                     </p>
                 </div>
             </div>
@@ -27,20 +27,20 @@
         </template>
 
         <p class="body-2 ma-0 my-5 black--textm mx-5">
-            {{post.mind}}
+            {{data.mind}}
         </p>
 
         <v-divider></v-divider>
 
         <v-card-actions class="pa-0">
             <v-btn tile text class="caption text-capitalize py-6" @click="addLike">
-                <v-icon small class="mr-2" color="red" v-if="post.likes.includes(user._id)">mdi-heart</v-icon>
+                <v-icon small class="mr-2" color="red" v-if="data.likes.includes(user._id)">mdi-heart</v-icon>
                 <v-icon small class="mr-2" v-else>mdi-heart-outline</v-icon>
-                <b class="mr-1">{{post.likes.length}}</b> Polubień
+                <b class="mr-1">{{data.likes.length}}</b> Polubień
             </v-btn>
             <v-btn tile text class="caption text-capitalize py-6" :disabled="comments.loading" @click="toggleComments()">
                 <v-icon small class="mr-2">mdi-comment-outline</v-icon>
-                <b class="mr-1">{{post.comments.length}}</b> Komentarze
+                <b class="mr-1">{{data.comments.length}}</b> Komentarze
             </v-btn>
         </v-card-actions>
 
@@ -61,7 +61,7 @@
                 <v-btn
                     small text
                     class="caption text-none grey lighten-3"
-                    v-if="comments.list.length < post.comments.length"
+                    v-if="comments.list.length < data.comments.length"
                     @click="loadComments()"
                 >
                     Pokaż wcześniejsze
@@ -69,13 +69,13 @@
 
                 <v-spacer></v-spacer>
 
-                <span>{{comments.list.length}} z {{post.comments.length}}</span>
+                <span>{{comments.list.length}} z {{data.comments.length}}</span>
             </v-row>
         </div>
 
         <div class=" mx-5 mt-5 d-flex">
             <v-avatar size="36">
-                <v-img :src="'http://192.168.43.5:3000/uploads/' + user.avatar"></v-img>
+                <v-img :src="$http.defaults.baseURL + 'uploads/' + user.avatar"></v-img>
             </v-avatar>
 
             <v-text-field
@@ -119,7 +119,7 @@ import {
 export default {
     name: "Post",
     props: {
-        post: {
+        data: {
             type: Object,
             required: true,
         }
@@ -148,7 +148,7 @@ export default {
     computed: {
         ...mapGetters(['user']),
         createdAt() { 
-            const dt = new Date(this.post.createdAt);
+            const dt = new Date(this.data.createdAt);
 
             let date = dt.getDate();
             date = date < 10 ? '0'+date : date;
@@ -168,13 +168,13 @@ export default {
     methods: {
         ...mapActions(['LOGOUT']),
         addLike() {
-            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/like/";
+            const url = "post/" + this.data._id + "/like/";
             this.$http.put(url)
                 .then(res => {
                     if(res.data.added) {
-                        this.post.likes.push(this.user._id);
+                        this.data.likes.push(this.user._id);
                     } else {
-                        this.post.likes.splice(this.post.likes.indexOf(this.user._id), 1);
+                        this.data.likes.splice(this.data.likes.indexOf(this.user._id), 1);
                     }
                 })
                 .catch(err => {
@@ -188,8 +188,8 @@ export default {
         addComment() {
             this.errors = {};
             this.newComment.loading = true;
-            console.log(this.post._id)
-            const url = "http://192.168.43.5:3000/api/post/" + this.post._id + "/comment/";
+            console.log(this.data._id)
+            const url = "post/" + this.data._id + "/comment/";
             this.$http.post(url, {comment: this.newComment.model})
                 .then(res => {
                     this.newComment.loading = false;
@@ -207,7 +207,7 @@ export default {
         },
         loadComments() {
             this.comments.loading = true;
-            this.$http.post(`http://192.168.43.5:3000/api/post/${this.post._id}/comments`, {
+            this.$http.post(`post/${this.data._id}/comments`, {
                 timestamp: this.comments.timestamp,
                 skip: this.comments.skip,
                 limit: this.comments.limit,
@@ -229,7 +229,7 @@ export default {
                 })
         },
         toggleComments() {
-            if(this.post.comments.length > 0) {
+            if(this.data.comments.length > 0) {
                 if(this.comments.list.length > 0) {
                     this.comments.list = [];
                 } else {

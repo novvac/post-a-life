@@ -11,8 +11,8 @@
         </base-card>
 
         <base-card without-padding v-else-if="!loading && !msg">
-            <profile-banner :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.banner"/>
-            <avatar :owner="id === user.short_id ? true : false" :src="'http://192.168.43.5:3000/uploads/' + loadedUser.avatar"/>
+            <profile-banner :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.banner"/>
+            <avatar :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.avatar"/>
 
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>
@@ -121,7 +121,7 @@ export default {
             friendButton: {},
             tab: null,
             tabs: [
-                {icon: "folder-outline", text: "Posty", component: "posts", data: {
+                {icon: "folder-outline", text: "Posty", component: "infinite-scroll", data: {
                     ids: [],
                     visibility: 0,
                 }},
@@ -139,7 +139,7 @@ export default {
         avatar: () => import("@/components/User/avatar"),
         newPost: () => import("@/components/Home/newPost"),
 
-        posts: () => import('@/components/posts'),
+        infiniteScroll: () => import('@/components/infiniteScroll'),
     },
     methods: {
         ...mapActions(['LOGOUT']),
@@ -150,8 +150,8 @@ export default {
             this.loading = true;
 
             this.$http.all([
-                this.$http.get("http://192.168.43.5:3000/api/user/id/" + this.id),
-                this.$http.get("http://192.168.43.5:3000/api/user/friend/" + this.id),
+                this.$http.get("user/id/" + this.id),
+                this.$http.get("user/friend/" + this.id),
             ])
                 .then(this.$http.spread((loadedUser, friendStatus) => {
                     this.loadedUser = loadedUser.data;

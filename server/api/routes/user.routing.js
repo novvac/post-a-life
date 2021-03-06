@@ -1,23 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.model");
-const Friend = require("../models/Friend.model");
-const Message = require("../models/Message.model");
-const passport = require("../passport/index");
+const User = require("../../models/User.model");
+const Friend = require("../../models/Friend.model");
+const Message = require("../../models/Message.model");
+const passport = require("../../passport/index");
 const multer = require('multer');
 const mongoose = require("mongoose");
-const storage = require('../config/multer');
-const { clients, socketExec } = require("../config/ws");
+const storage = require('../../config/multer');
+const { clients, socketExec } = require("../../config/ws");
 
 const upload = multer({storage: storage});
 
-// GET CURRENT LOGGED USER
+// ! ############################
+// ! GET CURRENT LOGGED USER
+// ! ############################
 router.get("/id/", passport.authenticate("jwt", {session: false}), (req, res) => {
     let {password, __v, email, friends, ...result} = req.user._doc;
     res.status(200).json({user: result});
 })
 
-// GET USER WITH :id (short_id or ObjectID)
+// ! ##############################################
+// ! GET USER WITH :id (short_id or ObjectID)
+// ! ##############################################
 router.get('/id/:id', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let user = null;
 
@@ -25,7 +29,7 @@ router.get('/id/:id', passport.authenticate("jwt", {session: false}), async (req
     var regex = new RegExp("^[0-9a-fA-F]{24}$")
     if(regex.test(req.params.id)) {
         user = await User.findOne({
-            _id: mongoose.Types.ObjectId(req.params.id)
+            _id: mongoose.Types.ObjectId(req.params.id),
         })
     } else {
         user = await User.findOne({
@@ -42,7 +46,9 @@ router.get('/id/:id', passport.authenticate("jwt", {session: false}), async (req
     }
 })
 
-// UPLOAD NEW BANNER AND SET THEM FOR LOGGED USER
+// ! ####################################################
+// ! UPLOAD NEW BANNER AND SET THEM FOR LOGGED USER
+// ! ####################################################
 router.post("/banner/", passport.authenticate("jwt", {session: false}), upload.single('banner'), (req,res) => {
     User.findOne({_id: req.user.id}, (err, user) => {
         if(err)
@@ -63,7 +69,9 @@ router.post("/banner/", passport.authenticate("jwt", {session: false}), upload.s
     })
 })
 
-// UPLOAD NEW AVATAR AND SET THEM FOR LOGGED USER
+// ! ####################################################
+// ! UPLOAD NEW AVATAR AND SET THEM FOR LOGGED USER
+// ! ####################################################
 router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.single('avatar'), (req, res) => {
     User.findOne({_id: req.user.id}, (err, user) => {
         if(err)
@@ -88,6 +96,9 @@ router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.s
 // ?    1   - friends
 // ?    2   - pending
 // ?    3   - received
+// ! ####################################################
+// ! GET FRIENDS
+// ! ####################################################
 router.get("/friends/type/:type", passport.authenticate("jwt", {session: false}), async(req, res) => {
     let user = await User.findOne(
         {_id: req.user.id},
@@ -113,6 +124,9 @@ router.get("/friends/type/:type", passport.authenticate("jwt", {session: false})
     res.status(200).json({list: friendsList});
 })
 
+// ! ####################################################
+// ! GET FRIEND STATUS FOR USER (ID IN BODY)
+// ! ####################################################
 router.get("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const recipient = await User.findOne({short_id: req.params.id});
 
@@ -133,6 +147,9 @@ router.get("/friend/:id", passport.authenticate("jwt", {session: false}), async 
         return res.status(200).json({status: 0})
 })
 
+// ! ####################################################
+// ! CREATE NEW RELATION BETWEEN USERS (SEND INVITE)
+// ! ####################################################
 router.post("/friend/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const recipient = await User.findOne({short_id: req.body.id});
 
@@ -165,6 +182,9 @@ router.post("/friend/", passport.authenticate("jwt", {session: false}), async (r
         res.status(200).json({status: req_doc.friendStatus});
     }
 })
+// ! ####################################################
+// ! CHANGE RELATION BETWEEN USERS TO 'FRIENDS'
+// ! ####################################################
 router.put("/friend/:id", passport.authenticate("jwt", {session: false}), async (req, res) => {
     const recipient = await User.findOne({short_id: req.params.id});
 
@@ -188,6 +208,9 @@ router.put("/friend/:id", passport.authenticate("jwt", {session: false}), async 
         res.status(200).json({status: 1});
     }
 })
+// ! ####################################################
+// ! DELETE RELATION BETWEEN USERS
+// ! ####################################################
 router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), async(req, res) => {
     let recipient = await User.findOne({short_id: req.params.id});
 
@@ -223,6 +246,9 @@ router.delete("/friend/:id", passport.authenticate("jwt", {session: false}), asy
     }
 });
 
+// ! ############################
+// ! GET ONLINE FRIENDS
+// ! ############################
 router.post("/active-friends/", passport.authenticate("jwt", {session: false}), (req, res) => {
     let mapClients = clients.map((item) => item.id);
 
@@ -239,7 +265,9 @@ router.post("/active-friends/", passport.authenticate("jwt", {session: false}), 
     res.status(200).json(dataToSend);
 })
 
+// ! ############################
 // ! GET LASTEST MESSAGES
+// ! ############################
 router.get("/:id/messages/:skip-:limit", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let recipient = null;
 
@@ -283,7 +311,9 @@ router.get("/:id/messages/:skip-:limit", passport.authenticate("jwt", {session: 
     }
 })
 
+// ! #######################
 // ! ADD NEW MESSAGE
+// ! #######################
 router.post("/:id/message/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let recipient = await User.findOne({
         short_id: req.params.id
@@ -305,7 +335,9 @@ router.post("/:id/message/", passport.authenticate("jwt", {session: false}), asy
     res.status(200).json('sucess');
 })
 
+// ! ############################
 // ! LOAD UNREAD MESSAGES
+// ! ############################
 router.get("/unread-messages/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let result = await Message.aggregate([
         {$project: {
