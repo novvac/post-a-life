@@ -1,7 +1,7 @@
 <template>
     <base-card v-if="events.length > 0">
         <template v-slot:title>
-            Twoje wydarzenia
+            Zainteresowany
         </template>
 
         <template v-slot:action>
@@ -27,19 +27,31 @@
 
 <script>
 import {
+    mapGetters,
     mapActions,
 } from 'vuex';
 
 export default {
-    name: "OwnerEvents",
-    props: {
-        events: {
-            type: Array,
-            required: true,
+    name: "Interested",
+    data() {
+        return {
+            events: [],
         }
+    },
+    computed: {
+        ...mapGetters(["interestedEvents"]),
     },
     methods: {
         ...mapActions(['SET_EVENTS_DIALOG']),
+        ...mapActions(['LOAD_INTERESTED_EVENTS']),
+    },
+    created() {
+        this.LOAD_INTERESTED_EVENTS();
+    },
+    watch: {
+        interestedEvents() {
+            this.events = this.interestedEvents;
+        }
     }
 }
 </script>

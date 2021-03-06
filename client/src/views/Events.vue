@@ -30,6 +30,7 @@
             <v-col cols="12" :md="4">
                 <owner-events :events="userEvents"/>
                 <invitations class="mt-5"/>
+                <interested class="mt-5"/>
             </v-col>
 
             <v-col cols="12" :md="8">
@@ -52,13 +53,7 @@
                     ></v-select>
                 </v-row>
 
-                <div class="events-list mt-5">
-                    <event-inline src="najman.png" :event="{title: 'Nazwa nowego wydarzenia'}"/>
-                    <event-inline class="mt-3" src="event-bg-1.png" :event="{title: 'Zdam maturę na 30 percent'}"/>
-                    <event-inline class="mt-3" src="event-bg-2.png" :event="{title: 'POLSKA DLA POLAKÓW - nie no żartuje xd'}"/>
-                </div>
-
-                <infinite-scroll endpoint="event" component="event-inline"/>
+                <infinite-scroll class="mt-5" endpoint="event" component="event-inline"/>
             </v-col>
         </v-row>
 
@@ -95,6 +90,7 @@ export default {
 
         OwnerEvents: () => import('@/components/Events/widgets/owner'),
         Invitations: () => import('@/components/Events/widgets/invitations'),
+        Interested: () => import('@/components/Events/widgets/interested'),
 
         NewEvent: () => import('@/components/Events/dialog/newEvent'),
         EventDetails: () => import('@/components/Events/dialog/eventDetails'),
@@ -110,7 +106,7 @@ export default {
         ...mapActions(['LOAD_USER_EVENTS']),
         loadUserEvents() {
             this.LOAD_USER_EVENTS();
-        }
+        },
     },
     created() {
         this.loadUserEvents();

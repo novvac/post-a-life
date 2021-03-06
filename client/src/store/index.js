@@ -11,6 +11,7 @@ export default new Vuex.Store({
     user: null,
     friends: null,
     userEvents: null,
+    interestedEvents: null,
     receivedInvitations: [],
     socket: null,
     newMessage: false,
@@ -28,6 +29,9 @@ export default new Vuex.Store({
     },
     userEvents(store) {
       return store.userEvents;
+    },
+    interestedEvents(store) {
+      return store.interestedEvents;
     },
     receivedInvitations(store) {
       return store.receivedInvitations;
@@ -54,6 +58,9 @@ export default new Vuex.Store({
     },
     setUserEvents(store, payload) {
       store.userEvents = payload;
+    },
+    setInterestedEvents(store, payload) {
+      store.interestedEvents = payload;
     },
     setSocket(store, payload) {
       if(!payload) {
@@ -145,7 +152,17 @@ export default new Vuex.Store({
     },
     async LOAD_USER_EVENTS({commit}) {
       await axios.get("event/user-events").then(res => {
-        commit('setUserEvents', res.data.events);
+        commit('setUserEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
+      })
+    },
+    async LOAD_INTERESTED_EVENTS({commit}) {
+      await axios.get("event/interested").then(res => {
+        commit('setInterestedEvents', res.data);
       }).catch(err => {
         if(err.response) {
           if(err.response.status === 401)

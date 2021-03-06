@@ -32,7 +32,19 @@ router.get('/user-events/', passport.authenticate("jwt", {session: false}), asyn
         title: 1,
     })
 
-    return res.status(200).json({events: events});
+    return res.status(200).json(events);
+})
+
+// ! ###############################
+// ! GET USER INTERESTED EVENTS
+// ! ###############################
+router.get('/interested/', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    let events = await Event.find({
+        owner: {$ne: req.user.id},
+        interested: {$in: req.user.id}
+    });
+
+    return res.status(200).json(events);
 })
 
 // ! ##############################
@@ -76,6 +88,37 @@ router.post("/:id/image", passport.authenticate("jwt", {session: false}), upload
         event.image = req.file.filename;
         await event.save();
         return res.status(200).json('success');
+    } else {
+        return res.status(404).json('error');
+    }
+})
+
+// ! ###############################
+// ! UPDATE EVENT
+// ! ###############################
+router.put("/:id/:type", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let event = await Event.findById(req.params.id);
+
+    if(event) {
+        const type = req.params.type;
+
+        const isInterested = event.interested.includes(req.user.id);
+        const isParticipant = event.participants.includes(req.user.id);
+
+        if(isInterested)
+            event.interested.splice(event.interested.indexOf(req.user.id), 1);
+        if(isParticipant)
+            event.participants.splice(event.participants.indexOf(req.user.id), 1);
+
+        if(type === 'interested' && !isInterested) {
+            event.interested.push(req.user.id);
+        } else if(type === 'participant' && !isParticipant) {
+            event.participants.push(req.user.id);
+        }
+
+        await event.save();
+
+        return res.status(200).json(event);
     } else {
         return res.status(404).json('error');
     }

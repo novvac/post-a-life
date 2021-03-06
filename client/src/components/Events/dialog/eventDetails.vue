@@ -30,11 +30,11 @@
                     </div>
 
                     <div class="mt-5 mt-md-0">
-                        <v-btn class="caption text-none button" text>
+                        <v-btn class="caption text-none button" text :color="isInterested ? 'primary' : undefined" @click="eventAction('interested')">
                             <v-icon small class="mr-2">mdi-eye</v-icon>
                             Zainteresowany
                         </v-btn>
-                        <v-btn class="caption text-none ml-3 button" text>
+                        <v-btn class="caption text-none ml-3 button" text :color="isParticipant ? 'primary' : undefined" @click="eventAction('participant')">
                             <v-icon small class="mr-2">mdi-check</v-icon>
                             Wezmę udział
                         </v-btn>
@@ -74,9 +74,17 @@ export default {
     },
     computed: {
         ...mapGetters(['eventsDialog']),
+        ...mapGetters(['user']),
+        isInterested() {
+            return this.event.interested.includes(this.user._id);
+        },
+        isParticipant() {
+            return this.event.participants.includes(this.user._id);
+        }
     },
     methods: {
         ...mapActions(['LOGOUT']),
+        ...mapActions(['LOAD_INTERESTED_EVENTS']),
         async loadEvent() {
             await this.$http.get("event/" + this.eventsDialog.id).then(res => {
                 this.event = res.data.event;
@@ -88,7 +96,34 @@ export default {
 
                 console.log(err);
             })
-        }
+        },
+        eventAction(type) {
+            this.$http.put(`event/${this.event._id}/${type}`).then(res => {
+
+                let interested = this.event.interested.includes(this.user._id);
+                let participant = this.event.participants.includes(this.user._id);
+
+                if(interested)
+                    this.event.interested.splice(this.event.interested.indexOf(this.user._id), 1);
+                if(participant)
+                    this.event.participants.splice(this.event.participants.indexOf(this.user._id), 1);
+
+                if(type === 'interested' && !interested) {
+                    this.event.interested.push(this.user._id);
+                } else if(type === 'participant' && !participant) {
+                    this.event.participants.push(this.user._id);
+                }
+
+                this.LOAD_INTERESTED_EVENTS();
+            }).catch(err => {
+                if(err.response) {
+                    if(err.response.status === 401)
+                        this.LOGOUT();
+                }
+
+                console.log(err);
+            })
+        },
     },
     created() {
         this.loadEvent();

@@ -2,20 +2,20 @@
     <base-card class="ma-0 event-inline py-3 py-md-0" dense to="#" @click="SET_EVENTS_DIALOG({component: 'event-details', id: data._id})">
         <v-row class="ma-0" align="center">
             <v-col class="d-none d-md-block pa-0" cols="12" :md="3">
-                <v-img :src="$http.defaults.baseURL + 'uploads/' + data.image" style="border-radius:16px" height="120"/>
+                <v-img :src="$http.defaults.baseURL + 'uploads/' + data.image" style="border-radius:16px" height="100"/>
             </v-col>
             <v-col cols="12" :md="9" class="py-0">
                 <div class="d-flex justify-space-between">
                     <div>
                         <v-chip class="caption chip" x-small>
                             <v-icon x-small class="mr-2">mdi-eye</v-icon>
-                            <span>42</span>
+                            <span>{{data.interested.length}}</span>
                             <div class="ml-1">zainteresowanych</div>
                         </v-chip>
 
                         <v-chip class="caption chip ml-2" x-small>
                             <v-icon x-small class="mr-2">mdi-check</v-icon>
-                            <span>92</span>
+                            <span>{{data.participants.length}}</span>
                             <div class="ml-1">weźmie udział</div>
                         </v-chip>      
                     </div>
@@ -30,19 +30,8 @@
                     {{data.title}}
                 </p>
                 <p class="mb-3 pa-0 ma-0 text-truncate caption">
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quae ea nihil accusantium qui distinctio voluptates nulla ratione neque adipisci placeat, aut fugit? Corrupti architecto dignissimos quisquam quam maxime ex vero?
+                    {{data.description}}
                 </p>
-
-                <div class="d-flex"> 
-                    <v-btn text class="caption text-none button" x-small>
-                        <v-icon x-small class="mr-2">mdi-eye</v-icon>
-                        Zainteresowany
-                    </v-btn>
-                    <v-btn text class="caption text-none ml-3 button" x-small>
-                        <v-icon x-small class="mr-2">mdi-check</v-icon>
-                        Wezmę udział
-                    </v-btn>
-                </div>
             </v-col>
         </v-row>
     </base-card>
@@ -50,6 +39,7 @@
 
 <script>
 import {
+    mapGetters,
     mapActions,
 } from 'vuex';
 
