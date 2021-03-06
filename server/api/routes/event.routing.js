@@ -47,6 +47,18 @@ router.get('/interested/', passport.authenticate('jwt', {session: false}), async
     return res.status(200).json(events);
 })
 
+// ! ###############################
+// ! GET USER PARTICIPANT EVENTS
+// ! ###############################
+router.get('/participant/', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    let events = await Event.find({
+        owner: {$ne: req.user.id},
+        participants: {$in: req.user.id}
+    });
+
+    return res.status(200).json(events);
+})
+
 // ! ##############################
 // ! GET EVENT WITH ID
 // ! ##############################

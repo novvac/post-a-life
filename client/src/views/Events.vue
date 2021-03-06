@@ -31,6 +31,7 @@
                 <owner-events :events="userEvents"/>
                 <invitations class="mt-5"/>
                 <interested class="mt-5"/>
+                <participant class="mt-5"/>
             </v-col>
 
             <v-col cols="12" :md="8">
@@ -91,6 +92,7 @@ export default {
         OwnerEvents: () => import('@/components/Events/widgets/owner'),
         Invitations: () => import('@/components/Events/widgets/invitations'),
         Interested: () => import('@/components/Events/widgets/interested'),
+        Participant: () => import('@/components/Events/widgets/participant'),
 
         NewEvent: () => import('@/components/Events/dialog/newEvent'),
         EventDetails: () => import('@/components/Events/dialog/eventDetails'),

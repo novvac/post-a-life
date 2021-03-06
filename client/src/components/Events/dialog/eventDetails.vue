@@ -85,6 +85,7 @@ export default {
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_INTERESTED_EVENTS']),
+        ...mapActions(['LOAD_PARTICIPANT_EVENTS']),
         async loadEvent() {
             await this.$http.get("event/" + this.eventsDialog.id).then(res => {
                 this.event = res.data.event;
@@ -115,6 +116,7 @@ export default {
                 }
 
                 this.LOAD_INTERESTED_EVENTS();
+                this.LOAD_PARTICIPANT_EVENTS();
             }).catch(err => {
                 if(err.response) {
                     if(err.response.status === 401)
