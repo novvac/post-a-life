@@ -66,12 +66,11 @@ router.get('/participant/', passport.authenticate('jwt', {session: false}), asyn
 // ! ###############################
 router.get('/invitations/', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let events = await Event.find({
-        'invited.invited': {$in: req.user.id}
+        owner: {$ne: req.user.id},
+        invited: {$in: req.user.id}
     }).select({
         title: 1,
     });
-
-    console.log(events);
     
     return res.status(200).json(events);
 })
@@ -154,33 +153,30 @@ router.put("/:id/:type/", passport.authenticate("jwt", {session: false}), async 
             let friendsMap = friends.map(item => item.recipient);
 
             for(let friend of friendsMap) {
-                let i=0;
-                let found = false;
-                while(i < event.invited.length) {
-                    let {inviting, invited} = event.invited[i];
-
-                    if(inviting.toString() == req.user.id && invited.toString() == friend.toString()) {
-                        found = true;
-                        break;
-                    }
-
-                    i++;
-                }
-
-                if(!found) {
-                    let obj = {
-                        inviting: req.user.id,
-                        invited: friend
-                    }
-
-                    event.invited.push(obj);
-                }
+                if(!event.invited.includes(friend) && event.owner.toString() != friend.toString() && !event.participants.includes(friend))
+                    event.invited.push(friend);
             }
         }
 
         await event.save();
 
         return res.status(200).json(event);
+    } else {
+        return res.status(404).json('error');
+    }
+})
+
+// ! ###############################
+// ! UPDATE EVENT
+// ! ###############################
+router.delete('/invitation/:id/', passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let event = await Event.findById(req.params.id);
+
+    if(event) {
+        event.invited.splice(event.invited.indexOf(req.user.id), 1);
+        await event.save();
+        
+        return res.status(200).json('success');
     } else {
         return res.status(404).json('error');
     }

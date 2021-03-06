@@ -19,7 +19,17 @@
                 dense
                 @click="SET_EVENTS_DIALOG({component: 'event-details', id: invitation._id})"
             >
-                <v-list-item-title class="body-2 font-weight-bold ml-3">{{invitation.title}}</v-list-item-title>
+                <v-list-item-title class="body-2 font-weight-bold ml-3">
+                    <v-row class="ma-0" align="center">
+                        {{invitation.title}}
+
+                        <v-spacer></v-spacer>
+
+                        <v-btn small icon @click.stop="DELETE_EVENT_INVITE(invitation._id)">
+                            <v-icon small>mdi-close</v-icon>
+                        </v-btn>
+                    </v-row>
+                </v-list-item-title>
             </v-list-item>
         </v-list>
     </base-card>
@@ -44,6 +54,7 @@ export default {
     methods: {
         ...mapActions(['SET_EVENTS_DIALOG']),
         ...mapActions(['LOAD_INVITATIONS_EVENTS']),
+        ...mapActions(['DELETE_EVENT_INVITE']),
     },
     created() {
         this.LOAD_INVITATIONS_EVENTS();

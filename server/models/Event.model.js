@@ -14,14 +14,8 @@ const Event = new Schema({
     },
     image: String,
     invited: [{
-        inviting: {
-            type: mongoose.Types.ObjectId,
-            ref: "User",
-        },
-        invited: {
-            type: mongoose.Types.ObjectId,
-            ref: "User",
-        }
+        type: mongoose.Types.ObjectId,
+        ref: "User",
     }],
     interested: [{
         type: mongoose.Types.ObjectId,

@@ -173,7 +173,6 @@ export default new Vuex.Store({
     },
     async LOAD_INVITATIONS_EVENTS({commit}) {
       await axios.get("event/invitations/").then(res => {
-        console.log(res.data);
         commit('setInvitationsEvents', res.data);
       }).catch(err => {
         if(err.response) {
@@ -261,6 +260,17 @@ export default new Vuex.Store({
     SET_INVITE_FRIENDS({commit}, payload) {
       commit('setInviteFriends', payload);
     },
+    DELETE_EVENT_INVITE({commit}, payload) {
+      axios.delete('event/invitation/' + payload).then(res => {
+        this.dispatch("LOAD_INVITATIONS_EVENTS");
+      }).catch(err => {
+        if(err.response) {
+          if(err.reponse.status === 401)
+            this.dispatch("LOGOUT");
+        }
+        console.log(err);
+      })
+    }
   },
   modules: {
   }
