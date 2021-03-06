@@ -173,6 +173,7 @@ export default new Vuex.Store({
     },
     async LOAD_INVITATIONS_EVENTS({commit}) {
       await axios.get("event/invitations/").then(res => {
+        console.log(res.data);
         commit('setInvitationsEvents', res.data);
       }).catch(err => {
         if(err.response) {

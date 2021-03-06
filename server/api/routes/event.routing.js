@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const passport = require("../../passport/index");
 const Event = require("../../models/Event.model");
@@ -65,7 +66,9 @@ router.get('/participant/', passport.authenticate('jwt', {session: false}), asyn
 // ! ###############################
 router.get('/invitations/', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let events = await Event.find({
-
+        'invited.invited': {$in: req.user.id}
+    }).select({
+        title: 1,
     });
 
     console.log(events);
