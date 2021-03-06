@@ -1,5 +1,5 @@
 <template>
-    <base-card v-if="events.length > 0">
+    <base-card v-if="events.length > 0" class="mt-5">
         <template v-slot:title>
             Zainteresowany
         </template>

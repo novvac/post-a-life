@@ -29,7 +29,7 @@
                         </v-chip>
                     </div>
 
-                    <div class="mt-5 mt-md-0">
+                    <div class="mt-5 mt-md-0" v-if="event.owner !== user._id">
                         <v-btn class="caption text-none button" text :color="isInterested ? 'primary' : undefined" @click="eventAction('interested')">
                             <v-icon small class="mr-2">mdi-eye</v-icon>
                             Zainteresowany
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="d-flex justify-end mt-5 mt-md-0">
-                    <v-btn class="caption text-none button grey lighten-4" text>
+                    <v-btn class="caption text-none button grey lighten-4" text @click="SET_INVITE_FRIENDS({dialog: true, id: event._id})">
                         <v-icon small class="mr-2">mdi-bullhorn</v-icon>
                         Zaproś znajomych
                     </v-btn>
@@ -86,6 +86,7 @@ export default {
         ...mapActions(['LOGOUT']),
         ...mapActions(['LOAD_INTERESTED_EVENTS']),
         ...mapActions(['LOAD_PARTICIPANT_EVENTS']),
+        ...mapActions(['SET_INVITE_FRIENDS']),
         async loadEvent() {
             await this.$http.get("event/" + this.eventsDialog.id).then(res => {
                 this.event = res.data.event;

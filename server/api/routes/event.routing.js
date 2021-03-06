@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("../../passport/index");
 const Event = require("../../models/Event.model");
+const Friend = require('../../models/Friend.model');
 
 const multer = require("multer");
 const storage = require("../../config/multer");
@@ -59,6 +60,19 @@ router.get('/participant/', passport.authenticate('jwt', {session: false}), asyn
     return res.status(200).json(events);
 })
 
+// ! ###############################
+// ! GET USER INVITATIONS EVENTS
+// ! ###############################
+router.get('/invitations/', passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let events = await Event.find({
+
+    });
+
+    console.log(events);
+    
+    return res.status(200).json(events);
+})
+
 // ! ##############################
 // ! GET EVENT WITH ID
 // ! ##############################
@@ -108,24 +122,57 @@ router.post("/:id/image", passport.authenticate("jwt", {session: false}), upload
 // ! ###############################
 // ! UPDATE EVENT
 // ! ###############################
-router.put("/:id/:type", passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.put("/:id/:type/", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let event = await Event.findById(req.params.id);
 
     if(event) {
         const type = req.params.type;
 
-        const isInterested = event.interested.includes(req.user.id);
-        const isParticipant = event.participants.includes(req.user.id);
+        if(type === "interested" || type === "participant") {
+            const isInterested = event.interested.includes(req.user.id);
+            const isParticipant = event.participants.includes(req.user.id);
 
-        if(isInterested)
-            event.interested.splice(event.interested.indexOf(req.user.id), 1);
-        if(isParticipant)
-            event.participants.splice(event.participants.indexOf(req.user.id), 1);
+            if(isInterested)
+                event.interested.splice(event.interested.indexOf(req.user.id), 1);
+            if(isParticipant)
+                event.participants.splice(event.participants.indexOf(req.user.id), 1);
 
-        if(type === 'interested' && !isInterested) {
-            event.interested.push(req.user.id);
-        } else if(type === 'participant' && !isParticipant) {
-            event.participants.push(req.user.id);
+            if(type === 'interested' && !isInterested) {
+                event.interested.push(req.user.id);
+            } else if(type === 'participant' && !isParticipant) {
+                event.participants.push(req.user.id);
+            }
+        } else if(type === 'invitation') {
+            let friends = await Friend.find({
+                friendStatus: 1,
+                requester: {$eq: req.user.id},
+                recipient: {$in: req.body.ids}
+            })
+            let friendsMap = friends.map(item => item.recipient);
+
+            for(let friend of friendsMap) {
+                let i=0;
+                let found = false;
+                while(i < event.invited.length) {
+                    let {inviting, invited} = event.invited[i];
+
+                    if(inviting.toString() == req.user.id && invited.toString() == friend.toString()) {
+                        found = true;
+                        break;
+                    }
+
+                    i++;
+                }
+
+                if(!found) {
+                    let obj = {
+                        inviting: req.user.id,
+                        invited: friend
+                    }
+
+                    event.invited.push(obj);
+                }
+            }
         }
 
         await event.save();

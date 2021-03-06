@@ -29,9 +29,9 @@
         <v-row class="ma-0" style="flex-direction: row-reverse">
             <v-col cols="12" :md="4">
                 <owner-events :events="userEvents"/>
-                <invitations class="mt-5"/>
-                <interested class="mt-5"/>
-                <participant class="mt-5"/>
+                <invitations/>
+                <interested/>
+                <participant/>
             </v-col>
 
             <v-col cols="12" :md="8">
@@ -39,7 +39,7 @@
                     Nadchodzące wydarzenia
                 </span>
 
-                <v-row class="ma-0" align="center" justify="space-between">
+                <!-- <v-row class="ma-0" align="center" justify="space-between">
                     <v-btn color="primary" class="caption py-5 text-none" style="border-radius: 8px">
                         Wszystko
                     </v-btn>
@@ -52,7 +52,7 @@
                         hide-details
                         style="flex: none; border-radius: 8px; box-shadow: 0 !important;"
                     ></v-select>
-                </v-row>
+                </v-row> -->
 
                 <infinite-scroll class="mt-5" endpoint="event" component="event-inline"/>
             </v-col>
@@ -72,6 +72,24 @@
 
                     <component v-if="eventsDialog" :is="eventsDialog.component"/>
                 </div>
+            </base-card>
+        </v-dialog>
+
+        <v-dialog v-model="inviteFriends.dialog" persistent max-width="600" scrollable>
+            <base-card without-padding>
+                <v-row class="ma-0 pa-5" align="center">
+                    <p class="ma-0 pa-0">
+                        Zaproś znajomych
+                    </p>
+
+                    <v-spacer></v-spacer>
+
+                    <v-btn icon @click="SET_INVITE_FRIENDS({dialog: false, id: null})">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                </v-row>
+
+                <component :is="'invite-friends'"/>
             </base-card>
         </v-dialog>
     </div>
@@ -96,16 +114,19 @@ export default {
 
         NewEvent: () => import('@/components/Events/dialog/newEvent'),
         EventDetails: () => import('@/components/Events/dialog/eventDetails'),
+        InviteFriends: () => import('@/components/Events/dialog/inviteFriends'),
         
         InfiniteScroll: () => import('@/components/infiniteScroll'),
     },
     computed: {
         ...mapGetters(['eventsDialog']),
         ...mapGetters(['userEvents']),
+        ...mapGetters(['inviteFriends']),
     },
     methods: {
         ...mapActions(['SET_EVENTS_DIALOG']),
         ...mapActions(['LOAD_USER_EVENTS']),
+        ...mapActions(['SET_INVITE_FRIENDS']),
         loadUserEvents() {
             this.LOAD_USER_EVENTS();
         },

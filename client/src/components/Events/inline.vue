@@ -20,7 +20,7 @@
                         </v-chip>      
                     </div>
 
-                    <v-btn class="caption chip text-none ml-3 button" x-small color="white">
+                    <v-btn class="caption chip text-none ml-3 button" x-small color="white" @click.stop="SET_INVITE_FRIENDS({dialog: true, id: data._id})">
                         <v-icon x-small>mdi-bullhorn</v-icon>
                         <div class="ml-2">Zaproś znajomych</div>
                     </v-btn>           
@@ -52,6 +52,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['SET_INVITE_FRIENDS']),
         ...mapActions(['SET_EVENTS_DIALOG']),
     }
 }

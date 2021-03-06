@@ -11,12 +11,14 @@ export default new Vuex.Store({
     user: null,
     friends: null,
     userEvents: null,
-    interestedEvents: null,
-    participantEvents: null,
+    invitationsEvents: [],
+    interestedEvents: [],
+    participantEvents: [],
     receivedInvitations: [],
     socket: null,
     newMessage: false,
     eventsDialog: null,
+    inviteFriends: {dialog: false},
   },
   getters: {
     user(store) {
@@ -30,6 +32,9 @@ export default new Vuex.Store({
     },
     userEvents(store) {
       return store.userEvents;
+    },
+    invitationsEvents(store) {
+      return store.invitationsEvents;
     },
     interestedEvents(store) {
       return store.interestedEvents;
@@ -45,6 +50,9 @@ export default new Vuex.Store({
     },
     eventsDialog(store) {
       return store.eventsDialog;
+    },
+    inviteFriends(store) {
+      return store.inviteFriends;
     }
   },
   mutations: {
@@ -62,6 +70,9 @@ export default new Vuex.Store({
     },
     setUserEvents(store, payload) {
       store.userEvents = payload;
+    },
+    setInvitationsEvents(store, payload) {
+      store.invitationsEvents = payload;
     },
     setInterestedEvents(store, payload) {
       store.interestedEvents = payload;
@@ -85,6 +96,9 @@ export default new Vuex.Store({
     },
     setEventsDialog(store, payload) {
       store.eventsDialog = payload;
+    },
+    setInviteFriends(store, payload) {
+      store.inviteFriends = payload;
     }
   },
   actions: {
@@ -155,6 +169,16 @@ export default new Vuex.Store({
             
             reject(err);
           })
+      })
+    },
+    async LOAD_INVITATIONS_EVENTS({commit}) {
+      await axios.get("event/invitations/").then(res => {
+        commit('setInvitationsEvents', res.data);
+      }).catch(err => {
+        if(err.response) {
+          if(err.response.status === 401)
+            return this.dispatch("LOGOUT");
+        }
       })
     },
     async LOAD_USER_EVENTS({commit}) {
@@ -232,7 +256,10 @@ export default new Vuex.Store({
     },
     SET_EVENTS_DIALOG({commit}, payload) {
       commit('setEventsDialog', payload);
-    }
+    },
+    SET_INVITE_FRIENDS({commit}, payload) {
+      commit('setInviteFriends', payload);
+    },
   },
   modules: {
   }
