@@ -8,6 +8,7 @@ const multer = require('multer');
 const mongoose = require("mongoose");
 const storage = require('../../config/multer');
 const { clients, socketExec } = require("../../config/ws");
+const { Router } = require("express");
 
 const upload = multer({storage: storage});
 
@@ -69,6 +70,13 @@ router.post("/banner/", passport.authenticate("jwt", {session: false}), upload.s
     })
 })
 
+// ! ##########################
+// ! GET LOGGED USER BANNER
+// ! ##########################
+router.get("/banner/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    return res.status(200).json(req.user.banner);
+})
+
 // ! ####################################################
 // ! UPLOAD NEW AVATAR AND SET THEM FOR LOGGED USER
 // ! ####################################################
@@ -90,6 +98,13 @@ router.post("/avatar/", passport.authenticate("jwt", {session: false}), upload.s
             res.status(200).json('success');
         }
     })
+})
+
+// ! ##########################
+// ! GET LOGGED USER AVATAR
+// ! ##########################
+router.get("/avatar/", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    return res.status(200).json(req.user.avatar);
 })
 
 // ! type:

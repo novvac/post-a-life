@@ -11,8 +11,8 @@
         </base-card>
 
         <base-card without-padding v-else-if="!loading && !msg">
-            <profile-banner :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.banner"/>
-            <avatar :owner="id === user.short_id ? true : false" :src="$http.defaults.baseURL + 'uploads/' + loadedUser.avatar"/>
+            <profile-banner :owner="id === user.short_id ? true : false" :src="loadedUser.banner"/>
+            <avatar :owner="id === user.short_id ? true : false" :src="loadedUser.avatar"/>
 
             <div>
                 <p class="ma-0 text-center mt-4 title black--text">{{loadedUser.firstName}} {{loadedUser.lastName}}</p>
@@ -101,7 +101,26 @@
 
         <base-card v-else>
             {{msg}}
-        </base-card>   
+        </base-card>
+
+        <base-snackbar
+            v-model="userSnackbar.dialog"
+            timeout="3000"
+            :color="userSnackbar.color"
+            fixed
+            top
+            right
+        >
+            <v-row class="ma-0" align="center" justify="space-between">
+                <div>
+                    {{userSnackbar.msg}}
+                </div>
+
+                <v-btn icon @click="SET_USER_SNACKBAR({dialog: false, msg: null, color: null})">
+                    <v-icon small>mdi-close</v-icon>
+                </v-btn>
+            </v-row>
+        </base-snackbar>
     </div>
 </template>
 
@@ -133,6 +152,7 @@ export default {
     },
     computed: {
         ...mapGetters(['user']),
+        ...mapGetters(['userSnackbar']),
         id() {
             return this.$route.params.id;
         },
@@ -147,6 +167,7 @@ export default {
     methods: {
         ...mapActions(['LOGOUT']),
         ...mapActions(['INVITATION_MANAGER']),
+        ...mapActions(['SET_USER_SNACKBAR']),
         loadUser() {
             this.msg = null;
             this.loadedUser = {},

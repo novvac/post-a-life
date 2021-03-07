@@ -10,11 +10,15 @@
             accept="image/png, image/jpeg, image/jpg"
             :rules="rules"
         ></v-file-input>
-        <v-img :src="src" height="100%"></v-img>
+        <v-img :src="$http.defaults.baseURL + 'uploads/' + (banner ? banner : src)" height="100%"></v-img>
     </div>
 </template>
 
 <script>
+import {
+    mapActions,
+} from 'vuex';
+
 export default {
     name: "UserProfileBanner",
     props: {
@@ -30,25 +34,39 @@ export default {
     data() {
         return {
             selectedFile: null,
+            banner: null,
             rules: [
                 value => !value || value.size < 4000000 || "Wielkość obrazu nie może przekraczać 4MB"
             ]
         }
     },
     methods: {
+        ...mapActions(['SET_USER_SNACKBAR']),
+        ...mapActions(['LOGOUT']),
         changeBanner() {
             const formData = new FormData();
             formData.append("banner", this.selectedFile);
-            this.$http.post("user/banner/", formData)
-                .then(res => {
-                    // TODO: success message
-                    // console.log(res);
-                })
-                .catch(err => {
-                    // TODO: show error
-                    // console.log(err);
-                })
+            if(this.selectedFile) {
+                this.$http.post("user/banner/", formData)
+                    .then(res => {
+                        this.SET_USER_SNACKBAR({dialog: true, msg: "Baner został zmieniony! ", color: "success"});
+                        this.$http.get("user/banner/").then(res => {
+                            this.banner = res.data;
+                        })
+                    })
+                    .catch(err => {
+                        if(err.response) {
+                            if(err.response.status === 401)
+                                return this.LOGOUT();
+                        }
+
+                        this.SET_USER_SNACKBAR({dialog: true, msg: "Nie udało się zmienić banera!", color: "error"})
+                    })
+            }
         }
+    },
+    created() {
+        console.log(this.banner);
     }
 }
 </script>

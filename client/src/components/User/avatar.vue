@@ -1,7 +1,7 @@
 <template>
     <div class="avatar">
         <v-avatar size="160" style="position: relative" :class="owner ? 'owner' : undefined">
-            <v-img :src="src"></v-img>
+            <v-img :src="$http.defaults.baseURL + 'uploads/' + (avatar ? avatar : src)"></v-img>
 
             <v-file-input
                 @change="changeAvatar()" 
@@ -19,6 +19,10 @@
 </template>
 
 <script>
+import {
+    mapActions
+} from 'vuex';
+
 export default {
     name: "UserAvatar",
     props: {
@@ -34,23 +38,32 @@ export default {
     data() {
         return {
             selectedFile: null,
+            avatar: null,
             rules: [
                 value => !value || value.size < 2000000 || "Wielkość obrazu nie może przekraczać 2MB"
             ]
         }
     },
     methods: {
+        ...mapActions(['LOGOUT']),
+        ...mapActions(['SET_USER_SNACKBAR']),
         changeAvatar() {
             const formData = new FormData();
             formData.append("avatar", this.selectedFile);
             this.$http.post("user/avatar/", formData)
                 .then(res => {
-                    // TODO: success message
-                    // console.log(res);
+                    this.SET_USER_SNACKBAR({dialog: true, msg: "Avatar został zmieniony! ", color: "success"});
+                    this.$http.get("user/avatar/").then(res => {
+                        this.avatar = res.data;
+                    })
                 })
                 .catch(err => {
-                    // TODO: show error
-                    // console.log(err);
+                    if(err.response) {
+                        if(err.response.status === 401)
+                            this.LOGOUT();
+                    }
+
+                    this.SET_USER_SNACKBAR({dialog: true, msg: "Nie udało się zmienić avatara!", color: "error"})
                 })
         }
     }

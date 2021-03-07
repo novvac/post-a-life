@@ -11,6 +11,7 @@ export default new Vuex.Store({
     user: null,
     friends: null,
     userEvents: null,
+    userSnackbar: {model: false, msg: null, color: null},
     invitationsEvents: [],
     interestedEvents: [],
     participantEvents: [],
@@ -32,6 +33,9 @@ export default new Vuex.Store({
     },
     userEvents(store) {
       return store.userEvents;
+    },
+    userSnackbar(store) {
+      return store.userSnackbar;
     },
     invitationsEvents(store) {
       return store.invitationsEvents;
@@ -70,6 +74,9 @@ export default new Vuex.Store({
     },
     setUserEvents(store, payload) {
       store.userEvents = payload;
+    },
+    setUserSnackbar(store, payload) {
+      store.userSnackbar = payload;
     },
     setInvitationsEvents(store, payload) {
       store.invitationsEvents = payload;
@@ -190,6 +197,9 @@ export default new Vuex.Store({
             return this.dispatch("LOGOUT");
         }
       })
+    },
+    SET_USER_SNACKBAR({commit}, payload) {
+      commit('setUserSnackbar', payload);
     },
     async LOAD_INTERESTED_EVENTS({commit}) {
       await axios.get("event/interested").then(res => {
