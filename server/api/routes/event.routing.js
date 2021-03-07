@@ -48,7 +48,9 @@ router.get("/:id/:skip-:limit-:visibility-:timestamp", passport.authenticate("jw
 // ! ###############################
 router.get('/most-popular/', passport.authenticate("jwt", {session: false}), async (req, res) => {
     let events = await Event.find({
-        owner: {$ne: req.user.id}
+        owner: {$ne: req.user.id},
+    }).sort({
+        participants: -1,
     }).limit(2);
 
     return res.status(200).json(events);

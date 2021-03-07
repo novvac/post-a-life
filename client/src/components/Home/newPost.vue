@@ -35,7 +35,7 @@
                     :error-messages="errors.mind"
                 />
 
-                <v-btn icon large color="success" @click="addPost()">
+                <v-btn icon large color="success" class="ml-3" @click="addPost()">
                     <v-icon>mdi-check</v-icon>
                 </v-btn>
             </v-list-item>

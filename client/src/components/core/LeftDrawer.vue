@@ -73,8 +73,8 @@ export default {
     data() {
         return {
             links: [
-                {icon: "home", text: "Home", to: "/app"},
-                {icon: "calendar-blank", text: "Events", to: "/app/events"},
+                {icon: "home", text: "Strona główna", to: "/app"},
+                {icon: "calendar-blank", text: "Wydarzenia", to: "/app/events"},
             ]
         }
     },

@@ -6,7 +6,6 @@ let Post = new Schema({
         type: String,
         required: true,
     },
-    images: [],
     owner: {
         type: mongoose.Types.ObjectId,
         ref: "User",
