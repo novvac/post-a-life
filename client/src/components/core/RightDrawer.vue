@@ -63,17 +63,9 @@ export default {
         return {
             items: [
                 {
-                    subheader: "Twoje strony",
-                    content: []
-                },
-                {
                     subheader: "Znajomi",
                     content: []
                 },
-                {
-                    subheader: "Grupy",
-                    content: []
-                }
             ],
             heartbeat: null,
         }
@@ -112,7 +104,7 @@ export default {
                         }
                     })
             }
-            this.items[1].content = bufor;
+            this.items[0].content = bufor;
         },
         setHeartbeat() {
             clearInterval(this.heartbeat);
@@ -125,13 +117,13 @@ export default {
                 ids: this.friends,
             })
                 .then(res => {
-                    let items = this.items[1].content;
+                    let items = this.items[0].content;
                     let mapItems = items.map(item => item._id);
                     for(var i=0; i<items.length; i++) {
                         let found = res.data.find(el => el.id === items[i]._id);
                         let index = mapItems.indexOf(found.id);
                         if(index > -1)
-                            this.items[1].content[index].isActive = found.isActive;
+                            this.items[0].content[index].isActive = found.isActive;
                     }
                 })
                 .catch(err => {
@@ -141,16 +133,16 @@ export default {
         async loadUnreadMessages() {
             await this.$http.get("user/unread-messages")
                 .then(res => {
-                    let mapItems = this.items[1].content.map(item => item._id);
+                    let mapItems = this.items[0].content.map(item => item._id);
                     let mapResponse = res.data.map(item => item.sender);
 
                     for(var i=0; i<mapItems.length; i++) {
                         let index = mapResponse.indexOf(mapItems[i]);
                         
                         if(index == -1) {
-                            this.items[1].content[i].hasUnread = false;
+                            this.items[0].content[i].hasUnread = false;
                         } else {
-                            this.items[1].content[i].hasUnread = true;
+                            this.items[0].content[i].hasUnread = true;
                         }
                     }
                 })

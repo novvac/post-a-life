@@ -200,6 +200,7 @@ export default new Vuex.Store({
     },
     SET_USER_SNACKBAR({commit}, payload) {
       commit('setUserSnackbar', payload);
+      this.dispatch("LOAD_USER");
     },
     async LOAD_INTERESTED_EVENTS({commit}) {
       await axios.get("event/interested").then(res => {

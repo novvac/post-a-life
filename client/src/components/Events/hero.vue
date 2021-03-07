@@ -1,9 +1,9 @@
 <template>
     <base-card
         class="event-hero pa-5 white--text"
-        :style="{backgroundImage: 'url(' + require('../../assets/' + this.src) + ')'}"
+        :style="{backgroundImage: 'url(' + $http.defaults.baseURL + 'uploads/' + event.image + ')'}"
         to="#"
-        @click="SET_EVENTS_DIALOG({component: 'event-details', id: 0})"
+        @click="SET_EVENTS_DIALOG({component: 'event-details', id: event._id})"
     >
         <div class="overlay"></div>
 
@@ -12,18 +12,18 @@
                 <div>
                     <v-chip class="caption chip" small>
                         <v-icon x-small class="mr-2">mdi-eye</v-icon>
-                        <span>42</span>
+                        <span>{{event.interested.length}}</span>
                         <div class="ml-1">zainteresowanych</div>
                     </v-chip>
 
                     <v-chip class="caption chip ml-2" small>
                         <v-icon x-small class="mr-2">mdi-check</v-icon>
-                        <span>92</span>
+                        <span>{{event.participants.length}}</span>
                         <div class="ml-1">weźmie udział</div>
                     </v-chip>      
                 </div>
 
-                <v-btn class="caption chip text-none ml-3 button" x-small color="white">
+                <v-btn class="caption chip text-none ml-3 button" x-small color="white" @click.stop="SET_INVITE_FRIENDS({dialog: true, id: event._id})">
                     <v-icon x-small>mdi-bullhorn</v-icon>
                     <div class="ml-2">Zaproś znajomych</div>
                 </v-btn>           
@@ -35,16 +35,6 @@
                 </div>
                 <div class="body-2 text-truncate" style="color: #ccc"> 
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ratione quod nemo deserunt, facere repellendus? Natus autem asperiores blanditiis adipisci, odio molestiae numquam ex optio harum possimus nostrum? Dolor, veritatis?
-                </div>
-                <div class="d-flex mt-5"> 
-                    <v-btn class="caption text-none button" x-small color="white">
-                        <v-icon x-small class="mr-2">mdi-eye</v-icon>
-                        Zainteresowany
-                    </v-btn>
-                    <v-btn class="caption text-none ml-3 button" x-small color="white">
-                        <v-icon x-small class="mr-2">mdi-check</v-icon>
-                        Wezmę udział
-                    </v-btn>
                 </div>
             </div>
         </div>
@@ -59,10 +49,6 @@ import {
 export default {
     name: "EventHero",
     props: {
-        src: {
-            type: String,
-            required: true,
-        },
         event: {
             type: Object,
             required: true,
@@ -70,6 +56,7 @@ export default {
     },
     methods: {
         ...mapActions(['SET_EVENTS_DIALOG']),
+        ...mapActions(['SET_INVITE_FRIENDS']),
     }
 }
 </script>
@@ -77,7 +64,7 @@ export default {
 <style lang="scss">
 .event-hero {
     border-radius: 22px;
-    height: 360px;
+    height: 280px;
     background-size: cover;
     overflow: hidden;
     position: relative;

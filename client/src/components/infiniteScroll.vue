@@ -22,9 +22,9 @@
 
         <div class="text-center mt-5 caption" v-if="end || max">
             <v-divider class="mb-5"></v-divider>
-            <span v-if="feeds.length == 0"><b>Nie znaleziono żadnych postów</b> Sprawdź później!</span>
-            <span v-else-if="end"><b>Wszystko zostało załadowane!</b> Sprawdź później!</span>
-            <span v-else-if="max"><b>Załadowano maksymalną ilość postów.</b> Odśwież stronę!</span>
+            <span v-if="feeds.length == 0"><b>Nie znaleziono żadnych elementów</b></span>
+            <span v-else-if="end"><b>Wszystkie elementy zostały załadowane!</b> Sprawdź później!</span>
+            <span v-else-if="max"><b>Załadowano maksymalną ilość elementów.</b> Odśwież stronę!</span>
         </div>
     </div>
 </template>
