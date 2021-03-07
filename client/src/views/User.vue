@@ -89,10 +89,10 @@
                     <v-tabs-items v-model="tab">
                         <v-tab-item
                             v-for="t in tabs"
-                            :key="t.component"
+                            :key="t.text"
                             transition="fade-transition"
                         >
-                            <component v-bind="t.data" :is="t.component" bordered/>
+                            <component :id="id" v-bind="t.data" :is="t.component" bordered/>
                         </v-tab-item>
                     </v-tabs-items>
                 </v-col>
@@ -122,9 +122,12 @@ export default {
             tab: null,
             tabs: [
                 {icon: "folder-outline", text: "Posty", component: "infinite-scroll", data: {
-                    ids: [],
                     visibility: 0,
                 }},
+                {icon: "calendar", text: "Wydarzenia", component: "infinite-scroll", data: {
+                    endpoint: 'event',
+                    component: 'event-inline'
+                }}
             ]
         }
     },
@@ -159,12 +162,6 @@ export default {
 
                     this.setFriendButton();
 
-                    if(this.tabs[0].data.ids.length === 0)
-                        this.tabs[0].data.ids.push(loadedUser.data._id);
-                    else
-                        this.tabs[0].data.ids = loadedUser.data._id;
-                    
-
                     if(friendStatus.data.status != 1)
                         this.tabs[0].data.visibility = 0;
                     else
@@ -177,10 +174,12 @@ export default {
                 }))
                 .catch(err => {
                     this.msg = "Nie udało się załadować użytkownika! Prosimy o kontakt!";
-                    if(err.response.status === 401)
-                        this.LOGOUT();
-                    else if(err.response.status === 404)
-                        this.msg = "Użytkownik nie istnieje!";
+                    if(err.response) {
+                        if(err.response.status === 401)
+                            this.LOGOUT();
+                        else if(err.response.status === 404)
+                            this.msg = "Użytkownik nie istnieje!";
+                    }
                         
                     this.loading = false;
                 })

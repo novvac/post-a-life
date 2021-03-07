@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("../../passport/index");
+const mongoose = require('mongoose');
 const Post = require("../../models/Post.model");
 const User = require("../../models/User.model");
 const Comment = require("../../models/Comment.model");
@@ -27,7 +28,7 @@ router.post("/", passport.authenticate("jwt", {session: false}), async (req, res
     return res.status(200).send('success');
 })
 
-router.get("/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.get("/:id/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
     let startDate = new Date(parseInt(req.params.timestamp));
 
     let friends = await User.findOne({
@@ -46,6 +47,13 @@ router.get("/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", 
         }
     });
     let friendsMap = friends.friends.map(item => item.recipient);
+
+    let convertedShortId = await User.findOne({short_id: req.params.id})
+    if(convertedShortId)
+        friendsMap = [convertedShortId.id]
+
+    if(mongoose.isValidObjectId(req.params.id))
+        friendsMap = [req.params.id];
 
     let posts = await Post.find({
         owner: {$in: friendsMap},

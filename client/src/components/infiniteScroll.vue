@@ -48,6 +48,10 @@ export default {
         endpoint: {
             type: String,
             default: 'post',
+        },
+        id: {
+            type: String,
+            default: "none",
         }
     },
     components: {
@@ -74,10 +78,9 @@ export default {
                 let dt = new Date();
                 this.timestamp = dt.getTime();
             }
-            console.log("OK");
 
             this.loading = true;
-            const computedURL = `${this.endpoint}/${this.skip}-${this.limit}-${this.visibility}-${this.timestamp}`
+            const computedURL = `${this.endpoint}/${this.id}/${this.skip}-${this.limit}-${this.visibility}-${this.timestamp}`
             this.$http.get(computedURL)
                 .then(res => {
                     if(res.data.length < this.limit)

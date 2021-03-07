@@ -4,22 +4,41 @@ const router = express.Router();
 const passport = require("../../passport/index");
 const Event = require("../../models/Event.model");
 const Friend = require('../../models/Friend.model');
+const User = require("../../models/User.model");
 
 const multer = require("multer");
 const storage = require("../../config/multer");
 const upload = multer({storage: storage});
 
 // ! ##########################################
-// ! GET ALL EVENTS (WITHOUT LOGGED USER)
+// ! GET EVNETS (ALL OR USER EVENTS)
 // ! ##########################################
-router.get("/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
+router.get("/:id/:skip-:limit-:visibility-:timestamp", passport.authenticate("jwt", {session: false}), async (req, res) => {
+    let ids = [];
+    let convertedShortId = await User.findOne({short_id: req.params.id})
+    if(convertedShortId)
+        ids = [convertedShortId.id]
+
+    if(mongoose.isValidObjectId(req.params.id))
+        ids = [req.params.id];
+
     let startDate = new Date(parseInt(req.params.timestamp));
-    let events = await Event.find({
-        owner: {$ne: req.user.id},
-        createdAt: {$lt: startDate}
-    }).sort({
-        createdAt: -1,
-    }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit));;
+    let events = [];
+    if(ids.length > 0) {
+        events = await Event.find({
+            owner: {$in: ids},
+            createdAt: {$lt: startDate}
+        }).sort({
+            createdAt: -1,
+        }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit));
+    } else {
+        events = await Event.find({
+            owner: {$ne: req.user.id},
+            createdAt: {$lt: startDate}
+        }).sort({
+            createdAt: -1,
+        }).skip(parseInt(req.params.skip)).limit(parseInt(req.params.limit));
+    }
 
     return res.status(200).json(events);
 })

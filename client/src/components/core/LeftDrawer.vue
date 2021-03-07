@@ -75,9 +75,6 @@ export default {
             links: [
                 {icon: "home", text: "Home", to: "/app"},
                 {icon: "calendar-blank", text: "Events", to: "/app/events"},
-                {icon: "video", text: "Watch videos", to: "/app/videos"},
-                {icon: "folder-image", text: "Photos", to: "/app/photos"},
-                {icon: "file-multiple", text: "Files", to: "/app/files"},
             ]
         }
     },
